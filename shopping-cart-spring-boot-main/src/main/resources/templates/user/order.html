@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Đặt hàng</title>
+</head>
+<body>
+
+
+	<!-- Hiển thị lỗi thanh toán -->
+	<div th:if="${errorMessage}"
+		class="alert alert-danger text-center mt-3">
+		<p th:text="${errorMessage}"></p>
+	</div>
+
+
+	<section>
+		<a href="javascript:history.back()" class="btn"> <i
+			class="fa-solid fa-arrow-left mt-3"></i> Trở lại
+		</a>
+		<div class="container mt-5 p-5">
+
+			<!-- ✅ Form duy nhất -->
+			<form action="/user/save-order" method="post" id="orders" novalidate>
+
+				<div class="row">
+					<!-- 🏠 Địa chỉ thanh toán -->
+					<div class="col-md-6">
+						<div class="mb-3 row">
+							<p class="text-center fs-4">Địa chỉ thanh toán</p>
+							<hr>
+							<div class="col p-1">
+								<label>Họ</label> <input type="text" name="firstName" required
+									class="form-control mt-1" th:value="${user.name}">
+							</div>
+							<div class="col p-1">
+								<label>Tên</label> <input type="text" name="lastName" required
+									class="form-control mt-1">
+							</div>
+						</div>
+
+						<div class="mb-3 row">
+							<div class="col p-1">
+								<label>Email</label> <input type="email" name="email" required
+									class="form-control col" th:value="${user.email}">
+							</div>
+							<div class="col p-1">
+								<label>Số điện thoại</label> <input type="text" name="mobileNo"
+									required class="form-control col ms-2"
+									th:value="${user.mobileNumber}">
+							</div>
+						</div>
+
+						<div class="mb-3 row">
+							<div class="col p-1">
+								<label>Địa chỉ</label> <input type="text" name="address"
+									required class="form-control col" th:value="${user.address}">
+							</div>
+							<div class="col p-1">
+								<label>Thành phố</label> <select name="city" id="city"
+									class="form-control col ms-2" required>
+									<option value="" selected disabled hidden>-- Chon
+										thanh pho --</option>
+									<option value="Ha Noi">Ha Noi</option>
+									<option value="TP Ho Chi Minh">TP Ho Chi Minh</option>
+									<option value="Da Nang">Da Nang</option>
+									<option value="Hai Phong">Hai Phong</option>
+									<option value="Can Tho">Can Tho</option>
+									<option value="Hue">Hue</option>
+									<option value="Binh Duong">Binh Duong</option>
+									<option value="Dong Nai">Dong Nai</option>
+									<option value="Quang Ninh">Quang Ninh</option>
+									<option value="Khac">Khac</option>
+								</select>
+
+
+							</div>
+						</div>
+
+						<div class="mb-3 row">
+							<div class="col p-1">
+								<label>Tỉnh/Thành</label> <input type="text" name="state"
+									required class="form-control col" th:value="${user.state}">
+							</div>
+							<div class="col p-1">
+								<label>Mã bưu điện</label> <input type="number" name="pincode"
+									required class="form-control col ms-2"
+									th:value="${user.pincode}">
+							</div>
+						</div>
+					</div>
+
+					<!-- 💳 Hình thức thanh toán -->
+					<div class="col-md-6">
+						<p class="text-center fs-4">Hình thức thanh toán</p>
+						<hr>
+
+						<div class="card">
+							<div class="card-body">
+								<table class="table table-borderless">
+									<tbody>
+										<tr>
+											<td>Tạm tính</td>
+											<td>:</td>
+											<td><span
+												th:text="${#numbers.formatDecimal(orderPrice, 0, 'COMMA', 0, 'POINT')}"></span>
+												<th:block th:utext="${@commnServiceImpl.rupeeSign()}"></th:block>
+											</td>
+										</tr>
+										<tr>
+											<td>Phí vận chuyển</td>
+											<td>:</td>
+											<td id="shippingCost"><span
+												th:text="${#numbers.formatDecimal(20000, 0, 'COMMA', 0, 'POINT')}"></span>
+												<th:block th:utext="${@commnServiceImpl.rupeeSign()}"></th:block>
+											</td>
+										</tr>
+										<tr>
+											<td>Thuế</td>
+											<td>:</td>
+											<td><span
+												th:text="${#numbers.formatDecimal(350, 0, 'COMMA', 0, 'POINT')}"></span>
+												<th:block th:utext="${@commnServiceImpl.rupeeSign()}"></th:block>
+											</td>
+										</tr>
+										<tr class="border-top">
+											<td>Tổng cộng</td>
+											<td>:</td>
+											<td><span
+												th:text="${#numbers.formatDecimal(totalOrderPrice, 0, 'COMMA', 0, 'POINT')}"></span>
+												<th:block th:utext="${@commnServiceImpl.rupeeSign()}"></th:block>
+											</td>
+										</tr>
+									</tbody>
+
+								</table>
+							</div>
+						</div>
+
+						<input type="hidden" name="amount" th:value="${totalOrderPrice}" />
+
+						<div class="card shadow p-3 mb-5 mt-2 bg-body-tertiary rounded">
+							<div class="card-body text-center">
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="paymentType"
+										id="cod" value="COD" checked> <label
+										class="form-check-label" for="cod">Thanh toán khi nhận
+										hàng</label>
+								</div>
+
+								<div class="form-check mt-2">
+									<input class="form-check-input" type="radio" name="paymentType"
+										id="vnpay" value="VNPAY"> <label
+										class="form-check-label" for="vnpay">Thanh toán bằng
+										VNPay</label>
+								</div>
+
+								<!-- 🔘 Nút xác nhận -->
+								<button type="submit"
+									class="btn bg-primary text-white col-md-12 mt-3">Xác
+									nhận đặt hàng</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+			</form>
+		</div>
+	</section>
+
+
+	<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const orderForm = document.getElementById("orders");
+
+    orderForm.addEventListener("submit", function(event) {
+        const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+        const totalAmount = document.querySelector('input[name="amount"]').value;
+        const citySelect = document.getElementById("city");
+        const selectedCity = citySelect.value;
+
+        // ✅ Kiem tra chon thanh pho
+        if (!selectedCity || selectedCity.trim() === "") {
+            event.preventDefault();
+            alert("Vui lòng chọn thành phố trước khi đặt hàng!");
+            citySelect.focus();
+            return;
+        }
+
+        if (paymentType === "VNPAY") {
+            event.preventDefault();
+
+            fetch("/create-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                },
+                body: "amount=" + encodeURIComponent(totalAmount)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Lỗi Kết Nối VNPay!");
+                return response.text();
+            })
+            .then(url => {
+                if (url.startsWith("http")) {
+                    window.location.href = url;
+                } else {
+                    alert("Không nhận được URL thanh toán hợp lệ từ máy chủ!");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Không thể tạo giao dịch VNPay. Vui lòng thử lại sau!");
+            });
+        }
+    });
+});
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Thêm Sản Phẩm</title>
+</head>
+<body>
+	<section>
+		<div class="container mt-4 mb-5">
+
+			<!-- Nút trở lại -->
+			<div class="mb-3">
+				<a href="javascript:history.back()"
+					class="btn btn-outline-secondary"> <i
+					class="fa-solid fa-arrow-left"></i> Trở lại
+				</a>
+			</div>
+
+			<!-- Tiêu đề -->
+			<h2 class="text-center mb-4 fw-bold text-uppercase">Thêm Sản
+				Phẩm Mới</h2>
+
+			<!-- Hiển thị thông báo -->
+			<div class="text-center mb-3">
+				<th:block th:if="${session.succMsg}">
+					<p class="text-success fw-bold">[[${session.succMsg}]]</p>
+					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+				</th:block>
+
+				<th:block th:if="${session.errorMsg}">
+					<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+				</th:block>
+			</div>
+
+			<!-- Form thêm sản phẩm -->
+			<div class="row">
+				<div class="col-md-10 offset-md-1">
+					<div class="card shadow-sm">
+						<div class="card-body p-4">
+							<form action="/admin/saveProduct" method="post"
+								enctype="multipart/form-data">
+
+								<!-- Tiêu đề -->
+								<div class="mb-3">
+									<label class="fw-semibold">Tên sản phẩm</label> <input type="text"
+										name="title" class="form-control"
+										placeholder="Nhập tên sản phẩm" required>
+								</div>
+
+								<!-- Mô tả -->
+								<div class="mb-3">
+									<label class="fw-semibold">Mô tả</label>
+									<textarea rows="4" name="description" class="form-control"
+										placeholder="Nhập mô tả sản phẩm..." required></textarea>
+								</div>
+
+								<!-- Danh mục -->
+								<div class="mb-3">
+									<label class="fw-semibold">Danh mục</label> <select
+										class="form-control" name="category" required>
+										<option value="">--Chọn--</option>
+										<option th:each="c:${categories}" th:value="${c.name}"
+											th:text="${c.name}"></option>
+									</select>
+								</div>
+
+								<!-- Giá -->
+								<div class="mb-3">
+									<label class="fw-semibold">Giá (VNĐ)</label> <input
+										type="number" name="price" class="form-control"
+										placeholder="Nhập giá sản phẩm" required>
+								</div>
+
+								<!-- Tồn kho -->
+								<div class="mb-3">
+									<label class="fw-semibold">Tồn kho</label> <input type="number"
+										name="stock" class="form-control"
+										placeholder="Số lượng trong kho" required>
+								</div>
+
+								<!-- Color -->
+								<div class="mb-3">
+									<label class="fw-semibold">Màu sắc</label> <select name="color"
+										class="form-control" required>
+										<option value="">--Chọn màu--</option>
+										<option value="Đen">Xanh</option>
+										<option value="Vàng">Đỏ</option>
+										<option value="Bạc">Tím</option>
+										<option value="Bạc">Vàng</option>
+										<option value="Bạc">Trắng</option>
+										<option value="Bạc">Đen</option>
+									</select>
+								</div>
+
+								<!-- Size -->
+								<div class="mb-3">
+									<label class="fw-semibold">Size</label> <select name="size"
+										class="form-control" required>
+										<option value="">--Chọn size--</option>
+										<option value="Small">Small</option>
+										<option value="Medium">Medium</option>
+										<option value="Large">Large</option>
+										<option value="Free Size">Free Size</option>
+									</select>
+								</div>
+
+
+								<!-- Trạng thái -->
+								<div class="mb-3">
+									<label class="fw-semibold">Trạng thái</label><br>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="isActive"
+											id="active" value="true" checked> <label
+											class="form-check-label" for="active">Kích hoạt</label>
+									</div>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="isActive"
+											id="inactive" value="false"> <label
+											class="form-check-label" for="inactive">Ngừng kích
+											hoạt</label>
+									</div>
+								</div>
+
+								<!-- Ảnh -->
+								<div class="mb-4">
+									<label class="fw-semibold">Ảnh sản phẩm</label> <input
+										type="file" name="file" class="form-control" required>
+								</div>
+
+								<!-- Nút lưu -->
+								<div class="text-center">
+									<button class="btn btn-primary px-5 py-2">Lưu sản phẩm</button>
+								</div>
+
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</section>
+</body>
+</html>

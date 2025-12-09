@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Đơn hàng của tôi</title>
+</head>
+<body>
+
+	<section class="mt-5 mb-5">
+		<div class="container">
+
+			<!-- Nút quay lại -->
+			<div class="mb-3">
+				<a href="javascript:history.back()"
+					class="btn btn-outline-secondary"> <i
+					class="fa-solid fa-arrow-left"></i> Trở lại
+				</a>
+			</div>
+
+			<!-- Tiêu đề trang -->
+			<h3 class="text-center fw-bold mb-4">Đơn hàng của tôi</h3>
+
+			<!-- Thông báo -->
+			<th:block th:if="${session.succMsg}">
+				<div class="alert alert-success text-center fw-semibold">
+					[[${session.succMsg}]]</div>
+				<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+			</th:block>
+
+			<th:block th:if="${session.errorMsg}">
+				<div class="alert alert-danger text-center fw-semibold">
+					[[${session.errorMsg}]]</div>
+				<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+			</th:block>
+
+			<!-- Bảng danh sách đơn hàng -->
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<div class="table-responsive">
+						<table class="table align-middle table-bordered text-center">
+							<thead class="table-light">
+								<tr>
+									<th scope="col">Mã đơn</th>
+									<th scope="col">Ngày đặt</th>
+									<th scope="col">Sản phẩm</th>
+									<th scope="col">Chi tiết</th>
+									<th scope="col">Trạng thái</th>
+									<th scope="col">Hành động</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="o : ${orders}">
+									<td class="fw-bold text-primary">[[${o.orderId}]]</td>
+									<td>[[${o.orderDate}]]</td>
+									<td>
+										<div class="d-flex align-items-start">
+											<img th:src="@{'/img/product_img/'+${o.product.image}}"
+												alt="Ảnh sản phẩm" class="me-2 rounded"
+												style="width: 60px; height: 60px; object-fit: cover;">
+											<div class="text-start">
+												<div>[[${o.product.title}]]</div>
+												<div>Size: [[${o.product.size}]]</div>
+												<div>Color: [[${o.product.color}]]</div>
+											</div>
+										</div>
+									</td>
+
+									<td>
+										<div class="text-start">
+											<div>
+												Số lượng: <strong>[[${o.quantity}]]</strong>
+											</div>
+											<div>Giá: [[${o.price}]]</div>
+											<div>
+												Thành tiền: <strong>[[${o.quantity * o.price}]]</strong>
+											</div>
+										</div>
+									</td>
+									<td><span th:switch="${o.status}"> <span
+											th:case="'Pending'" class="badge bg-secondary">Đang xử
+												lý</span> <span th:case="'Received'" class="badge bg-info">Đã
+												nhận</span> <span th:case="'Packed'" class="badge bg-warning">Đã
+												đóng gói</span> <span th:case="'Shipping'" class="badge bg-primary">Đang
+												giao</span> <span th:case="'Delivered'" class="badge bg-success">Hoàn
+												tất</span> <span th:case="'Cancelled'" class="badge bg-danger">Đã
+												hủy</span> <span th:case="*">Không xác định</span>
+									</span></td>
+
+									<td><th:block th:if="${o.status != 'Cancelled'}">
+											<a th:href="@{'/user/update-status?id='+${o.id}+'&st=6'}"
+												class="btn btn-sm btn-outline-danger"> <i
+												class="fa-solid fa-times"></i> Hủy
+											</a>
+										</th:block> <th:block th:unless="${o.status != 'Cancelled'}">
+											<button class="btn btn-sm btn-secondary" disabled>
+												<i class="fa-solid fa-ban"></i> Hủy
+											</button>
+										</th:block></td>
+								</tr>
+
+								<tr th:if="${#lists.isEmpty(orders)}">
+									<td colspan="6" class="text-center text-muted py-4"><i
+										class="fa-solid fa-box-open fa-2x mb-2"></i><br> Bạn chưa
+										có đơn hàng nào.</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+</body>
+</html>

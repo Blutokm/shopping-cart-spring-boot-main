@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<!-- Đổi charset sang UTF-8 -->
+<meta charset="UTF-8">
+<title>Quản lý Người dùng</title>
+</head>
+<body>
+	<section>
+		<div class="container-fluid p-3">
+			<div class="mb-3">
+				<a href="javascript:history.back()"
+					class="btn btn-outline-secondary"> <i
+					class="fa-solid fa-arrow-left"></i> Trở lại
+				</a>
+			</div>
+			<div class="card card-sh">
+				<div class="card-header text-center">
+					<p class="fs-4" th:if="${userType==1}">Người dùng</p>
+					<p class="fs-4" th:if="${userType==2}">Quản trị viên</p>
+
+					<th:block th:if="${session.succMsg}">
+						<p class="text-success fw-bold">[[${session.succMsg}]]</p>
+						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+					</th:block>
+
+					<th:block th:if="${session.errorMsg}">
+						<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+					</th:block>
+				</div>
+
+				<div class="card-body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">STT</th>
+								<th scope="col">Ảnh đại diện</th>
+								<th scope="col">Họ và tên</th>
+								<th scope="col">Email</th>
+								<th scope="col">Số điện thoại</th>
+								<th scope="col">Địa chỉ</th>
+								<th scope="col">Trạng thái</th>
+								<th scope="col">Hành động</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="u,c:${users}">
+								<th scope="row">[[${c.count}]]</th>
+								<td><img th:src="@{'/img/profile_img/'+${u.profileImage}}"
+									width="70px" height="70px"></td>
+								<td>[[${u.name}]]</td>
+								<td>[[${u.email}]]</td>
+								<td>[[${u.mobileNumber}]]</td>
+								<td>[[${u.address+','+u.city+','+u.state+','+u.pincode}]]</td>
+								<td>[[${u.isEnable}]]</td>
+								<td><a
+									th:href="@{'/admin/updateSts?status=true&id='+${u.id}}+'&type='+${userType}"
+									class="btn btn-sm btn-primary">Kích hoạt</a> <a
+									th:href="@{'/admin/updateSts?status=false&id='+${u.id}}+'&type='+${userType}"
+									class="btn btn-sm btn-danger">Vô hiệu</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

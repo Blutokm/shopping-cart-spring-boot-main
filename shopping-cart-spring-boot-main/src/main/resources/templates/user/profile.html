@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Hồ sơ cá nhân</title>
+</head>
+<body>
+
+<section class="mt-5 mb-5">
+    <div class="container">
+
+        <!-- Nút quay lại -->
+        <div class="mb-3">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Trở lại
+            </a>
+        </div>
+
+        <!-- Tiêu đề -->
+        <h3 class="text-center fw-bold mb-4">Hồ sơ của tôi</h3>
+
+        <!-- Thông báo -->
+        <th:block th:if="${session.succMsg}">
+            <div class="alert alert-success text-center fw-semibold">
+                [[${session.succMsg}]]
+            </div>
+            <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+        </th:block>
+
+        <th:block th:if="${session.errorMsg}">
+            <div class="alert alert-danger text-center fw-semibold">
+                [[${session.errorMsg}]]
+            </div>
+            <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+        </th:block>
+
+        <!-- Thông tin người dùng -->
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <img th:src="@{'../img/profile_img/'+${user.profileImage}}"
+                         alt="Ảnh đại diện"
+                         class="border p-2 rounded-circle"
+                         style="width: 120px; height: 120px; object-fit: cover;">
+                </div>
+
+                <form action="/user/update-profile" method="post" enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Họ và tên</label>
+                            <input type="text" name="name" class="form-control" th:value="${user.name}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Số điện thoại</label>
+                            <input type="text" name="mobileNumber" class="form-control" th:value="${user.mobileNumber}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="text" class="form-control" readonly th:value="${user.email}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Ảnh đại diện</label>
+                            <input type="file" name="img" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Địa chỉ</label>
+                            <input type="text" name="address" class="form-control" th:value="${user.address}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Thành phố</label>
+                            <input type="text" name="city" class="form-control" th:value="${user.city}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Tỉnh/Thành</label>
+                            <input type="text" name="state" class="form-control" th:value="${user.state}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Mã bưu điện</label>
+                            <input type="text" name="pincode" class="form-control" th:value="${user.pincode}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Vai trò</label>
+                            <input type="text" class="form-control" readonly th:value="${user.role}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Trạng thái tài khoản</label>
+                            <input type="text" class="form-control" readonly th:value="${user.isEnable}">
+                            <input type="hidden" th:value="${user.id}" name="id">
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary px-4">Cập nhật hồ sơ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Đổi mật khẩu -->
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h4 class="text-center fw-bold mb-4">Đổi mật khẩu</h4>
+                <form action="/user/change-password" method="post" class="col-md-6 offset-md-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mật khẩu hiện tại</label>
+                        <input type="password" name="currentPassword" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mật khẩu mới</label>
+                        <input type="password" name="newPassword" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Xác nhận mật khẩu</label>
+                        <input type="password" name="confirmPassword" class="form-control">
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary px-4">Cập nhật mật khẩu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+</body>
+</html>

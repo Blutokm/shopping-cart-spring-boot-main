@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>ShopPKTH - Modern Store</title>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link
+	href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+	rel="stylesheet">
+
+</head>
+<body>
+	<section>
+
+		<!-- HERO SLIDER GỐC -->
+		<div class="container">
+			<div class="hero-card p-3">
+				<div id="carouselExample" class="carousel slide"
+					data-bs-ride="carousel">
+					<div class="carousel-inner">
+						<div class="carousel-item active" data-bs-interval="3000">
+							<img src="img/ecom1.png" class="d-block w-100" alt="Banner 1">
+						</div>
+						<div class="carousel-item" data-bs-interval="3000">
+							<img src="img/ecom2.png" class="d-block w-100" alt="Banner 2">
+						</div>
+						<div class="carousel-item" data-bs-interval="3000">
+							<img src="img/ecom3.png" class="d-block w-100" alt="Banner 3">
+						</div>
+					</div>
+					<button class="carousel-control-prev" type="button"
+						data-bs-target="#carouselExample" data-bs-slide="prev">
+						<span class="carousel-control-prev-icon"></span>
+					</button>
+					<button class="carousel-control-next" type="button"
+						data-bs-target="#carouselExample" data-bs-slide="next">
+						<span class="carousel-control-next-icon"></span>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- DANH MỤC GỐC -->
+		<div class="container my-5">
+			<h4 class="fw-bold mb-4">Danh mục phổ biến</h4>
+			<div class="d-flex justify-content-center flex-wrap gap-3">
+				<div class="text-center cat-wrapper" th:each="c:${category}">
+					<a th:href="@{'/products?category=' + ${c.name}}"
+						class="text-decoration-none text-dark"> <img
+						th:src="@{'/img/category_img/' + ${c.imageName}}"
+						class="cat-circle mb-2">
+						<h5 class="fw-semibold">[[${c.name}]]</h5>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="container mb-5">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div>
+					<h3 class="fw-bold mb-0">Sản phẩm Trend</h3>
+					<small class="text-muted">Được mua nhiều nhất tuần qua</small>
+				</div>
+				<a href="/products" class="btn btn-outline-dark rounded-pill">Xem
+					Shop <i class="fa-solid fa-arrow-right"></i>
+				</a>
+			</div>
+
+			<div class="row g-4">
+				<div class="col-6 col-md-3" th:each="p:${products}">
+					<div class="product-card h-100 p-2">
+						<span class="text-danger badge-sale fs-6" th:if="${p.discount > 0}">-[[${p.discount}]]%</span>
+
+						<div class="text-center p-3">
+							<a th:href="@{'/product/' + ${p.id}}"> <img
+								th:src="@{'/img/product_img/' + ${p.image}}" class="img-fluid"
+								style="height: 180px; object-fit: contain;">
+							</a>
+						</div>
+
+						<div class="card-body pt-0">
+							<div class="text-warning small mb-1">
+								<i class="fa-solid fa-star"></i> 4.8
+							</div>
+							<h6 class="fw-bold text-truncate">[[${p.title}]]</h6>
+
+							<div
+								class="d-flex justify-content-between align-items-center mt-2">
+								<div>
+									<span class="fw-bold text-danger">
+										[[${#numbers.formatDecimal(p.discountPrice, 0, 'COMMA', 0,
+										'POINT')}]]đ </span><br> <small
+										class="text-muted text-decoration-line-through"
+										th:if="${p.discount > 0}">
+										[[${#numbers.formatDecimal(p.price, 0, 'COMMA', 0,
+										'POINT')}]]đ </small>
+								</div>
+
+								<a th:if="${user == null}" href="/signin"
+									class="btn btn-sm btn-dark rounded-circle"
+									style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+									<i class="fa-solid fa-cart-plus"></i>
+								</a> <a th:unless="${user == null}"
+									th:href="@{'/user/addCart?pid=' + ${p.id} + '&uid=' + ${user.id}}"
+									class="btn btn-sm btn-dark rounded-circle"
+									style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+									<i class="fa-solid fa-cart-plus"></i>
+								</a>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="container pb-5">
+			<div class="bg-dark text-white rounded-4 p-5 text-center"
+				style="background: linear-gradient(135deg, #1e1e1e 0%, #3a3a3a 100%);">
+				<h2>Tham gia cùng ShopPKTH</h2>
+				<p class="opacity-75">Nhận mã giảm giá 50k cho đơn hàng đầu tiên</p>
+				<a href="/register" class="btn btn-light rounded-pill px-4 fw-bold">Đăng
+					ký ngay</a>
+			</div>
+		</div>
+
+		<div class="container my-4">
+			<div class="p-3 rounded-4 text-white"
+				style="background: linear-gradient(90deg, #ff4757, #ff6b81); box-shadow: 0 5px 20px rgba(255, 99, 99, 0.3);">
+				<div class="d-flex justify-content-between align-items-center">
+					<h5 class="fw-bold mb-0">⚡ Flash Sale đang diễn ra</h5>
+					<a href="/products"
+						class="text-white fw-semibold text-decoration-underline">Xem
+						ngay</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="container my-5">
+			<h4 class="fw-bold mb-3">Gợi ý dành cho bạn</h4>
+			<div class="row g-4">
+				<div class="col-6 col-md-3" th:each="p:${products}">
+					<div class="product-card p-3">
+						<img th:src="@{'/img/product_img/' + ${p.image}}"
+							class="img-fluid rounded"
+							style="height: 150px; object-fit: contain;">
+						<h6 class="mt-2 fw-semibold text-truncate">[[${p.title}]]</h6>
+						<div class="mt-2" style="min-height: 50px;">
+							<span class="text-danger fw-bold">
+								[[${#numbers.formatDecimal(p.discountPrice, 0, 'COMMA', 0,
+								'POINT')}]]đ </span> <span class="badge bg-danger ms-2" 
+								th:if="${p.discount > 0}"> -[[${p.discount}]]% </span> <br>
+
+							<small class="text-muted text-decoration-line-through"
+								th:if="${p.discount > 0}">
+								[[${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}]]đ
+							</small>
+						</div>
+						<a th:href="@{'/product/' + ${p.id}}"
+							class="btn btn-sm btn-dark mt-2 rounded-pill px-3"> Xem chi
+							tiết </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</section>
+</body>
+</html>

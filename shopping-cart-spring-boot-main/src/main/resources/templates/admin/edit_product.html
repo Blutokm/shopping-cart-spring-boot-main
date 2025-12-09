@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Chỉnh sửa Sản phẩm</title>
+</head>
+<body>
+	<section>
+		<div class="container p-3">
+			<!-- Nút trở lại -->
+			<div class="mb-3">
+				<a href="javascript:history.back()"
+					class="btn btn-outline-secondary"> <i
+					class="fa-solid fa-arrow-left"></i> Trở lại
+				</a>
+			</div>
+
+			<div class="row">
+				<div class="col-md-8 offset-md-2">
+					<div class="card card-sh shadow-sm" style="min-height: 90vh;">
+						<div class="card-header text-center">
+							<p class="fs-4 fw-bold">Chỉnh sửa Sản phẩm</p>
+
+							<!-- Thông báo thành công -->
+							<th:block th:if="${session.succMsg}">
+								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
+								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+							</th:block>
+
+							<!-- Thông báo lỗi -->
+							<th:block th:if="${session.errorMsg}">
+								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+							</th:block>
+						</div>
+
+						<div class="card-body p-4">
+							<form action="/admin/updateProduct" method="post"
+								enctype="multipart/form-data">
+								<input type="hidden" name="id" th:value="${product.id}">
+
+								<!-- Tiêu đề -->
+								<div class="mb-3">
+									<label class="fw-semibold">Tiêu đề</label> <input type="text"
+										name="title" th:value="${product.title}" class="form-control"
+										placeholder="Nhập tên sản phẩm">
+								</div>
+
+								<!-- Mô tả -->
+								<div class="mb-3">
+									<label class="fw-semibold">Mô tả</label>
+									<textarea rows="3" class="form-control" name="description"
+										placeholder="Nhập mô tả sản phẩm...">[[${product.description}]]</textarea>
+								</div>
+
+								<!-- Danh mục & Giá -->
+								<div class="row">
+									<div class="mb-3 col">
+										<label class="fw-semibold">Danh mục</label> <select
+											class="form-control" name="category">
+											<option>[[${product.category}]]</option>
+											<option th:each="c:${categories}">[[${c.name}]]</option>
+										</select>
+									</div>
+
+									<div class="mb-3 col">
+										<label class="fw-semibold">Giá (VNĐ)</label> <input
+											type="number" name="price" th:value="${product.price}"
+											class="form-control" placeholder="Nhập giá sản phẩm">
+									</div>
+								</div>
+
+								<!-- Giảm giá -->
+								<div class="row">
+									<div class="mb-3 col">
+										<label class="fw-semibold">Giảm giá (%)</label> <input
+											type="number" name="discount" th:value="${product.discount}"
+											class="form-control" placeholder="Nhập % giảm giá">
+									</div>
+									<div class="mb-3 col">
+										<label class="fw-semibold">Giá sau giảm</label> <input
+											type="number" readonly th:value="${product.discountPrice}"
+											class="form-control">
+									</div>
+								</div>
+
+								<!-- Color -->
+								<div class="mb-3 col">
+									<label class="fw-semibold">Màu sắc</label> <select name="color"
+										class="form-control">
+										<option th:value="${product.color}" th:text="${product.color}"></option>
+										<option value="Đen">Đen</option>
+										<option value="Vàng">Vàng</option>
+										<option value="Bạc">Bạc</option>
+									</select>
+								</div>
+
+								<!-- Size -->
+								<div class="mb-3 col">
+									<label class="fw-semibold">Size</label> <select name="size"
+										class="form-control">
+										<option th:value="${product.size}" th:text="${product.size}"></option>
+										<option value="Small">Small</option>
+										<option value="Medium">Medium</option>
+										<option value="Large">Large</option>
+										<option value="Free Size">Free Size</option>
+									</select>
+								</div>
+
+
+								<!-- Trạng thái -->
+								<div class="mb-3">
+									<label class="fw-semibold">Trạng thái</label>
+									<div class="form-check">
+										<input class="form-check-input" type="radio"
+											th:checked="${product.isActive==true}" value="true"
+											name="isActive" id="flexRadioDefault1"> <label
+											class="form-check-label" for="flexRadioDefault1">Kích
+											hoạt</label>
+									</div>
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="isActive"
+											th:checked="${product.isActive==false}" value="false"
+											id="flexRadioDefault2"> <label
+											class="form-check-label" for="flexRadioDefault2">Ngừng
+											kích hoạt</label>
+									</div>
+								</div>
+
+								<!-- Tồn kho & Ảnh -->
+								<div class="row">
+									<div class="mb-3 col">
+										<label class="fw-semibold">Tồn kho</label> <input type="text"
+											name="stock" th:value="${product.stock}" class="form-control"
+											placeholder="Nhập số lượng tồn kho">
+									</div>
+
+									<div class="mb-3 col">
+										<label class="fw-semibold">Tải ảnh lên</label> <input
+											type="file" name="file" class="form-control">
+									</div>
+								</div>
+
+								<!-- Ảnh hiện tại -->
+								<div class="text-center mb-3">
+									<img th:src="@{'/img/product_img/'+${product.image}}"
+										width="120px" height="120px"
+										style="border-radius: 8px; object-fit: cover;">
+								</div>
+
+								<!-- Nút cập nhật -->
+								<button class="btn btn-primary col-md-12 mt-2 py-2 fw-semibold">Cập
+									nhật sản phẩm</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>
