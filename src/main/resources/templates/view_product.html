@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Chi tiết sản phẩm</title>
+</head>
+<body>
+	<section>
+		<div class="container mt-5 mb-5">
+			<div class="card shadow-lg border-0 rounded-4 p-4">
+				<div class="row align-items-center">
+
+					<div class="col-12">
+						<th:block th:if="${session.succMsg}">
+							<div class="alert alert-success text-center fw-bold">
+								[[${session.succMsg}]]</div>
+							<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+						</th:block>
+
+						<th:block th:if="${session.errorMsg}">
+							<div class="alert alert-danger text-center fw-bold">
+								[[${session.errorMsg}]]</div>
+							<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+						</th:block>
+					</div>
+
+					<div
+						class="col-md-6 d-flex justify-content-center align-items-center mb-4 mb-md-0">
+						<img th:src="@{'/img/product_img/' + ${product.image}}"
+							alt="Ảnh sản phẩm" class="img-fluid rounded-4 shadow-sm"
+							style="max-width: 400px;">
+					</div>
+
+					<div class="col-md-6">
+						<h3 class="fw-bold mb-3">[[${product.title}]]</h3>
+
+						<p class="mb-3">
+							<span class="fw-semibold">Mô tả:</span><br>
+							[[${product.description}]]
+						</p>
+
+						<p class="mb-3">
+							<span class="fw-semibold">Chi tiết sản phẩm:</span><br>
+							Trạng thái:
+							<th:block th:with="totalStock=${#lists.isEmpty(product.variants) ? 0 : #aggregates.sum(product.variants.![stock])}">
+								<span th:if="${totalStock != null && totalStock > 0}" class="badge bg-success">Còn hàng</span>
+								<span th:unless="${totalStock != null && totalStock > 0}" class="badge bg-warning text-dark">Hết hàng</span>
+							</th:block>
+							<br> Danh mục: [[${product.category}]]<br> 
+							Chính sách: Đổi trả trong 7 ngày
+						</p>
+
+						<form action="/user/addCart" method="post">
+							<input type="hidden" name="pid" th:value="${product.id}">
+							<input type="hidden" th:if="${user != null}" name="uid" th:value="${user.id}">
+
+							<div class="mb-4 mt-3">
+								<label class="fw-bold mb-2">Chọn Phân Loại Sản Phẩm:</label>
+								<select name="variantId" class="form-select border-dark shadow-none" required>
+									<option value="">-- Chọn Màu Sắc & Kích Cỡ --</option>
+									<option th:each="v : ${product.variants}" 
+											th:value="${v.id}" 
+											th:text="${v.color + ' - Size ' + v.size + ' (Còn ' + v.stock + ' sp)'}"
+											th:disabled="${v.stock <= 0}">
+									</option>
+								</select>
+								<small th:if="${#lists.isEmpty(product.variants)}" class="text-danger mt-1 d-block">
+									<i class="fa-solid fa-triangle-exclamation"></i> Sản phẩm đang được cập nhật kho hàng.
+								</small>
+							</div>
+
+							<p class="fs-5 fw-bold">
+								Giá: 
+								<span class="text-danger"> 
+									<span th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
+								</span> 
+								<span class="text-secondary text-decoration-line-through ms-2" th:if="${product.discount > 0}">
+									<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
+								</span> 
+								<span class="text-success ms-2" th:if="${product.discount > 0}"> -[[${product.discount}]]% </span>
+							</p>
+
+							<div class="row text-center mt-4">
+								<div class="col-md-4">
+									<i class="fas fa-money-bill-wave fa-2x text-success mb-2"></i>
+									<p class="small">Thanh toán khi nhận hàng</p>
+								</div>
+								<div class="col-md-4">
+									<i class="fas fa-undo-alt fa-2x text-danger mb-2"></i>
+									<p class="small">Hỗ trợ đổi trả</p>
+								</div>
+								<div class="col-md-4">
+									<i class="fas fa-truck-moving fa-2x text-primary mb-2"></i>
+									<p class="small">Miễn phí vận chuyển</p>
+								</div>
+							</div>
+
+							<div class="mt-4">
+								<th:block th:if="${user == null}">
+									<a href="/signin" class="btn btn-dark col-12 py-2"> 
+										<i class="fa-solid fa-cart-plus me-2"></i>Đăng nhập để mua hàng
+									</a>
+								</th:block>
+								<th:block th:unless="${user == null}">
+									<button type="submit" class="btn btn-dark col-12 py-2" th:disabled="${#lists.isEmpty(product.variants)}"> 
+										<i class="fa-solid fa-cart-plus me-2"></i>Thêm vào giỏ hàng
+									</button>
+								</th:block>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

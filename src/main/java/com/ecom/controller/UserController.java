@@ -1,0 +1,304 @@
+package com.ecom.controller;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.ecom.model.Cart;
+import com.ecom.model.Category;
+import com.ecom.model.OrderRequest;
+import com.ecom.model.ProductOrder;
+import com.ecom.model.UserDtls;
+import com.ecom.service.CartService;
+import com.ecom.service.CategoryService;
+import com.ecom.service.OrderService;
+import com.ecom.service.UserService;
+import com.ecom.util.CommonUtil;
+import com.ecom.util.OrderStatus;
+
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+@RequestMapping("/user")
+public class UserController {
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private CategoryService categoryService;
+
+	@Autowired
+	private CartService cartService;
+
+	@Autowired
+	private OrderService orderService;
+
+	@Autowired
+	private CommonUtil commonUtil;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@GetMapping("/")
+	public String home() {
+		return "user/home";
+	}
+
+	@ModelAttribute
+	public void getUserDetails(Principal p, Model m) {
+		if (p != null) {
+			String email = p.getName();
+			UserDtls userDtls = userService.getUserByEmail(email);
+			m.addAttribute("user", userDtls);
+			Integer countCart = cartService.getCountCart(userDtls.getId());
+			m.addAttribute("countCart", countCart);
+		}
+
+		List<Category> allActiveCategory = categoryService.getAllActiveCategory();
+		m.addAttribute("categorys", allActiveCategory);
+	}
+
+	@PostMapping("/addCart")
+	public String addToCart(@RequestParam Integer pid, @RequestParam Integer uid, @RequestParam Integer variantId, HttpSession session) {
+		
+		Cart saveCart = cartService.saveCart(pid, uid, variantId);
+
+		if (ObjectUtils.isEmpty(saveCart)) {
+			session.setAttribute("errorMsg", "Thêm Vào Giỏ Hàng Thất Bại");
+		} else {
+			session.setAttribute("succMsg", "Thêm Vào Giỏ Hàng Thành Công");
+		}
+		return "redirect:/product/" + pid;
+	}
+
+	@GetMapping("/cart")
+	public String loadCartPage(Principal p, Model m) {
+
+		UserDtls user = getLoggedInUserDetails(p);
+		List<Cart> carts = cartService.getCartsByUser(user.getId());
+		m.addAttribute("carts", carts);
+		if (carts.size() > 0) {
+			Double totalOrderPrice = carts.get(carts.size() - 1).getTotalOrderPrice();
+			m.addAttribute("totalOrderPrice", totalOrderPrice);
+		}
+		return "/user/cart";
+	}
+
+	@GetMapping("/cartQuantityUpdate")
+	public String updateCartQuantity(@RequestParam String sy, @RequestParam Integer cid) {
+		cartService.updateQuantity(sy, cid);
+		return "redirect:/user/cart";
+	}
+
+	private UserDtls getLoggedInUserDetails(Principal p) {
+		String email = p.getName();
+		UserDtls userDtls = userService.getUserByEmail(email);
+		return userDtls;
+	}
+
+	@GetMapping("/orders")
+	public String orderPage(Principal p, Model m) {
+		UserDtls user = getLoggedInUserDetails(p);
+		List<Cart> carts = cartService.getCartsByUser(user.getId());
+		m.addAttribute("carts", carts);
+		if (carts.size() > 0) {
+			Double orderPrice = carts.get(carts.size() - 1).getTotalOrderPrice();
+			Double totalOrderPrice = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
+			m.addAttribute("orderPrice", orderPrice);
+			m.addAttribute("totalOrderPrice", totalOrderPrice);
+		}
+		return "/user/order";
+	}
+
+	@PostMapping("/save-order")
+	public Object saveOrder(@ModelAttribute OrderRequest request,
+	                        @RequestParam(name = "paymentType", required = false) String paymentType,
+	                        @RequestParam(name = "amount", required = false) Double amount,
+	                        Principal p,
+	                        HttpServletRequest servletRequest,
+	                        Model model) throws Exception {
+
+	    UserDtls user = getLoggedInUserDetails(p);
+	    List<Cart> carts = cartService.getCartsByUser(user.getId());
+
+	    String orderId = "HD" + System.currentTimeMillis();
+
+	    double total = 0;
+	    if (!carts.isEmpty()) {
+	        total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
+	    }
+
+	    orderService.saveOrder(user.getId(), request);
+
+	    model.addAttribute("orderId", orderId);
+	    model.addAttribute("user", user);
+	    model.addAttribute("paymentType", "VNPAY".equalsIgnoreCase(paymentType) ? "Thanh toán VNPay" : "Thanh toán khi nhận hàng");
+	    model.addAttribute("totalOrderPrice", total);
+	    model.addAttribute("carts", carts);
+
+	    boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(servletRequest.getHeader("X-Requested-With"));
+
+	    if ("VNPAY".equalsIgnoreCase(paymentType)) {
+	        if (amount == null || amount <= 0) {
+	            if (isAjax) {
+	                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid_amount");
+	            } else {
+	                return "redirect:/user/order?error=invalid_amount";
+	            }
+	        }
+
+	        String paymentUrl = PaymentController.buildVnPayUrl(servletRequest, amount.longValue());
+	        if (isAjax) {
+	            return ResponseEntity.ok(paymentUrl);
+	        } else {
+	            return "redirect:" + paymentUrl;
+	        }
+	    }
+
+	    return "user/success";
+
+	}
+
+
+	@GetMapping("/success")
+	public String loadSuccess(Principal p, Model model) {
+	    UserDtls user = getLoggedInUserDetails(p);
+	    List<Cart> carts = cartService.getCartsByUser(user.getId());
+	    double total = 0;
+	    if (!carts.isEmpty()) {
+	        total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
+	    }
+
+	    model.addAttribute("orderId", "HD" + System.currentTimeMillis());
+	    model.addAttribute("user", user);
+	    model.addAttribute("paymentType", "Thanh toán khi nhận hàng");
+	    model.addAttribute("totalOrderPrice", total);
+	    model.addAttribute("carts", carts);
+
+	    return "user/success";
+
+	}
+
+
+	@GetMapping("/update-status")
+	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
+
+		OrderStatus[] values = OrderStatus.values();
+		String status = null;
+
+		for (OrderStatus orderSt : values) {
+			if (orderSt.getId().equals(st)) {
+				status = orderSt.getName();
+			}
+		}
+
+		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+
+		try {
+			commonUtil.sendMailForProductOrder(updateOrder, status);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (!ObjectUtils.isEmpty(updateOrder)) {
+			session.setAttribute("succMsg", "Cập Nhật Trạng Thái Thành Công");
+		} else {
+			session.setAttribute("errorMsg", "Cập Nhật Trạng Thái Thất Bại");
+		}
+		return "redirect:/user/user-orders";
+	}
+
+	@GetMapping("/profile")
+	public String profile() {
+		return "/user/profile";
+	}
+
+	@PostMapping("/update-profile")
+	public String updateProfile(@ModelAttribute UserDtls user, @RequestParam MultipartFile img, HttpSession session) {
+		UserDtls updateUserProfile = userService.updateUserProfile(user, img);
+		if (ObjectUtils.isEmpty(updateUserProfile)) {
+			session.setAttribute("errorMsg", "Hồ Sơ Chưa Được Cập Nhật");
+		} else {
+			session.setAttribute("succMsg", "Hồ Sơ Cập Nhật Thành Công");
+		}
+		return "redirect:/user/profile";
+	}
+
+	@PostMapping("/change-password")
+	public String changePassword(@RequestParam String newPassword, @RequestParam String currentPassword, Principal p,
+			HttpSession session) {
+		UserDtls loggedInUserDetails = getLoggedInUserDetails(p);
+
+		boolean matches = passwordEncoder.matches(currentPassword, loggedInUserDetails.getPassword());
+
+		if (matches) {
+			String encodePassword = passwordEncoder.encode(newPassword);
+			loggedInUserDetails.setPassword(encodePassword);
+			UserDtls updateUser = userService.updateUser(loggedInUserDetails);
+			if (ObjectUtils.isEmpty(updateUser)) {
+				session.setAttribute("errorMsg", "Mật Khẩu Cập Nhật Thất Bại");
+			} else {
+				session.setAttribute("succMsg", "Mật Khẩu Cập Nhật Thành Công");
+			}
+		} else {
+			session.setAttribute("errorMsg", "Mật Khẩu Cập Nhật Thất Bại");
+		}
+
+		return "redirect:/user/profile";
+	}
+
+	@GetMapping("/order")
+	public String orderPage(@RequestParam(value = "error", required = false) String error, Model model, Principal p) {
+		// Lấy thông tin giỏ hàng như cũ
+		UserDtls user = getLoggedInUserDetails(p);
+		List<Cart> carts = cartService.getCartsByUser(user.getId());
+		model.addAttribute("carts", carts);
+		if (!carts.isEmpty()) {
+			Double orderPrice = carts.get(carts.size() - 1).getTotalOrderPrice();
+			Double totalOrderPrice = orderPrice + 250 + 100;
+			model.addAttribute("orderPrice", orderPrice);
+			model.addAttribute("totalOrderPrice", totalOrderPrice);
+		}
+
+		if ("payment".equals(error)) {
+			model.addAttribute("errorMessage",
+					"❌ Thanh toán VNPay thất bại. Vui lòng thử lại hoặc chọn phương thức khác.");
+		}
+
+		return "user/order";
+	}
+	
+	@GetMapping("/user-orders")
+	public String userOrders(Model model, Principal principal) {
+	    if (principal == null) {
+	        return "redirect:/signin";
+	    }
+
+	    UserDtls user = getLoggedInUserDetails(principal);
+
+	    List<ProductOrder> orders = new ArrayList<>(orderService.getOrdersByUser(user.getId()));
+	    orders.sort((o1, o2) -> o2.getId().compareTo(o1.getId()));
+
+	    model.addAttribute("orders", orders);
+	    model.addAttribute("user", user);
+
+	    return "user/my_orders"; 
+	}
+
+
+
+}

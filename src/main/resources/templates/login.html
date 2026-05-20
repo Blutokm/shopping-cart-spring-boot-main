@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập</title>
+</head>
+<body>
+    <section>
+        <div class="container mt-5 p-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+                        <div class="card-header text-center">
+                            <p class="fs-4">Đăng nhập</p>
+                            <div th:if="${param.error}" class="alert alert-danger text-center">
+                                <th:block th:if="${session.SPRING_SECURITY_LAST_EXCEPTION!=null}">
+                                    [[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]
+                                </th:block>
+                            </div>
+                            <div th:if="${param.logout}" class="alert alert-success text-center">
+                                Đăng xuất thành công
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <form action="/login" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input required class="form-control" name="username" type="email">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Mật khẩu</label>
+                                    <input required class="form-control" name="password" type="password">
+                                </div>
+
+                                <button type="submit" class="btn bg-dark text-white col-md-12">
+                                    Đăng nhập
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="card-footer text-center">
+                            Chưa có tài khoản?
+                            <a href="register" class="text-decoration-none">Đăng ký ngay</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

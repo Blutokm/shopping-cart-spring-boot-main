@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý danh mục</title>
+</head>
+<body>
+<section>
+    <div class="container mt-4 mb-5">
+
+        <!-- Nút trở lại -->
+        <div class="mb-3">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Trở lại
+            </a>
+        </div>
+
+        <!-- Tiêu đề trang -->
+        <h2 class="text-center fw-bold text-uppercase mb-4">Quản lý danh mục</h2>
+
+        <div class="row">
+            <!-- Form thêm danh mục -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center bg-light">
+                        <h5 class="fw-semibold mb-0">Thêm danh mục</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Thông báo -->
+                        <div class="text-center mb-3">
+                            <th:block th:if="${session.succMsg}">
+                                <p class="text-success fw-bold">[[${session.succMsg}]]</p>
+                                <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                            </th:block>
+
+                            <th:block th:if="${session.errorMsg}">
+                                <p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+                                <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                            </th:block>
+                        </div>
+
+                        <form action="/admin/saveCategory" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label class="fw-semibold">Tên danh mục</label>
+                                <input type="text" name="name" class="form-control" placeholder="Nhập tên danh mục...">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="fw-semibold">Trạng thái</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" checked
+                                           value="true" name="isActive" id="active">
+                                    <label class="form-check-label" for="active">Hoạt động</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isActive"
+                                           value="false" id="inactive">
+                                    <label class="form-check-label" for="inactive">Không hoạt động</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="fw-semibold">Ảnh danh mục</label>
+                                <input type="file" name="file" class="form-control">
+                            </div>
+
+                            <div class="text-center">
+                                <button class="btn btn-primary px-4 col-md-12">Lưu danh mục</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách danh mục -->
+            <div class="col-md-8">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header text-center bg-light">
+                        <h5 class="fw-semibold mb-0">Danh sách danh mục</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered align-middle text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên danh mục</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hình ảnh</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cat,c:${categorys}">
+                                    <td>[[${c.count}]]</td>
+                                    <td>[[${cat.name}]]</td>
+                                    <td>
+                                        <span th:text="${cat.isActive} ? 'Hoạt động' : 'Không hoạt động'"></span>
+                                    </td>
+                                    <td>
+                                        <img th:src="@{'/img/category_img/'+${cat.imageName}}"
+                                             width="60" height="60"
+                                             class="rounded border">
+                                    </td>
+                                    <td>
+                                        <a th:href="@{'/admin/loadEditCategory/'+${cat.id}}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-solid fa-pen-to-square"></i> Sửa
+                                        </a>
+                                        <a th:href="@{'/admin/deleteCategory/'+${cat.id}}"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="fa-solid fa-trash"></i> Xóa
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Phân trang -->
+                        <div class="row align-items-center mt-3">
+                            <div class="col-md-4">
+                                <p class="mb-0">Tổng số danh mục: <b>[[${totalElements}]]</b></p>
+                            </div>
+                            <div class="col-md-4">
+                                <nav aria-label="Điều hướng trang">
+                                    <ul class="pagination justify-content-center mb-0">
+                                        <li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
+                                            <a class="page-link"
+                                               th:href="@{'/admin/category?pageNo='+${pageNo-1}}"
+                                               aria-label="Trước">
+                                                &laquo;
+                                            </a>
+                                        </li>
+
+                                        <li th:each="i:${#numbers.sequence(1,totalPages)}"
+                                            class="page-item" th:classappend="${pageNo+1==i}?'active':''">
+                                            <a class="page-link"
+                                               th:href="@{'/admin/category?pageNo='+${i-1}}">[[${i}]]</a>
+                                        </li>
+
+                                        <li class="page-item" th:classappend="${isLast} ? 'disabled':''">
+                                            <a class="page-link"
+                                               th:href="@{'/admin/category?pageNo='+${pageNo+1}}"
+                                               aria-label="Tiếp">
+                                                &raquo;
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Sản phẩm</title>
+</head>
+<body>
+	<section>
+		<div class="container-fluid p-4">
+			<div class="row">
+				<div class="col-md-8 offset-md-2">
+					<form action="/products" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="ch"
+								placeholder="Tìm kiếm sản phẩm...">
+							<button class="btn btn-light ms-3 px-4">
+								<i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="container-fluid mt-1">
+			<div class="row">
+				<div class="col-md-2 p-0">
+					<div class="card shadow-sm p-0 mb-5 bg-body-tertiary rounded">
+						<div class="card-body">
+							<div class="list-group">
+								<p class="fs-5">Danh mục</p>
+								<a href="/products"
+									th:classappend="${paramValue==''} ? 'active':''"
+									class="list-group-item list-group-item-action"
+									aria-current="true"> Tất cả </a> <a th:each="c:${categories}"
+									th:href="@{'/products?category='+${c.name}}"
+									th:classappend="${paramValue == c.name} ? 'active':''"
+									class="list-group-item list-group-item-action">[[${c.name}]]</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-10">
+					<div class="card">
+						<div class="card-body">
+							<p class="fs-3 text-center">Sản phẩm</p>
+							<div class="row">
+								<th:block th:if="${productsSize >0}">
+									<div class="col-6 col-md-3 mt-3" th:each="p:${products}">
+										<div class="card card-sh h-100">
+											<div class="card-body text-center d-flex flex-column">
+												<img alt="Ảnh sản phẩm"
+													th:src="@{'/img/product_img/'+${p.image}}"
+													class="product-img">
+												<p class="fs-5 text-center product-title">
+													[[${p.title}]]</p>
+
+
+												<div class="row text-center">
+													<div class="price-box">
+
+														<p class="current-price">
+															<span
+																th:text="${#numbers.formatDecimal(p.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+														</p>
+
+														<div class="discount-area">
+
+															<span
+																class="text-decoration-line-through text-secondary old-price"
+																th:if="${p.discount > 0}"
+																th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+															</span> <span class="badge bg-danger" th:if="${p.discount > 0}">
+																-[[${p.discount}]]% </span>
+
+														</div>
+
+													</div>
+													<a th:href="@{'/product/'+${p.id}}"
+														class="btn btn-dark col-md-8 offset-md-2 mt-auto"> Xem
+														chi tiết </a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</th:block>
+								<th:block th:unless="${productsSize>0}">
+									<p class="fs-4 text-center mt-4 text-danger">Không có sản
+										phẩm</p>
+								</th:block>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-4">Tổng số sản phẩm: [[${totalElements}]]</div>
+						<div class="col-md-6">
+							<th:block th:if="${productsSize>0}">
+								<nav aria-label="Điều hướng trang">
+									<ul class="pagination">
+										<li class="page-item"
+											th:classappend="${isFirst} ? 'disabled':''"><a
+											class="page-link"
+											th:href="@{'/products?pageNo='+${pageNo-1}}"
+											aria-label="Trước"> <span aria-hidden="true">&laquo;</span>
+										</a></li>
+
+										<li th:each="i:${#numbers.sequence(1,totalPages)}"
+											class="page-item" th:classappend="${pageNo+1==i}?'active':''">
+											<a class="page-link" th:href="@{'/products?pageNo='+${i-1}}">[[${i}]]</a>
+										</li>
+
+										<li class="page-item"
+											th:classappend="${isLast} ? 'disabled':''"><a
+											class="page-link"
+											th:href="@{'/products?pageNo='+${pageNo+1}}"
+											aria-label="Tiếp"> <span aria-hidden="true">&raquo;</span>
+										</a></li>
+									</ul>
+								</nav>
+							</th:block>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>
