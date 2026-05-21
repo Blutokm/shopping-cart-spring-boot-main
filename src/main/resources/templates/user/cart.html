@@ -49,25 +49,25 @@
 										<td>[[${c.count}]]</td>
 										<td><img
 											th:src="@{'/img/product_img/' + ${cart.product.image}}"
-											alt="Sản phẩm" class="rounded" width="75" height="75" style="object-fit: cover;">
-										</td>
+											alt="Sản phẩm" class="rounded" width="75" height="75"
+											style="object-fit: cover;"></td>
 										<td class="fw-semibold text-start">[[${cart.product.title}]]</td>
-										
-										<td class="text-center align-middle">
-											<span class="badge bg-info text-dark">Màu: [[${cart.color}]]</span><br>
-											<span class="badge bg-secondary mt-1">Size: [[${cart.size}]]</span>
-										</td>
+
+										<td class="text-center align-middle"><span
+											class="badge bg-info text-dark">Màu: [[${cart.color}]]</span><br>
+											<span class="badge bg-secondary mt-1">Size:
+												[[${cart.size}]]</span></td>
 
 										<td>[[${@commnServiceImpl.formatCurrency(cart.product.discountPrice)}]]</td>
-										<td>
-                                            <a th:href="@{'/user/cartQuantityUpdate?sy=de&cid=' + ${cart.id}}" class="text-dark me-2"> 
-                                                <i class="fa-solid fa-minus"></i>
-										    </a> 
-                                            <span class="fw-bold">[[${cart.quantity}]]</span> 
-                                            <a th:href="@{'/user/cartQuantityUpdate?sy=in&cid=' + ${cart.id}}" class="text-dark ms-2"> 
-                                                <i class="fa-solid fa-plus"></i>
-										    </a>
-                                        </td>
+										<td><a
+											th:href="@{'/user/cartQuantityUpdate?sy=de&cid=' + ${cart.id}}"
+											class="text-dark text-decoration-none me-2"> <i
+												class="fa-solid fa-minus"></i>
+										</a> <span class="fw-bold">[[${cart.quantity}]]</span> <a
+											th:href="@{'/user/cartQuantityUpdate?sy=in&cid=' + ${cart.id}}"
+											class="text-dark text-decoration-none ms-2"> <i
+												class="fa-solid fa-plus"></i>
+										</a></td>
 										<td class="fw-bold">[[${@commnServiceImpl.formatCurrency(cart.totalPrice)}]]</td>
 									</tr>
 

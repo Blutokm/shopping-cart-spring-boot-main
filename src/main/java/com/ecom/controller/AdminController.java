@@ -1,6 +1,8 @@
 package com.ecom.controller;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ecom.model.Category;
 import com.ecom.model.Product;
+import com.ecom.model.ProductImage;
 import com.ecom.model.ProductOrder;
 import com.ecom.model.ProductVariant;
 import com.ecom.model.UserDtls;
@@ -43,6 +46,7 @@ import com.ecom.service.UserService;
 import com.ecom.util.CommonUtil;
 import com.ecom.util.OrderStatus;
 import java.util.stream.Collectors;
+import com.ecom.model.ProductImage;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -201,6 +205,7 @@ public class AdminController {
 
 	@PostMapping("/saveProduct")
 	public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
+			@RequestParam(value = "extraImageFiles", required = false) MultipartFile[] extraImages,
 			@RequestParam(value = "colors", required = false) List<String> colors,
 			@RequestParam(value = "sizes", required = false) List<String> sizes,
 			@RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session)
@@ -225,13 +230,40 @@ public class AdminController {
 		}
 		product.setVariants(variants);
 
+		if (extraImages != null && extraImages.length > 0) {
+			List<ProductImage> imageList = new ArrayList<>();
+			for (MultipartFile extraFile : extraImages) {
+				if (!extraFile.isEmpty()) {
+					ProductImage img = new ProductImage();
+					img.setImageName(extraFile.getOriginalFilename());
+					img.setProduct(product);
+					imageList.add(img);
+				}
+			}
+			product.setExtraImages(imageList);
+		}
+
 		Product saveProduct = productService.saveProduct(product);
 
 		if (!ObjectUtils.isEmpty(saveProduct)) {
-			File saveFile = new ClassPathResource("static/img").getFile();
-			Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator
-					+ image.getOriginalFilename());
-			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+			File saveFileDir = new ClassPathResource("static/img").getFile();
+
+			if (!image.isEmpty()) {
+				Path mainPath = Paths.get(saveFileDir.getAbsolutePath() + File.separator + "product_img"
+						+ File.separator + image.getOriginalFilename());
+				Files.copy(image.getInputStream(), mainPath, StandardCopyOption.REPLACE_EXISTING);
+			}
+
+			if (extraImages != null && extraImages.length > 0) {
+				for (MultipartFile extraFile : extraImages) {
+					if (!extraFile.isEmpty()) {
+						Path extraPath = Paths.get(saveFileDir.getAbsolutePath() + File.separator + "product_img"
+								+ File.separator + extraFile.getOriginalFilename());
+						Files.copy(extraFile.getInputStream(), extraPath, StandardCopyOption.REPLACE_EXISTING);
+					}
+				}
+			}
+
 			session.setAttribute("succMsg", "Lưu Sản Phẩm Thành Công");
 		} else {
 			session.setAttribute("errorMsg", "Lưu Sản Phẩm Thất Bại");
@@ -285,9 +317,10 @@ public class AdminController {
 
 	@PostMapping("/updateProduct")
 	public String updateProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
-			@RequestParam(value = "colors", required = false) List<String> colors,
-			@RequestParam(value = "sizes", required = false) List<String> sizes,
-			@RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session, Model m) {
+	        @RequestParam(value = "extraImageFiles", required = false) MultipartFile[] extraImages,
+	        @RequestParam(value = "colors", required = false) List<String> colors,
+	        @RequestParam(value = "sizes", required = false) List<String> sizes,
+	        @RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session, Model m) {
 
 		if (product.getDiscount() < 0 || product.getDiscount() > 100) {
 			session.setAttribute("errorMsg", "invalid Discount");
@@ -305,7 +338,7 @@ public class AdminController {
 			}
 			product.setVariants(newVariants);
 
-			Product updateProduct = productService.updateProduct(product, image);
+			Product updateProduct = productService.updateProduct(product, image, extraImages);
 
 			if (!ObjectUtils.isEmpty(updateProduct)) {
 				session.setAttribute("succMsg", "Cập Nhật Sản Phẩm Thành Công");

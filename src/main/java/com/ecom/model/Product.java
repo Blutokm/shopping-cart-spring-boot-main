@@ -144,4 +144,20 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> variants = new ArrayList<>();
+    
+    public List<ProductImage> getExtraImages() {
+		return extraImages;
+	}
+
+	public void setExtraImages(List<ProductImage> extraImages) {
+		this.extraImages = extraImages;
+	}
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> extraImages = new ArrayList<>();
+
+	public int getStock() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

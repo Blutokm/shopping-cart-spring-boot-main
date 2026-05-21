@@ -39,7 +39,7 @@
 		</div>
 
 		<div class="container my-5">
-			<h4 class="fw-bold mb-4 text-center">Danh mục nổi bật</h4>
+			<h4 class="fw-bold mb-4 text-center">Danh mục</h4>
 			<div class="d-flex justify-content-center flex-wrap gap-4">
 				<div class="text-center cat-wrapper" th:each="c:${category}">
 					<a th:href="@{'/products?category=' + ${c.name}}"
@@ -72,13 +72,18 @@
 						<span class="bg-danger text-white badge-sale fs-6"
 							th:if="${p.discount > 0}">-[[${p.discount}]]%</span>
 
-						<div class="text-center p-3"
-							style="height: 220px; display: flex; align-items: center; justify-content: center;">
+						<div class="text-center p-3 product-img-container"
+							style="height: 220px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; background-color: #f8f9fa;">
 							<a th:href="@{'/product/' + ${p.id}}"> <img
-								th:src="@{'/img/product_img/' + ${p.image}}" class="img-fluid"
-								style="max-height: 190px; object-fit: contain; transition: 0.3s;"
-								onmouseover="this.style.transform='scale(1.08)'"
-								onmouseout="this.style.transform='scale(1)'">
+								th:src="@{'/img/product_img/' + ${p.image}}"
+								class="img-fluid main-img"
+								style="max-height: 190px; object-fit: contain; transition: 0.5s ease;">
+
+								<img
+								th:if="${p.extraImages != null and !p.extraImages.isEmpty() and p.extraImages[0].imageName != null}"
+								th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
+								class="img-fluid hover-img"
+								style="max-height: 190px; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); opacity: 0; transition: 0.5s ease;">
 							</a>
 						</div>
 
@@ -102,9 +107,8 @@
 									<span class="fw-bold text-danger fs-5"
 										style="line-height: 1.2;">
 										[[${#numbers.formatDecimal(p.discountPrice, 0, 'COMMA', 0,
-										'POINT')}]] ₫ </span>
-									<!-- Dùng class 'invisible' của Bootstrap để ẩn giá gốc nếu ko có giảm giá, giữ nguyên không gian -->
-									<small class="text-muted text-decoration-line-through mt-1"
+										'POINT')}]] ₫ </span> <small
+										class="text-muted text-decoration-line-through mt-1"
 										th:classappend="${p.discount <= 0 ? 'invisible' : ''}"
 										style="line-height: 1.2;">
 										[[${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}]]
@@ -143,11 +147,16 @@
 					<div class="product-card p-3 h-100 d-flex flex-column text-center">
 						<span class="bg-danger text-white badge-sale fs-6"
 							th:if="${p.discount > 0}">-[[${p.discount}]]%</span> <a
-							th:href="@{'/product/' + ${p.id}}"
-							style="height: 160px; display: flex; align-items: center; justify-content: center;">
+							th:href="@{'/product/' + ${p.id}}" class="product-img-container"
+							style="height: 160px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
 							<img th:src="@{'/img/product_img/' + ${p.image}}"
-							class="img-fluid rounded"
-							style="max-height: 150px; object-fit: contain;">
+							class="img-fluid rounded main-img"
+							style="max-height: 150px; object-fit: contain; transition: 0.5s;">
+							<img
+							th:if="${p.extraImages != null and !p.extraImages.isEmpty()}"
+							th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
+							class="img-fluid rounded hover-img"
+							style="max-height: 150px; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); opacity: 0; transition: 0.5s;">
 						</a> <a th:href="@{'/product/' + ${p.id}}"
 							class="text-decoration-none text-dark">
 							<h6 class="mt-3 fw-semibold text-truncate">[[${p.title}]]</h6>

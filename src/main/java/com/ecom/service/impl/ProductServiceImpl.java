@@ -35,8 +35,7 @@ public class ProductServiceImpl implements ProductService {
 				variant.setProduct(product);
 			}
 		}
-		
-	
+
 		if (product.getDiscount() > 0 && product.getPrice() != null) {
 			Double discountAmount = product.getPrice() * (product.getDiscount() / 100.0);
 			Double discountPrice = product.getPrice() - discountAmount;
@@ -59,20 +58,19 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Boolean deleteProduct(Integer id) {
-	    try {
-	        Product product = productRepository.findById(id).orElse(null);
+		try {
+			Product product = productRepository.findById(id).orElse(null);
 
-	        if (!ObjectUtils.isEmpty(product)) {
-	            productRepository.delete(product);
-	            return true; 
-	        }
-	    } catch (Exception e) {
-	        System.err.println("❌ Lỗi khi xóa sản phẩm ID " + id + ": " + e.getMessage());
-	        return false; 
-	    }
-	    return false;
+			if (!ObjectUtils.isEmpty(product)) {
+				productRepository.delete(product);
+				return true;
+			}
+		} catch (Exception e) {
+			System.err.println("❌ Lỗi khi xóa sản phẩm ID " + id + ": " + e.getMessage());
+			return false;
+		}
+		return false;
 	}
-
 
 	@Override
 	public Product getProductById(Integer id) {
@@ -81,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Product updateProduct(Product product, MultipartFile image) {
+	public Product updateProduct(Product product, MultipartFile image, MultipartFile[] extraImages) {
 
 		Product dbProduct = getProductById(product.getId());
 
@@ -96,9 +94,7 @@ public class ProductServiceImpl implements ProductService {
 		dbProduct.setDiscount(product.getDiscount());
 
 		if (product.getVariants() != null) {
-
 			dbProduct.getVariants().clear();
-	
 			for (ProductVariant variant : product.getVariants()) {
 				variant.setProduct(dbProduct);
 				dbProduct.getVariants().add(variant);
@@ -109,20 +105,46 @@ public class ProductServiceImpl implements ProductService {
 		Double discountPrice = product.getPrice() - discountAmount;
 		dbProduct.setDiscountPrice(discountPrice);
 
+		if (extraImages != null && extraImages.length > 0 && !extraImages[0].isEmpty()) {
+			if (dbProduct.getExtraImages() != null) {
+				dbProduct.getExtraImages().clear();
+			} else {
+				dbProduct.setExtraImages(new java.util.ArrayList<>());
+			}
+
+			for (MultipartFile extraFile : extraImages) {
+				if (!extraFile.isEmpty()) {
+					com.ecom.model.ProductImage img = new com.ecom.model.ProductImage();
+					img.setImageName(extraFile.getOriginalFilename());
+					img.setProduct(dbProduct);
+					dbProduct.getExtraImages().add(img);
+				}
+			}
+		}
+
 		Product updateProduct = productRepository.save(dbProduct);
 
 		if (!ObjectUtils.isEmpty(updateProduct)) {
-			if (!image.isEmpty()) {
-				try {
-					File saveFile = new ClassPathResource("static/img").getFile();
+			try {
+				File saveFile = new ClassPathResource("static/img").getFile();
 
+				if (!image.isEmpty()) {
 					Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator
 							+ image.getOriginalFilename());
 					Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
+
+				if (extraImages != null && extraImages.length > 0 && !extraImages[0].isEmpty()) {
+					for (MultipartFile extraFile : extraImages) {
+						if (!extraFile.isEmpty()) {
+							Path extraPath = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img"
+									+ File.separator + extraFile.getOriginalFilename());
+							Files.copy(extraFile.getInputStream(), extraPath, StandardCopyOption.REPLACE_EXISTING);
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			return updateProduct;
 		}

@@ -45,15 +45,25 @@
 				<div class="col-md-10">
 					<div class="card">
 						<div class="card-body">
-							<p class="fs-3 text-center">Sản phẩm</p>
 							<div class="row">
 								<th:block th:if="${productsSize >0}">
 									<div class="col-6 col-md-3 mt-3" th:each="p:${products}">
 										<div class="card card-sh h-100">
 											<div class="card-body text-center d-flex flex-column">
-												<img alt="Ảnh sản phẩm"
+												<a th:href="@{'/product/' + ${p.id}}"
+													class="product-img-container"
+													style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 200px;">
+													<img alt="Ảnh sản phẩm"
 													th:src="@{'/img/product_img/'+${p.image}}"
-													class="product-img">
+													class="product-img main-img"
+													style="max-height: 100%; object-fit: contain; transition: 0.5s;">
+													<img
+													th:if="${p.extraImages != null and !p.extraImages.isEmpty()}"
+													alt="Ảnh phụ sản phẩm"
+													th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
+													class="product-img hover-img"
+													style="max-height: 100%; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); opacity: 0; transition: 0.5s;">
+												</a>
 												<p class="fs-5 text-center product-title">
 													[[${p.title}]]</p>
 

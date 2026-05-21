@@ -96,3 +96,10 @@ create table ProductOrder
     foreign key (product_id) references Product(id),
     foreign key (user_id) references User_Dtls(id)
 );
+create table product_image
+(
+    id int auto_increment primary key,
+    image_name varchar(255),
+    product_id int,
+    foreign key (product_id) references Product(id) on delete cascade
+);

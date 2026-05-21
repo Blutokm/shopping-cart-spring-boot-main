@@ -25,11 +25,32 @@
 						</th:block>
 					</div>
 
-					<div
-						class="col-md-6 d-flex justify-content-center align-items-center mb-4 mb-md-0">
-						<img th:src="@{'/img/product_img/' + ${product.image}}"
-							alt="Ảnh sản phẩm" class="img-fluid rounded-4 shadow-sm"
-							style="max-width: 400px;">
+					<div class="col-md-6">
+						<div class="text-center p-3 border rounded-4 bg-light mb-3"
+							style="height: 400px; display: flex; align-items: center; justify-content: center;">
+							<img id="mainProductImg"
+								th:src="@{'/img/product_img/' + ${product.image}}"
+								class="img-fluid"
+								style="max-height: 380px; object-fit: contain;">
+						</div>
+
+						<div class="d-flex gap-2 justify-content-center flex-wrap">
+							<div class="thumb-box border rounded p-1 active-thumb"
+								onclick="changeImage(this)"
+								style="width: 70px; height: 70px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+								<img th:src="@{'/img/product_img/' + ${product.image}}"
+									class="img-fluid"
+									style="max-height: 60px; object-fit: contain;">
+							</div>
+
+							<div th:each="img : ${product.extraImages}"
+								class="thumb-box border rounded p-1" onclick="changeImage(this)"
+								style="width: 70px; height: 70px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+								<img th:src="@{'/img/product_img/' + ${img.imageName}}"
+									class="img-fluid"
+									style="max-height: 60px; object-fit: contain;">
+							</div>
+						</div>
 					</div>
 
 					<div class="col-md-6">
@@ -43,42 +64,47 @@
 						<p class="mb-3">
 							<span class="fw-semibold">Chi tiết sản phẩm:</span><br>
 							Trạng thái:
-							<th:block th:with="totalStock=${#lists.isEmpty(product.variants) ? 0 : #aggregates.sum(product.variants.![stock])}">
-								<span th:if="${totalStock != null && totalStock > 0}" class="badge bg-success">Còn hàng</span>
-								<span th:unless="${totalStock != null && totalStock > 0}" class="badge bg-warning text-dark">Hết hàng</span>
+							<th:block
+								th:with="totalStock=${#lists.isEmpty(product.variants) ? 0 : #aggregates.sum(product.variants.![stock])}">
+								<span th:if="${totalStock != null && totalStock > 0}"
+									class="badge bg-success">Còn hàng</span>
+								<span th:unless="${totalStock != null && totalStock > 0}"
+									class="badge bg-warning text-dark">Hết hàng</span>
 							</th:block>
-							<br> Danh mục: [[${product.category}]]<br> 
-							Chính sách: Đổi trả trong 7 ngày
+							<br> Danh mục: [[${product.category}]]<br> Chính sách:
+							Đổi trả trong 7 ngày
 						</p>
 
 						<form action="/user/addCart" method="post">
 							<input type="hidden" name="pid" th:value="${product.id}">
-							<input type="hidden" th:if="${user != null}" name="uid" th:value="${user.id}">
+							<input type="hidden" th:if="${user != null}" name="uid"
+								th:value="${user.id}">
 
 							<div class="mb-4 mt-3">
-								<label class="fw-bold mb-2">Chọn Phân Loại Sản Phẩm:</label>
-								<select name="variantId" class="form-select border-dark shadow-none" required>
+								<label class="fw-bold mb-2">Chọn Phân Loại Sản Phẩm:</label> <select
+									name="variantId" class="form-select border-dark shadow-none"
+									required>
 									<option value="">-- Chọn Màu Sắc & Kích Cỡ --</option>
-									<option th:each="v : ${product.variants}" 
-											th:value="${v.id}" 
-											th:text="${v.color + ' - Size ' + v.size + ' (Còn ' + v.stock + ' sp)'}"
-											th:disabled="${v.stock <= 0}">
-									</option>
-								</select>
-								<small th:if="${#lists.isEmpty(product.variants)}" class="text-danger mt-1 d-block">
-									<i class="fa-solid fa-triangle-exclamation"></i> Sản phẩm đang được cập nhật kho hàng.
+									<option th:each="v : ${product.variants}" th:value="${v.id}"
+										th:text="${v.color + ' - Size ' + v.size + ' (Còn ' + v.stock + ' sp)'}"
+										th:disabled="${v.stock <= 0}"></option>
+								</select> <small th:if="${#lists.isEmpty(product.variants)}"
+									class="text-danger mt-1 d-block"> <i
+									class="fa-solid fa-triangle-exclamation"></i> Sản phẩm đang
+									được cập nhật kho hàng.
 								</small>
 							</div>
 
 							<p class="fs-5 fw-bold">
-								Giá: 
-								<span class="text-danger"> 
-									<span th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
-								</span> 
-								<span class="text-secondary text-decoration-line-through ms-2" th:if="${product.discount > 0}">
-									<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
-								</span> 
-								<span class="text-success ms-2" th:if="${product.discount > 0}"> -[[${product.discount}]]% </span>
+								Giá: <span class="text-danger"> <span
+									th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 0, 'POINT')}"></span>
+									VNĐ
+								</span> <span class="text-secondary text-decoration-line-through ms-2"
+									th:if="${product.discount > 0}"> <span
+									th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span>
+									VNĐ
+								</span> <span class="text-success ms-2" th:if="${product.discount > 0}">
+									-[[${product.discount}]]% </span>
 							</p>
 
 							<div class="row text-center mt-4">
@@ -98,12 +124,13 @@
 
 							<div class="mt-4">
 								<th:block th:if="${user == null}">
-									<a href="/signin" class="btn btn-dark col-12 py-2"> 
-										<i class="fa-solid fa-cart-plus me-2"></i>Đăng nhập để mua hàng
+									<a href="/signin" class="btn btn-dark col-12 py-2"> <i
+										class="fa-solid fa-cart-plus me-2"></i>Đăng nhập để mua hàng
 									</a>
 								</th:block>
 								<th:block th:unless="${user == null}">
-									<button type="submit" class="btn btn-dark col-12 py-2" th:disabled="${#lists.isEmpty(product.variants)}"> 
+									<button type="submit" class="btn btn-dark col-12 py-2"
+										th:disabled="${#lists.isEmpty(product.variants)}">
 										<i class="fa-solid fa-cart-plus me-2"></i>Thêm vào giỏ hàng
 									</button>
 								</th:block>
@@ -114,5 +141,54 @@
 			</div>
 		</div>
 	</section>
+
+	<script>
+    let currentIndex = 0;
+    let autoChangeTimer;
+
+    function changeImage(element, isAuto = false) {
+        var newSrc = element.querySelector('img').src;
+        var mainImg = document.getElementById('mainProductImg');
+        if(mainImg) {
+            mainImg.src = newSrc;
+        }
+        
+        var thumbs = document.querySelectorAll('.thumb-box');
+        thumbs.forEach(function(box, index) {
+            box.classList.remove('border-primary');
+            box.style.borderColor = '#dee2e6';
+            
+            if(box === element) {
+                currentIndex = index; 
+            }
+        });
+        
+        element.classList.add('border-primary');
+        element.style.borderColor = '#0d6efd';
+
+        if (!isAuto) {
+            clearInterval(autoChangeTimer);
+            startAutoChange();
+        }
+    }
+
+    function startAutoChange() {
+        var thumbs = document.querySelectorAll('.thumb-box');
+        if(thumbs.length > 1) {
+            autoChangeTimer = setInterval(function() {
+                currentIndex++;
+                if(currentIndex >= thumbs.length) {
+                    currentIndex = 0;
+                }
+              
+                changeImage(thumbs[currentIndex], true);
+            }, 3000); 
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        startAutoChange();
+    });
+</script>
 </body>
 </html>

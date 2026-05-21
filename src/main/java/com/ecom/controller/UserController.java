@@ -289,8 +289,7 @@ public class UserController {
 
 	@GetMapping("/order")
 	public String orderPage(@RequestParam(value = "error", required = false) String error, Model model, Principal p) {
-		// Lấy thông tin giỏ hàng như cũ
-		UserDtls user = getLoggedInUserDetails(p);
+				UserDtls user = getLoggedInUserDetails(p);
 		List<Cart> carts = cartService.getCartsByUser(user.getId());
 		model.addAttribute("carts", carts);
 		if (!carts.isEmpty()) {

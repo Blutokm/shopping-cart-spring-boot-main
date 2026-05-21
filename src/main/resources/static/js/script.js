@@ -238,7 +238,57 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// Các phương thức validate custom
+let currentIndex = 0;
+let autoChangeTimer;
+
+function changeImage(element, isAuto = false) {
+
+    var newSrc = element.querySelector('img').src;
+    var mainImg = document.getElementById('mainProductImg');
+    if(mainImg) {
+        mainImg.src = newSrc;
+    }
+    
+    var thumbs = document.querySelectorAll('.thumb-box');
+    thumbs.forEach(function(box, index) {
+        box.classList.remove('border-primary', 'active-thumb');
+        box.style.borderColor = '#dee2e6';
+        
+        if(box === element) {
+            currentIndex = index;
+        }
+    });
+    
+    element.classList.add('border-primary');
+    element.style.borderColor = '#0d6efd';
+
+    if (!isAuto) {
+        clearInterval(autoChangeTimer);
+        startAutoChange();
+    }
+}
+
+function startAutoChange() {
+    var thumbs = document.querySelectorAll('.thumb-box');
+ 
+    if(thumbs.length > 1) {
+        autoChangeTimer = setInterval(function() {
+            currentIndex++;
+            if(currentIndex >= thumbs.length) {
+                currentIndex = 0;
+            }
+            changeImage(thumbs[currentIndex], true);
+        }, 3000); 
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById('mainProductImg')) {
+        startAutoChange();
+    }
+});
+
+
 jQuery.validator.addMethod('lettersonly', function(value, element) {
     return /^[^-\s][a-zA-Z_\s-]+$/.test(value);
 });

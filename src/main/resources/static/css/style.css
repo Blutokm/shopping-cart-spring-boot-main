@@ -429,5 +429,25 @@ body {
     font-weight: 600;
     z-index: 10;
 }
+.product-img-container {
+    position: relative;
+    cursor: pointer;
+}
 
+.main-img {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 1;
+}
+
+.product-card:hover .main-img, 
+.card-sh:hover .main-img {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.product-card:hover .hover-img,
+.card-sh:hover .hover-img {
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1.05) !important;
+}
 
