@@ -132,9 +132,9 @@ body {
 }
 
 .navbar-nav .nav-link.active {
-    color: #0d6efd !important;
+    color: #ff6600 !important;
     font-weight: bold;
-    border-bottom: 2px solid #0d6efd;
+    border-bottom: 2px solid #ff6600;
 }
 
 /* CAROUSEL */

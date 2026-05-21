@@ -95,11 +95,10 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         
-        // Cú pháp nội suy chuẩn của Thymeleaf, sẽ an toàn tuyệt đối, không gây sập trang!
-        var revenueLabels = /*[[${chartRevenueLabels}]]*/ ["Không có dữ liệu"];
-        var revenueData = /*[[${chartRevenueData}]]*/ [0];
+        // --- DATA BIỂU ĐỒ ĐƯỜNG (DOANH THU) ---
+        var revenueLabels = /*[[${chartRevenueLabels}]]*/ ["Tháng 1", "Tháng 2"];
+        var revenueData = /*[[${chartRevenueData}]]*/ [0, 0];
 
-        // Vẽ biểu đồ Đường
         const ctxLine = document.getElementById('revenueLineChart').getContext('2d');
         new Chart(ctxLine, {
             type: 'line',
@@ -116,13 +115,19 @@
                 }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
         });
 
-        // Vẽ biểu đồ Tròn
-        var categoryLabels = /*[[${chartCategoryLabels}]]*/ ["Không có dữ liệu"];
+        // --- DATA BIỂU ĐỒ TRÒN (DANH MỤC) ---
+        var categoryLabels = /*[[${chartCategoryLabels}]]*/ ["Danh mục"];
         var categoryData = /*[[${chartCategoryData}]]*/ [0];
 
         const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
@@ -136,7 +141,8 @@
                 }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true, 
+                maintainAspectRatio: false,
                 plugins: { legend: { position: 'bottom' } },
                 cutout: '75%'
             }

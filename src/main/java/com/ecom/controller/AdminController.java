@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -201,8 +203,8 @@ public class AdminController {
 	public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
 			@RequestParam(value = "colors", required = false) List<String> colors,
 			@RequestParam(value = "sizes", required = false) List<String> sizes,
-			@RequestParam(value = "stocks", required = false) List<Integer> stocks,
-			HttpSession session) throws IOException {
+			@RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session)
+			throws IOException {
 
 		String imageName = image.isEmpty() ? "default.jpg" : image.getOriginalFilename();
 
@@ -216,7 +218,7 @@ public class AdminController {
 				ProductVariant variant = new ProductVariant();
 				variant.setColor(colors.get(i));
 				variant.setSize(sizes.get(i));
-				variant.setStock(stocks.get(i) < 0 ? 0 : stocks.get(i)); 
+				variant.setStock(stocks.get(i) < 0 ? 0 : stocks.get(i));
 				variant.setProduct(product);
 				variants.add(variant);
 			}
@@ -261,22 +263,18 @@ public class AdminController {
 		return "admin/products";
 	}
 
-
 	@GetMapping("/deleteProduct/{id}")
 	public String deleteProduct(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-	    boolean isDeleted = productService.deleteProduct(id);
+		boolean isDeleted = productService.deleteProduct(id);
 
-	    if (isDeleted) {
-	        redirectAttributes.addFlashAttribute("successMsg", "Xóa sản phẩm thành công!");
-	    } else {
-	        redirectAttributes.addFlashAttribute("errorMsg", "Không thể xóa sản phẩm vì đang tồn tại trong đơn hàng!");
-	    }
+		if (isDeleted) {
+			redirectAttributes.addFlashAttribute("successMsg", "Xóa sản phẩm thành công!");
+		} else {
+			redirectAttributes.addFlashAttribute("errorMsg", "Không thể xóa sản phẩm vì đang tồn tại trong đơn hàng!");
+		}
 
-	    return "redirect:/admin/products";
+		return "redirect:/admin/products";
 	}
-
-
-
 
 	@GetMapping("/editProduct/{id}")
 	public String editProduct(@PathVariable int id, Model m) {
@@ -289,13 +287,12 @@ public class AdminController {
 	public String updateProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
 			@RequestParam(value = "colors", required = false) List<String> colors,
 			@RequestParam(value = "sizes", required = false) List<String> sizes,
-			@RequestParam(value = "stocks", required = false) List<Integer> stocks,
-			HttpSession session, Model m) {
+			@RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session, Model m) {
 
 		if (product.getDiscount() < 0 || product.getDiscount() > 100) {
 			session.setAttribute("errorMsg", "invalid Discount");
 		} else {
-		
+
 			List<ProductVariant> newVariants = new ArrayList<>();
 			if (colors != null && sizes != null && stocks != null) {
 				for (int i = 0; i < colors.size(); i++) {
@@ -309,7 +306,7 @@ public class AdminController {
 			product.setVariants(newVariants);
 
 			Product updateProduct = productService.updateProduct(product, image);
-			
+
 			if (!ObjectUtils.isEmpty(updateProduct)) {
 				session.setAttribute("succMsg", "Cập Nhật Sản Phẩm Thành Công");
 			} else {
@@ -327,46 +324,81 @@ public class AdminController {
 		} else {
 			users = userService.getUsers("ROLE_ADMIN");
 		}
-		m.addAttribute("userType",type);
+		m.addAttribute("userType", type);
 		m.addAttribute("users", users);
 		return "/admin/users";
 	}
 
 	@GetMapping("/updateSts")
-	public String updateUserAccountStatus(@RequestParam Boolean status, @RequestParam Integer id,@RequestParam Integer type, HttpSession session) {
+	public String updateUserAccountStatus(@RequestParam Boolean status, @RequestParam Integer id,
+			@RequestParam Integer type, HttpSession session) {
 		Boolean f = userService.updateAccountStatus(id, status);
 		if (f) {
 			session.setAttribute("succMsg", "Cập Nhật Trang Thái Thành Công");
 		} else {
 			session.setAttribute("errorMsg", "Cập Nhật Sản Phẩm Thất Bại");
 		}
-		return "redirect:/admin/users?type="+type;
+		return "redirect:/admin/users?type=" + type;
 	}
 
 	@GetMapping("/orders")
 	public String getAllOrders(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
+		List<ProductOrder> allOrders = new ArrayList<>(orderService.getAllOrders());
+		allOrders.sort((o1, o2) -> o2.getId().compareTo(o1.getId()));
 
-		Page<ProductOrder> page = orderService.getAllOrdersPagination(pageNo, pageSize);
-		List<ProductOrder> orders = new ArrayList<>(orderService.getAllOrders());
-	    orders.sort((o1, o2) -> o2.getId().compareTo(o1.getId()));
-		m.addAttribute("orders", orders);
+		Map<String, List<ProductOrder>> groupedOrders = new LinkedHashMap<>();
+		for (ProductOrder o : allOrders) {
+			groupedOrders.computeIfAbsent(o.getOrderId(), k -> new ArrayList<>()).add(o);
+		}
 
+		List<Map<String, Object>> summaryOrders = new ArrayList<>();
+		for (Map.Entry<String, List<ProductOrder>> entry : groupedOrders.entrySet()) {
+			String orderId = entry.getKey();
+			List<ProductOrder> items = entry.getValue();
+			ProductOrder representative = items.get(0);
+
+			double totalAmount = items.stream().mapToDouble(i -> i.getPrice() * i.getQuantity()).sum();
+			int totalQuantity = items.stream().mapToInt(ProductOrder::getQuantity).sum();
+
+			Map<String, Object> orderMap = new HashMap<>();
+			orderMap.put("orderId", orderId);
+			orderMap.put("orderDate", representative.getOrderDate());
+			orderMap.put("status", representative.getStatus());
+			orderMap.put("totalAmount", totalAmount);
+			orderMap.put("totalQuantity", totalQuantity);
+			orderMap.put("orderAddress", representative.getOrderAddress());
+
+			summaryOrders.add(orderMap);
+		}
+
+		int totalElements = summaryOrders.size();
+		int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+		if (totalPages == 0)
+			totalPages = 1;
+		int start = pageNo * pageSize;
+		int end = Math.min(start + pageSize, totalElements);
+
+		List<Map<String, Object>> pagedSummary = new ArrayList<>();
+		if (start < totalElements) {
+			pagedSummary = summaryOrders.subList(start, end);
+		}
+
+		m.addAttribute("orders", pagedSummary);
 		m.addAttribute("srch", false);
-
-		m.addAttribute("pageNo", page.getNumber());
+		m.addAttribute("pageNo", pageNo);
 		m.addAttribute("pageSize", pageSize);
-		m.addAttribute("totalElements", page.getTotalElements());
-		m.addAttribute("totalPages", page.getTotalPages());
-		m.addAttribute("isFirst", page.isFirst());
-		m.addAttribute("isLast", page.isLast());
+		m.addAttribute("totalElements", totalElements);
+		m.addAttribute("totalPages", totalPages);
+		m.addAttribute("isFirst", pageNo == 0);
+		m.addAttribute("isLast", pageNo >= totalPages - 1);
 
 		return "/admin/orders";
 	}
 
 	@PostMapping("/update-order-status")
-	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
+	public String updateOrderStatus(@RequestParam String orderId, @RequestParam Integer st, HttpSession session) {
 
 		OrderStatus[] values = OrderStatus.values();
 		String status = null;
@@ -377,18 +409,27 @@ public class AdminController {
 			}
 		}
 
-		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+		boolean isUpdated = false;
 
-		try {
-			commonUtil.sendMailForProductOrder(updateOrder, status);
-		} catch (Exception e) {
-			e.printStackTrace();
+		List<ProductOrder> allOrders = orderService.getAllOrders();
+		for (ProductOrder o : allOrders) {
+			if (o.getOrderId().equals(orderId)) {
+				ProductOrder updateOrder = orderService.updateOrderStatus(o.getId(), status);
+				if (updateOrder != null) {
+					isUpdated = true;
+					try {
+						commonUtil.sendMailForProductOrder(updateOrder, status);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 
-		if (!ObjectUtils.isEmpty(updateOrder)) {
-			session.setAttribute("succMsg", "Trạng Thái Đã Cập Nhật");
+		if (isUpdated) {
+			session.setAttribute("succMsg", "Trạng Thái Đã Được Cập Nhật");
 		} else {
-			session.setAttribute("errorMsg", "Trạng Thái Chưa Cập Nhật");
+			session.setAttribute("errorMsg", "Cập Nhật Trạng Thái Thất Bại");
 		}
 		return "redirect:/admin/orders";
 	}
@@ -398,34 +439,53 @@ public class AdminController {
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
-		if (orderId != null && orderId.length() > 0) {
+		if (orderId != null && orderId.trim().length() > 0) {
+			List<ProductOrder> allOrders = orderService.getAllOrders();
+			List<ProductOrder> orderDetails = allOrders.stream().filter(o -> o.getOrderId().equals(orderId.trim()))
+					.collect(Collectors.toList());
 
-			ProductOrder order = orderService.getOrdersByOrderId(orderId.trim());
-
-			if (ObjectUtils.isEmpty(order)) {
-				session.setAttribute("errorMsg", "Incorrect orderId");
+			if (orderDetails.isEmpty()) {
+				session.setAttribute("errorMsg", "Không tìm thấy mã đơn hàng");
 				m.addAttribute("orderDtls", null);
 			} else {
-				m.addAttribute("orderDtls", order);
-			}
+				ProductOrder representative = orderDetails.get(0);
+				double totalAmount = orderDetails.stream().mapToDouble(i -> i.getPrice() * i.getQuantity()).sum();
+				int totalQuantity = orderDetails.stream().mapToInt(ProductOrder::getQuantity).sum();
 
+				Map<String, Object> orderMap = new HashMap<>();
+				orderMap.put("orderId", orderId.trim());
+				orderMap.put("orderDate", representative.getOrderDate());
+				orderMap.put("status", representative.getStatus());
+				orderMap.put("totalAmount", totalAmount);
+				orderMap.put("totalQuantity", totalQuantity);
+				orderMap.put("orderAddress", representative.getOrderAddress());
+
+				m.addAttribute("orderDtls", orderMap);
+			}
 			m.addAttribute("srch", true);
 		} else {
-
-			Page<ProductOrder> page = orderService.getAllOrdersPagination(pageNo, pageSize);
-			m.addAttribute("orders", page);
-			m.addAttribute("srch", false);
-
-			m.addAttribute("pageNo", page.getNumber());
-			m.addAttribute("pageSize", pageSize);
-			m.addAttribute("totalElements", page.getTotalElements());
-			m.addAttribute("totalPages", page.getTotalPages());
-			m.addAttribute("isFirst", page.isFirst());
-			m.addAttribute("isLast", page.isLast());
-
+			return "redirect:/admin/orders";
 		}
 		return "/admin/orders";
+	}
 
+	@GetMapping("/view-order")
+	public String viewOrderDetailsAdmin(@RequestParam String orderId, Model model) {
+		List<ProductOrder> allOrders = orderService.getAllOrders();
+		List<ProductOrder> orderDetails = allOrders.stream().filter(o -> o.getOrderId().equals(orderId))
+				.collect(Collectors.toList());
+
+		if (orderDetails.isEmpty()) {
+			return "redirect:/admin/orders";
+		}
+
+		double totalAmount = orderDetails.stream().mapToDouble(o -> o.getPrice() * o.getQuantity()).sum();
+
+		model.addAttribute("orderDetails", orderDetails);
+		model.addAttribute("orderInfo", orderDetails.get(0));
+		model.addAttribute("totalAmount", totalAmount);
+
+		return "admin/view_order";
 	}
 
 	@GetMapping("/add-admin")
@@ -476,75 +536,90 @@ public class AdminController {
 	}
 
 	@PostMapping("/change-password")
-	public String changePassword(
-	        @RequestParam String currentPassword,
-	        @RequestParam String newPassword,
-	        @RequestParam String confirmPassword,
-	        Principal p,
-	        HttpSession session) {
+	public String changePassword(@RequestParam String currentPassword, @RequestParam String newPassword,
+			@RequestParam String confirmPassword, Principal p, HttpSession session) {
 
-	    UserDtls user = commonUtil.getLoggedInUserDetails(p);
-	    if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-	        session.setAttribute("errorMsg", "Mật khẩu hiện tại không đúng!");
-	        return "redirect:/admin/profile";
-	    }
-	    if (!newPassword.equals(confirmPassword)) {
-	        session.setAttribute("errorMsg", "Xác nhận mật khẩu không khớp!");
-	        return "redirect:/admin/profile";
-	    }
-	    user.setPassword(passwordEncoder.encode(newPassword));
-	    userService.updateUser(user);
+		UserDtls user = commonUtil.getLoggedInUserDetails(p);
+		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+			session.setAttribute("errorMsg", "Mật khẩu hiện tại không đúng!");
+			return "redirect:/admin/profile";
+		}
+		if (!newPassword.equals(confirmPassword)) {
+			session.setAttribute("errorMsg", "Xác nhận mật khẩu không khớp!");
+			return "redirect:/admin/profile";
+		}
+		user.setPassword(passwordEncoder.encode(newPassword));
+		userService.updateUser(user);
 
-	    session.setAttribute("succMsg", "Đổi mật khẩu thành công!");
-	    return "redirect:/admin/profile";
+		session.setAttribute("succMsg", "Đổi mật khẩu thành công!");
+		return "redirect:/admin/profile";
 	}
 
-	
 	@Autowired
 	private StatisticsService statisticsService;
 
-	@GetMapping({"", "/"})
+	@GetMapping({ "", "/" })
 	public String adminHome(Model model, Principal principal) {
 
-	    if (principal == null) {
-	        return "redirect:/signin";
-	    }
+		if (principal == null) {
+			return "redirect:/signin";
+		}
 
-	    String email = principal.getName();
-	    UserDtls user = userService.getUserByEmail(email);
-	    model.addAttribute("user", user);
+		String email = principal.getName();
+		UserDtls user = userService.getUserByEmail(email);
+		model.addAttribute("user", user);
 
-	    Map<String, Object> data = statisticsService.getDashboardData();
-	    model.addAllAttributes(data);
+		List<Product> allProducts = productService.getAllProducts();
+		model.addAttribute("products", allProducts.size());
 
-	    @SuppressWarnings("unchecked")
-	    Map<Integer, Double> revenueByMonth = (Map<Integer, Double>) data.get("revenueByMonth");
-	    List<String> revenueLabels = new ArrayList<>();
-	    List<Double> revenueValues = new ArrayList<>();
-	    
-	    if (revenueByMonth != null) {
-	        for (Map.Entry<Integer, Double> entry : revenueByMonth.entrySet()) {
-	            revenueLabels.add("Tháng " + entry.getKey());
-	            revenueValues.add(entry.getValue());
-	        }
-	    }
-	    model.addAttribute("chartRevenueLabels", revenueLabels);
-	    model.addAttribute("chartRevenueData", revenueValues);
+		List<UserDtls> allUsers = userService.getUsers("ROLE_USER");
+		model.addAttribute("users", allUsers.size());
 
-	    List<Product> allProducts = productService.getAllProducts();
-	    Map<String, Long> categoryCountMap = allProducts.stream()
-	            .filter(p -> p.getCategory() != null)
-	            .collect(Collectors.groupingBy(Product::getCategory, Collectors.counting()));
+		List<ProductOrder> allOrders = orderService.getAllOrders();
+		double totalRevenue = 0.0;
+		java.util.Set<String> uniqueOrders = new java.util.HashSet<>();
 
-	    List<String> categoryLabels = new ArrayList<>(categoryCountMap.keySet());
-	    List<Long> categoryData = new ArrayList<>(categoryCountMap.values());
+		Map<Integer, Double> revenueByMonth = new java.util.TreeMap<>();
+		for (int i = 1; i <= 12; i++) {
+			revenueByMonth.put(i, 0.0);
+		}
 
-	    model.addAttribute("chartCategoryLabels", categoryLabels);
-	    model.addAttribute("chartCategoryData", categoryData);
+		for (ProductOrder o : allOrders) {
+			uniqueOrders.add(o.getOrderId());
 
-	    return "admin/index";
+			if (!"Cancelled".equalsIgnoreCase(o.getStatus())) {
+				double orderTotal = o.getPrice() * o.getQuantity();
+				totalRevenue += orderTotal;
+
+				if (o.getOrderDate() != null) {
+					int month = o.getOrderDate().getMonthValue();
+					revenueByMonth.put(month, revenueByMonth.get(month) + orderTotal);
+				}
+			}
+		}
+
+		model.addAttribute("orders", uniqueOrders.size());
+		model.addAttribute("revenue", totalRevenue);
+
+		List<String> revenueLabels = new ArrayList<>();
+		List<Double> revenueValues = new ArrayList<>();
+		for (Map.Entry<Integer, Double> entry : revenueByMonth.entrySet()) {
+			revenueLabels.add("Tháng " + entry.getKey());
+			revenueValues.add(entry.getValue());
+		}
+		model.addAttribute("chartRevenueLabels", revenueLabels);
+		model.addAttribute("chartRevenueData", revenueValues);
+
+		Map<String, Long> categoryCountMap = allProducts.stream().filter(p -> p.getCategory() != null)
+				.collect(Collectors.groupingBy(Product::getCategory, Collectors.counting()));
+
+		List<String> categoryLabels = new ArrayList<>(categoryCountMap.keySet());
+		List<Long> categoryData = new ArrayList<>(categoryCountMap.values());
+
+		model.addAttribute("chartCategoryLabels", categoryLabels);
+		model.addAttribute("chartCategoryData", categoryData);
+
+		return "admin/index";
 	}
-
-
 
 }

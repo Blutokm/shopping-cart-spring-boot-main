@@ -44,11 +44,13 @@ public class OrderServiceImpl implements OrderService {
 
 		List<Cart> carts = cartRepository.findByUserId(userid);
 
+		String commonOrderId = UUID.randomUUID().toString();
+
 		for (Cart cart : carts) {
 
 			ProductOrder order = new ProductOrder();
 
-			order.setOrderId(UUID.randomUUID().toString());
+			order.setOrderId(commonOrderId);
 			order.setOrderDate(LocalDate.now());
 
 			order.setProduct(cart.getProduct());
@@ -66,12 +68,12 @@ public class OrderServiceImpl implements OrderService {
 			if (cart.getProduct().getVariants() != null) {
 				for (ProductVariant variant : cart.getProduct().getVariants()) {
 					if (variant.getColor().equals(cart.getColor()) && variant.getSize().equals(cart.getSize())) {
-				
+
 						int newStock = variant.getStock() - cart.getQuantity();
-			
+
 						variant.setStock(newStock < 0 ? 0 : newStock);
 						variantRepository.save(variant);
-						break; 
+						break;
 					}
 				}
 			}
@@ -91,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 			ProductOrder saveOrder = orderRepository.save(order);
 			commonUtil.sendMailForProductOrder(saveOrder, "success");
 		}
-		
+
 		if (!carts.isEmpty()) {
 			resetCart(carts.get(0).getUser());
 		}

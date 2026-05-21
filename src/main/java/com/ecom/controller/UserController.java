@@ -2,7 +2,11 @@ package com.ecom.controller;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,8 +77,9 @@ public class UserController {
 	}
 
 	@PostMapping("/addCart")
-	public String addToCart(@RequestParam Integer pid, @RequestParam Integer uid, @RequestParam Integer variantId, HttpSession session) {
-		
+	public String addToCart(@RequestParam Integer pid, @RequestParam Integer uid, @RequestParam Integer variantId,
+			HttpSession session) {
+
 		Cart saveCart = cartService.saveCart(pid, uid, variantId);
 
 		if (ObjectUtils.isEmpty(saveCart)) {
@@ -126,76 +131,75 @@ public class UserController {
 
 	@PostMapping("/save-order")
 	public Object saveOrder(@ModelAttribute OrderRequest request,
-	                        @RequestParam(name = "paymentType", required = false) String paymentType,
-	                        @RequestParam(name = "amount", required = false) Double amount,
-	                        Principal p,
-	                        HttpServletRequest servletRequest,
-	                        Model model) throws Exception {
+			@RequestParam(name = "paymentType", required = false) String paymentType,
+			@RequestParam(name = "amount", required = false) Double amount, Principal p,
+			HttpServletRequest servletRequest, Model model) throws Exception {
 
-	    UserDtls user = getLoggedInUserDetails(p);
-	    List<Cart> carts = cartService.getCartsByUser(user.getId());
+		UserDtls user = getLoggedInUserDetails(p);
+		List<Cart> carts = cartService.getCartsByUser(user.getId());
 
-	    String orderId = "HD" + System.currentTimeMillis();
+		String orderId = "HD" + System.currentTimeMillis();
 
-	    double total = 0;
-	    if (!carts.isEmpty()) {
-	        total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
-	    }
+		double total = 0;
+		if (!carts.isEmpty()) {
+			total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
+		}
 
-	    orderService.saveOrder(user.getId(), request);
+		orderService.saveOrder(user.getId(), request);
 
-	    model.addAttribute("orderId", orderId);
-	    model.addAttribute("user", user);
-	    model.addAttribute("paymentType", "VNPAY".equalsIgnoreCase(paymentType) ? "Thanh toán VNPay" : "Thanh toán khi nhận hàng");
-	    model.addAttribute("totalOrderPrice", total);
-	    model.addAttribute("carts", carts);
+		model.addAttribute("orderId", orderId);
+		model.addAttribute("user", user);
+		model.addAttribute("paymentType",
+				"VNPAY".equalsIgnoreCase(paymentType) ? "Thanh toán VNPay" : "Thanh toán khi nhận hàng");
+		model.addAttribute("totalOrderPrice", total);
+		model.addAttribute("carts", carts);
 
-	    boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(servletRequest.getHeader("X-Requested-With"));
+		boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(servletRequest.getHeader("X-Requested-With"));
 
-	    if ("VNPAY".equalsIgnoreCase(paymentType)) {
-	        if (amount == null || amount <= 0) {
-	            if (isAjax) {
-	                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid_amount");
-	            } else {
-	                return "redirect:/user/order?error=invalid_amount";
-	            }
-	        }
+		if ("VNPAY".equalsIgnoreCase(paymentType)) {
+			if (amount == null || amount <= 0) {
+				if (isAjax) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid_amount");
+				} else {
+					return "redirect:/user/order?error=invalid_amount";
+				}
+			}
 
-	        String paymentUrl = PaymentController.buildVnPayUrl(servletRequest, amount.longValue());
-	        if (isAjax) {
-	            return ResponseEntity.ok(paymentUrl);
-	        } else {
-	            return "redirect:" + paymentUrl;
-	        }
-	    }
+			String paymentUrl = PaymentController.buildVnPayUrl(servletRequest, amount.longValue());
+			if (isAjax) {
+				return ResponseEntity.ok(paymentUrl);
+			} else {
+				return "redirect:" + paymentUrl;
+			}
+		}
 
-	    return "user/success";
+		return "user/success";
 
 	}
-
 
 	@GetMapping("/success")
 	public String loadSuccess(Principal p, Model model) {
-	    UserDtls user = getLoggedInUserDetails(p);
-	    List<Cart> carts = cartService.getCartsByUser(user.getId());
-	    double total = 0;
-	    if (!carts.isEmpty()) {
-	        total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
-	    }
+		UserDtls user = getLoggedInUserDetails(p);
+		List<Cart> carts = cartService.getCartsByUser(user.getId());
+		double total = 0;
+		if (!carts.isEmpty()) {
+			total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
+		}
 
-	    model.addAttribute("orderId", "HD" + System.currentTimeMillis());
-	    model.addAttribute("user", user);
-	    model.addAttribute("paymentType", "Thanh toán khi nhận hàng");
-	    model.addAttribute("totalOrderPrice", total);
-	    model.addAttribute("carts", carts);
+		model.addAttribute("orderId", "HD" + System.currentTimeMillis());
+		model.addAttribute("user", user);
+		model.addAttribute("paymentType", "Thanh toán khi nhận hàng");
+		model.addAttribute("totalOrderPrice", total);
+		model.addAttribute("carts", carts);
 
-	    return "user/success";
+		return "user/success";
 
 	}
 
-
 	@GetMapping("/update-status")
-	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
+	public String updateOrderStatus(@RequestParam(required = false) Integer id,
+			@RequestParam(required = false) String orderId, @RequestParam Integer st, Principal principal,
+			HttpSession session) {
 
 		OrderStatus[] values = OrderStatus.values();
 		String status = null;
@@ -206,15 +210,37 @@ public class UserController {
 			}
 		}
 
-		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+		boolean isUpdated = false;
 
-		try {
-			commonUtil.sendMailForProductOrder(updateOrder, status);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (orderId != null && principal != null) {
+			UserDtls user = getLoggedInUserDetails(principal);
+			List<ProductOrder> allUserOrders = orderService.getOrdersByUser(user.getId());
+			for (ProductOrder o : allUserOrders) {
+				if (o.getOrderId().equals(orderId)) {
+					ProductOrder updateOrder = orderService.updateOrderStatus(o.getId(), status);
+					if (updateOrder != null) {
+						isUpdated = true;
+						try {
+							commonUtil.sendMailForProductOrder(updateOrder, status);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		} else if (id != null) {
+			ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+			if (updateOrder != null) {
+				isUpdated = true;
+				try {
+					commonUtil.sendMailForProductOrder(updateOrder, status);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
-		if (!ObjectUtils.isEmpty(updateOrder)) {
+		if (isUpdated) {
 			session.setAttribute("succMsg", "Cập Nhật Trạng Thái Thành Công");
 		} else {
 			session.setAttribute("errorMsg", "Cập Nhật Trạng Thái Thất Bại");
@@ -281,24 +307,73 @@ public class UserController {
 
 		return "user/order";
 	}
-	
+
 	@GetMapping("/user-orders")
 	public String userOrders(Model model, Principal principal) {
-	    if (principal == null) {
-	        return "redirect:/signin";
-	    }
+		if (principal == null) {
+			return "redirect:/signin";
+		}
 
-	    UserDtls user = getLoggedInUserDetails(principal);
+		UserDtls user = getLoggedInUserDetails(principal);
 
-	    List<ProductOrder> orders = new ArrayList<>(orderService.getOrdersByUser(user.getId()));
-	    orders.sort((o1, o2) -> o2.getId().compareTo(o1.getId()));
+		List<ProductOrder> orders = new ArrayList<>(orderService.getOrdersByUser(user.getId()));
 
-	    model.addAttribute("orders", orders);
-	    model.addAttribute("user", user);
+		orders.sort((o1, o2) -> o2.getId().compareTo(o1.getId()));
 
-	    return "user/my_orders"; 
+		Map<String, List<ProductOrder>> groupedOrders = new LinkedHashMap<>();
+		for (ProductOrder o : orders) {
+			groupedOrders.computeIfAbsent(o.getOrderId(), k -> new ArrayList<>()).add(o);
+		}
+
+		List<Map<String, Object>> summaryOrders = new ArrayList<>();
+		for (Map.Entry<String, List<ProductOrder>> entry : groupedOrders.entrySet()) {
+			String orderId = entry.getKey();
+			List<ProductOrder> items = entry.getValue();
+
+			ProductOrder representative = items.get(0);
+
+			double totalAmount = items.stream().mapToDouble(i -> i.getPrice() * i.getQuantity()).sum();
+
+			int totalQuantity = items.stream().mapToInt(ProductOrder::getQuantity).sum();
+
+			Map<String, Object> orderMap = new HashMap<>();
+			orderMap.put("orderId", orderId);
+			orderMap.put("orderDate", representative.getOrderDate());
+			orderMap.put("status", representative.getStatus());
+			orderMap.put("totalAmount", totalAmount);
+			orderMap.put("totalQuantity", totalQuantity);
+
+			summaryOrders.add(orderMap);
+		}
+
+		model.addAttribute("orders", summaryOrders);
+		model.addAttribute("user", user);
+
+		return "user/my_orders";
 	}
 
+	@GetMapping("/view-order")
+	public String viewOrderDetails(@RequestParam String orderId, Model model, Principal principal) {
+		if (principal == null) {
+			return "redirect:/signin";
+		}
 
+		UserDtls user = getLoggedInUserDetails(principal);
+		List<ProductOrder> allUserOrders = orderService.getOrdersByUser(user.getId());
+
+		List<ProductOrder> orderDetails = allUserOrders.stream().filter(o -> o.getOrderId().equals(orderId)).toList();
+
+		if (orderDetails.isEmpty()) {
+			return "redirect:/user/user-orders";
+		}
+
+		double totalAmount = orderDetails.stream().mapToDouble(o -> o.getPrice() * o.getQuantity()).sum();
+
+		model.addAttribute("orderDetails", orderDetails);
+		model.addAttribute("orderInfo", orderDetails.get(0));
+		model.addAttribute("totalAmount", totalAmount);
+
+		return "user/view_order";
+	}
 
 }
