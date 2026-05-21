@@ -1,22 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base::layout(~{::section})}">
+      th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
     <title>Quản lý danh mục</title>
 </head>
 <body>
 <section>
-    <div class="container mt-4 mb-5">
-
-        <!-- Nút trở lại -->
-        <div class="mb-3">
-            <a href="javascript:history.back()" class="btn btn-outline-secondary">
-                <i class="fa-solid fa-arrow-left"></i> Trở lại
-            </a>
-        </div>
-
-        <!-- Tiêu đề trang -->
+    <div class="container">
+     	<!-- Tiêu đề trang -->
         <h2 class="text-center fw-bold text-uppercase mb-4">Quản lý danh mục</h2>
 
         <div class="row">

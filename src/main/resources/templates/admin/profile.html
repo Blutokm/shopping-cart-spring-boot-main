@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base::layout(~{::section})}">
+      th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
-    <!-- Đổi charset sang UTF-8 -->
     <meta charset="UTF-8">
     <title>Hồ sơ cá nhân</title>
 </head>
 <body>
     <section>
-        <div class="container-fluid p-3 bg-light">
-        <div class="mb-3">
-            <a href="javascript:history.back()" class="btn btn-outline-secondary">
-                <i class="fa-solid fa-arrow-left"></i> Trở lại
-            </a>
-        </div>
+        <div class="container-fluid bg-light">
             <div class="row">
                 <div class="col-md-10 offset-md-1 ">
 
@@ -63,7 +57,7 @@
                                         <td><input type="text" name="city" class="form-control" th:value="${user.city}"></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">Tỉnh/Thành</th>
+                                        <th scope="row">Quận/Huyện</th>
                                         <td>:</td>
                                         <td><input type="text" name="state" class="form-control" th:value="${user.state}"></td>
                                     </tr>

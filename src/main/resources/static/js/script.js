@@ -219,6 +219,25 @@ $(function(){
     });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+   
+    var path = window.location.pathname;
+
+    var navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+
+    navLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+
+        if (href === "#") return;
+
+        if (path === href) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+});
+
 // Các phương thức validate custom
 jQuery.validator.addMethod('lettersonly', function(value, element) {
     return /^[^-\s][a-zA-Z_\s-]+$/.test(value);

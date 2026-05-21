@@ -40,6 +40,7 @@ import com.ecom.service.StatisticsService;
 import com.ecom.service.UserService;
 import com.ecom.util.CommonUtil;
 import com.ecom.util.OrderStatus;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -516,7 +517,32 @@ public class AdminController {
 	    Map<String, Object> data = statisticsService.getDashboardData();
 	    model.addAllAttributes(data);
 
-	    return "/admin/index";
+	    @SuppressWarnings("unchecked")
+	    Map<Integer, Double> revenueByMonth = (Map<Integer, Double>) data.get("revenueByMonth");
+	    List<String> revenueLabels = new ArrayList<>();
+	    List<Double> revenueValues = new ArrayList<>();
+	    
+	    if (revenueByMonth != null) {
+	        for (Map.Entry<Integer, Double> entry : revenueByMonth.entrySet()) {
+	            revenueLabels.add("Tháng " + entry.getKey());
+	            revenueValues.add(entry.getValue());
+	        }
+	    }
+	    model.addAttribute("chartRevenueLabels", revenueLabels);
+	    model.addAttribute("chartRevenueData", revenueValues);
+
+	    List<Product> allProducts = productService.getAllProducts();
+	    Map<String, Long> categoryCountMap = allProducts.stream()
+	            .filter(p -> p.getCategory() != null)
+	            .collect(Collectors.groupingBy(Product::getCategory, Collectors.counting()));
+
+	    List<String> categoryLabels = new ArrayList<>(categoryCountMap.keySet());
+	    List<Long> categoryData = new ArrayList<>(categoryCountMap.values());
+
+	    model.addAttribute("chartCategoryLabels", categoryLabels);
+	    model.addAttribute("chartCategoryData", categoryData);
+
+	    return "admin/index";
 	}
 
 

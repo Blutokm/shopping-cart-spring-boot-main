@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+	th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
 <!-- Đổi charset sang UTF-8 -->
 <meta charset="UTF-8">
@@ -8,13 +8,7 @@
 </head>
 <body>
 	<section>
-		<div class="container-fluid p-3">
-			<div class="mb-3">
-				<a href="javascript:history.back()"
-					class="btn btn-outline-secondary"> <i
-					class="fa-solid fa-arrow-left"></i> Trở lại
-				</a>
-			</div>
+		<div class="container-fluid">
 			<div class="row">
 				<p class="text-center fs-3 mt-2">Tất cả Đơn hàng</p>
 				<hr>

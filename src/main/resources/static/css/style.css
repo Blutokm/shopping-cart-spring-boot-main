@@ -131,6 +131,12 @@ body {
     color: #ff6600 !important;
 }
 
+.navbar-nav .nav-link.active {
+    color: #0d6efd !important;
+    font-weight: bold;
+    border-bottom: 2px solid #0d6efd;
+}
+
 /* CAROUSEL */
 .carousel-item img {
   width: 100%;
