@@ -9,18 +9,9 @@
 
 <section class="mt-5 mb-5">
     <div class="container">
-
-        <!-- Nút quay lại -->
-        <div class="mb-3">
-            <a href="javascript:history.back()" class="btn btn-outline-secondary">
-                <i class="fa-solid fa-arrow-left"></i> Trở lại
-            </a>
-        </div>
-
-        <!-- Tiêu đề -->
+   
         <h3 class="text-center fw-bold mb-4">Hồ sơ của tôi</h3>
 
-        <!-- Thông báo -->
         <th:block th:if="${session.succMsg}">
             <div class="alert alert-success text-center fw-semibold">
                 [[${session.succMsg}]]
@@ -35,7 +26,6 @@
             <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
         </th:block>
 
-        <!-- Thông tin người dùng -->
         <div class="card shadow-sm border-0 mb-5">
             <div class="card-body">
                 <div class="text-center mb-4">

@@ -38,16 +38,27 @@
 			</div>
 		</div>
 
-		<div class="container my-5">
-			<h4 class="fw-bold mb-4 text-center">Danh mục</h4>
-			<div class="d-flex justify-content-center flex-wrap gap-4">
-				<div class="text-center cat-wrapper" th:each="c:${category}">
-					<a th:href="@{'/products?category=' + ${c.name}}"
-						class="text-decoration-none text-dark"> <img
-						th:src="@{'/img/category_img/' + ${c.imageName}}"
-						class="cat-circle mb-2">
-						<h5 class="fw-semibold">[[${c.name}]]</h5>
-					</a>
+		<div class="container my-4">
+			<div class="bg-white rounded-3 shadow-sm p-4">
+				<div class="d-flex justify-content-between align-items-center mb-4">
+					<h4 class="fw-bold text-uppercase mb-0"
+						style="font-size: 1.1rem; color: #333;">Danh mục sản phẩm</h4>
+				</div>
+
+				<div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 g-3">
+					<div class="col" th:each="c:${category}">
+						<a th:href="@{'/products?category=' + ${c.name}}"
+							class="text-decoration-none text-dark category-card d-flex flex-column align-items-center justify-content-center p-3 h-100 border rounded-3 transition-all">
+
+							<div
+								class="category-img-box rounded-circle bg-light d-flex align-items-center justify-content-center mb-2">
+								<img th:src="@{'/img/category_img/' + ${c.imageName}}"
+									alt="Category" class="img-fluid category-img">
+							</div> <span class="text-center fw-medium category-text"
+							style="font-size: 0.85rem; line-height: 1.3;">
+								[[${c.name}]] </span>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>

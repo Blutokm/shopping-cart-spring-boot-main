@@ -2,7 +2,6 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
 	th:fragment="layout(content)">
 <head>
-
 <meta charset="UTF-8">
 <title>ShopPKTH</title>
 <link
@@ -10,12 +9,10 @@
 	rel="stylesheet"
 	integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
 	crossorigin="anonymous">
-
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 	integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
 	crossorigin="anonymous" referrerpolicy="no-referrer" />
-
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -34,11 +31,9 @@
 					<span class="navbar-toggler-icon"></span>
 				</button>
 
-
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-
+					
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
 						<th:block th:if="${user==null}">
 							<li class="nav-item"><a class="nav-link active"
 								aria-current="page" href="/"> <i class="fa-solid fa-house"></i>
@@ -56,11 +51,9 @@
 									class="fa-solid fa-house"></i> Trang chủ
 							</a></li>
 						</th:block>
-
 						
 						<li class="nav-item"><a class="nav-link active"
-							aria-current="page" href="/products">Toàn bộ sản phẩm</a></li>
-
+							aria-current="page" href="/products">Sản phẩm</a></li>
 						
 						<li class="nav-item dropdown"><a
 							class="nav-link dropdown-toggle" href="#" role="button"
@@ -72,9 +65,17 @@
 							</ul></li>
 					</ul>
 
-					
-					<ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-					
+					<form class="d-flex mx-auto w-100 px-lg-3" action="/products" method="get" style="max-width: 500px;">
+						<div class="input-group">
+							<input type="search" class="form-control" name="ch"
+								placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
+							<button class="btn btn-dark" type="submit">
+								<i class="fa-solid fa-magnifying-glass"></i>
+							</button>
+						</div>
+					</form>
+
+					<ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center mt-3 mt-lg-0">
 						<th:block th:if="${user==null}">
 							<li class="nav-item"><a class="nav-link active"
 								href="/signin"> <i class="fa-solid fa-user"></i> Đăng nhập
@@ -82,10 +83,8 @@
 							<li class="nav-item"><a class="nav-link active"
 								href="/register">Đăng ký</a></li>
 						</th:block>
-
 					
 						<th:block th:if="${user!=null}">
-					
 							<th:block th:if="${user.role=='ROLE_USER'}">
 								<li class="nav-item position-relative"><a href="/user/cart"
 									class="nav-link position-relative"> <i
@@ -93,7 +92,6 @@
 										class="cart-badge" th:text="${countCart}">0</span>
 								</a></li>
 							</th:block>
-
 					
 							<li class="nav-item dropdown"><a
 								class="nav-link dropdown-toggle active" href="#" role="button"
@@ -116,11 +114,8 @@
 		</nav>
 	</header>
 
-	<!-- End Navbar -->
+	<div th:replace="${content}" style="margin-top: 80px;"></div>
 
-	<div th:replace="${content}"></div>
-
-	<!-- Start Footer -->
 	<footer class="bg-dark text-white pt-4 mt-5">
 		<div class="container">
 			<div class="row align-items-center mb-4">
@@ -136,10 +131,7 @@
 					</a>
 				</div>
 			</div>
-
 			<hr class="bg-secondary">
-
-			<!-- Thông tin footer -->
 			<div class="row">
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Về ShopPKTH</h6>
@@ -162,81 +154,54 @@
 						src="/img/chungnhan/chungnhan.png" alt="bo cong thuong"
 						style="height: 35px;">
 				</div>
-
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Hỗ trợ khách hàng</h6>
 					<ul class="list-unstyled small">
-						<li><a href="#" class="text-white text-decoration-none">Sản
-								phẩm khuyến mãi</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Sản
-								phẩm nổi bật</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Tất
-								cả sản phẩm</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Sản phẩm khuyến mãi</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Sản phẩm nổi bật</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Tất cả sản phẩm</a></li>
 					</ul>
 					<img src="/img/vnpost/vnpost.png" alt="Vietnam Post"
 						style="height: 40px;">
 				</div>
-
-
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Liên kết</h6>
 					<ul class="list-unstyled small">
-						<li><a href="#" class="text-white text-decoration-none">Sản
-								phẩm mới</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Sản phẩm mới</a></li>
 						<li><a href="#" class="text-white text-decoration-none">Nam</a></li>
 						<li><a href="#" class="text-white text-decoration-none">Nữ</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Phụ
-								kiện</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Thương
-								hiệu</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Phụ kiện</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Thương hiệu</a></li>
 						<li><a href="#" class="text-white text-decoration-none">SALE</a></li>
 					</ul>
 				</div>
-
-
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Chính sách</h6>
 					<ul class="list-unstyled small">
-						<li><a href="#" class="text-white text-decoration-none">Giới
-								thiệu</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Hướng
-								dẫn mua hàng</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính
-								sách kiểm hàng</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính
-								sách vận chuyển</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính
-								sách thanh toán</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính
-								sách bảo mật</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính
-								sách đổi trả</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Liên
-								hệ</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Giới thiệu</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Hướng dẫn mua hàng</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính sách kiểm hàng</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính sách vận chuyển</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính sách thanh toán</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính sách bảo mật</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính sách đổi trả</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Liên hệ</a></li>
 					</ul>
 				</div>
 			</div>
-
 			<hr class="bg-secondary">
-
-
 			<div class="text-center pb-3 small">
 				<p class="mb-0">
-					&copy; 2025 ShopPKTH. Powered by <strong>Haravan</strong>
+					&copy; 2025 ShopPKTH
 				</p>
 			</div>
 		</div>
 	</footer>
-
-	<!-- End Footer -->
-
-	<!-- Jquery Validation Library  -->
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 	<script type="text/javascript" src="/js/script.js"></script>
-	<!-- End  -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

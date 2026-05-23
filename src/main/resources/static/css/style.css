@@ -1,124 +1,78 @@
 @charset "utf-8";
 
-.card-sh{
-    height: 100%;
-    border: none;
-    border-radius: 12px;
-    overflow: hidden;
-
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-}
-.product-img{
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-}
-.product-title{
-    min-height: 48px;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-
-    overflow: hidden;
+/* =========================================
+   0. ROOT VARIABLES (ĐỒNG NHẤT MÀU SẮC TOÀN WEB)
+   ========================================= */
+:root {
+    --primary-color: #ff6600;
+    --primary-hover: #e65c00; 
+    
+    --dark-color: #222222;    
+    --darker-color: #000000; 
+    --footer-bg: #1a1a1a;    
+    
+    --price-color: #dc3545;  
+    
+    --light-bg: #f8f9fa;     
+    --border-color: #dddddd; 
+    
+    --white: #ffffff;
 }
 
-.card-sh:hover{
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
+/* Các Class Tiện Ích (Utility classes) để dùng thẳng trong HTML */
+.text-brand { color: var(--primary-color) !important; }
+.bg-brand { background-color: var(--primary-color) !important; color: var(--white); }
+.border-brand { border-color: var(--primary-color) !important; }
 
-.price-box{
-    min-height: 70px;
-}
-
-.current-price{
-    font-size: 18px;
-    font-weight: bold;
-    color: #dc3545;
-    margin-bottom: 5px;
-}
-
-.discount-area{
-    height: 24px;
-}
-
-.old-price{
-    font-size: 14px;
-    margin-right: 5px;
-}
-
-.cat-div {
-	box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+/* =========================================
+   1. GLOBAL & UTILITIES
+   ========================================= */
+body {
+    padding-top: 55px; 
 }
 
 .error {
-	color: red;
+    color: var(--price-color);
 }
 
-body {
-  padding-top: 55px; 
-}
-
-/*trang product*/
 .bg-orange {
-	background-color: black;
-}
-
-.list-group-item.active {
-	background-color: black;
-	border-color: black;
-}
-
-.list-group-item{
-    transition: all 0.2s ease;
-}
-
-.list-group-item:hover{
-    color: #ff6600;
-    padding-left: 18px;
-}
-
-/* ===== PHÂN TRANG SẢN PHẨM ===== */
-.pagination .page-link {
-  color: #000;
-  border: 1px solid #ddd;
-  transition: all 0.25s ease;
-}
-
-.pagination .page-link:hover {
-  color: #ff6600;
-  border-color: #ff6600;
-  background-color: #fff7f0;
-}
-
-.pagination .page-item.active .page-link {
-  background-color: #000;
-  border-color: #000;
-  color: #fff;
-  font-weight: 600;
-}
-
-.pagination .page-item.disabled .page-link {
-  color: #aaa;
-  background-color: #f8f9fa;
-  border-color: #ddd;
+    background-color: var(--darker-color);
 }
 
 .badge {
-  border-radius: 0 6px 6px 0;
+    border-radius: 0 6px 6px 0;
+}
+
+.btn-dark {
+    background-color: var(--dark-color);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-dark:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* =========================================
+   2. NAVBAR & HEADER
+   ========================================= */
+.navbar-nav .nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--primary-color) !important;
+    font-weight: bold;
+    border-bottom: 2px solid var(--primary-color);
 }
 
 .cart-badge {
     position: absolute;
     top: -5px;
     right: -10px;
-    background-color: #dc3545;
-    color: #fff;
+    background-color: var(--price-color);
+    color: var(--white);
     font-size: 10px;
     font-weight: 600;
     border-radius: 50%;
@@ -127,327 +81,234 @@ body {
     text-align: center;
 }
 
-.navbar-nav .nav-link:hover {
-    color: #ff6600 !important;
-}
-
-.navbar-nav .nav-link.active {
-    color: #ff6600 !important;
-    font-weight: bold;
-    border-bottom: 2px solid #ff6600;
-}
-
-/* CAROUSEL */
+/* =========================================
+   3. CAROUSEL / BANNERS
+   ========================================= */
 .carousel-item img {
-  width: 100%;
-  height: 500px; 
-  object-position: center top; 
-}
-
-/* Category Section */
-.category-section {
-  padding: 60px 0;
-}
-
-.category-card a {
-  text-decoration: none;
-  color: #000;
-  transition: all 0.3s ease;
-}
-
-.category-card a:hover {
-   color: #ff6600;
-}
-
-.category-img-wrapper {
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.category-img-wrapper img {
-  width: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.category-card:hover img {
-  transform: scale(1.05);
-}
-
-/*PHẦN SẢN PHẨM MỚI NHẤT*/
-.product-section {
-  background-color: #f8f9fa;
-  padding: 60px 0;
-}
-
-/* Section Header */
-.product-section .section-header h2 {
-  font-weight: 700;
-  font-size: 2rem;
-  color: #333;
-  letter-spacing: 1px;
-}
-
-.product-section .section-header p {
-  font-size: 1rem;
-  color: #666;
-}
-
-/* CARD SẢN PHẨM */
-.product-card {
-  border: none;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background: #fff;
-}
-
-.product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-}
-
-.product-card .card-img-wrapper {
-  overflow: hidden;
-}
-
-.product-card img {
-  width: 100%;
-  aspect-ratio: 3/4; 
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.product-card:hover img {
-  transform: scale(1.05);
-}
-
-/* Tiêu đề sản phẩm */
-.product-card .product-title {
-  color: #222;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.product-card .product-title:hover {
-  color: #ff6600;
-}
-
-/* Giá sản phẩm */
-.product-card .product-price {
-  font-size: 0.95rem;
-  color: #888;
-}
-
-/* Responsive cơ bản */
-@media (max-width: 768px) {
-  .product-card img {
-    aspect-ratio: 1/1;
-  }
-}
-
-/*Btn xem tat ca*/
-.btn-dark {
-  background-color: #222;
-  border: none;
-  transition: all 0.3s ease;
-}
-
-.btn-dark:hover {
-  background-color: #ff6600;
-  color: #fff;
-}
-
-/* ===== FOOTER ===== */
-.footer-giovanni {
-    background-color: #1a1a1a;
-    color: #f1f1f1;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.footer-top {
-    background-color: #222;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.footer-top .social-icon {
-    color: white;
-    font-size: 1.1rem;
-    margin-left: 10px;
-    border: 1px solid white;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.footer-top .social-icon:hover {
-    background-color: #ff6600;
-    border-color: #ff6600;
-    color: #fff;
-}
-
-.footer-main a:hover {
-    text-decoration: underline;
-    color: #ff6600;
-}
-
-.footer-bottom {
-    background-color: #111;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    font-size: 0.85rem;
-    color: #ccc;
+    width: 100%;
+    height: 500px; 
+    object-position: center top; 
 }
 
 /* =========================================
-   📱 RESPONSIVE 3 CẤP: mobile / tablet / desktop
+   4. DANH MỤC (CATEGORIES)
    ========================================= */
-
-/* 1️⃣ Mobile (≤576px) */
-@media (max-width: 576px) {
-  .carousel-item img {
-    height: 250px;
-  }
-
-  .category-section {
-    padding: 30px 10px;
-  }
-
-  .category-card {
-    margin-bottom: 20px;
-  }
-
-  .category-img-wrapper img {
-    aspect-ratio: 1/1;
-  }
-
-  .product-section {
-    padding: 30px 10px;
-  }
-
-  .product-card img {
-    aspect-ratio: 1/1;
-  }
-
-  .product-card .product-title {
-    font-size: 0.9rem;
-  }
-
-  .product-card .product-price {
-    font-size: 0.85rem;
-  }
-
-  .footer-giovanni {
-    text-align: center;
-  }
+.category-section {
+    padding: 60px 0;
 }
 
-/* 2️⃣ Tablet (≥768px và ≤991px) */
-@media (min-width: 768px) and (max-width: 991px) {
-  .carousel-item img {
-    height: 380px;
-  }
-
-  .category-section {
-    padding: 40px;
-  }
-
-  .category-img-wrapper img {
-    aspect-ratio: 4/3;
-  }
-
-  .product-card img {
-    height: 220px;
-  }
-
-  .product-card .product-title {
-    font-size: 1rem;
-  }
+.category-img-box {
+    width: 120px;
+    height: 100px;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-/* 3️⃣ Desktop (≥992px) */
-@media (min-width: 992px) {
-  .carousel-item img {
-    height: 500px;
-  }
-
-  .category-section {
-    padding: 60px;
-  }
-
-  .category-img-wrapper img {
-    aspect-ratio: 3/2;
-  }
-
-  .product-card img {
-    height: 250px;
-  }
-
-  .product-card .product-title {
-    font-size: 1.05rem;
-  }
+.category-img {
+    max-height: 60%;
+    max-width: 60%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
 }
 
-/* CATEGORY */
+.category-card {
+    background-color: var(--white);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--dark-color);
+}
+
+.category-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08);
+    border-color: var(--dark-color) !important; 
+    transform: translateY(-3px); 
+}
+
+.category-card:hover .category-img {
+    transform: scale(1.15); 
+}
+
+.category-card:hover .category-text {
+    color: var(--primary-color); 
+}
+
+.category-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s ease;
+}
+
+.cat-div { box-shadow: 0 0 10px rgba(0, 0, 0, .1); }
 .cat-wrapper {
-  width: 20%;
-  margin:0 20px;
-  text-align: center;
-  transition: transform 0.2s ease;
+    width: 20%; margin: 0 20px; text-align: center; transition: transform 0.2s ease;
 }
-
-.cat-wrapper:hover {
-  transform: translateY(-5px);
-}
-
+.cat-wrapper a { text-decoration: none; color: var(--darker-color); }
+.cat-wrapper:hover { transform: translateY(-5px); }
+.cat-wrapper:hover a h5 { color: var(--primary-color); transition: color 0.3s ease; }
 .cat-circle {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 150px; height: 150px; border-radius: 50%; object-fit: cover;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cat-wrapper:hover .cat-circle {
+    transform: scale(1.07); box-shadow: 0 6px 18px rgba(0,0,0,0.25);
 }
 
-.cat-wrapper:hover .cat-circle {
-  transform: scale(1.07);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+/* =========================================
+   5. SẢN PHẨM (PRODUCTS)
+   ========================================= */
+.product-section {
+    background-color: var(--light-bg);
+    padding: 60px 0;
+}
+
+.product-section .section-header h2 {
+    font-weight: 700; font-size: 2rem; color: #333; letter-spacing: 1px;
+}
+.product-section .section-header p {
+    font-size: 1rem; color: #666;
+}
+
+.card-sh, .product-card {
+    border: none; border-radius: 12px; overflow: hidden; background: var(--white);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-sh { height: 100%; }
+
+.card-sh:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12); }
+
+.product-card .card-img-wrapper { overflow: hidden; }
+
+.product-img { width: 100%; height: 220px; object-fit: cover; }
+.product-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; transition: transform 0.4s ease; }
+.product-card:hover img { transform: scale(1.05); }
+
+.product-img-container { position: relative; cursor: pointer; }
+.main-img { transition: opacity 0.5s ease, transform 0.5s ease; opacity: 1; }
+
+.product-card:hover .main-img, .card-sh:hover .main-img { opacity: 0; transform: scale(0.9); }
+.product-card:hover .hover-img, .card-sh:hover .hover-img {
+    opacity: 1 !important; transform: translate(-50%, -50%) scale(1.05) !important;
 }
 
 .badge-sale {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    z-index: 10;
+    position: absolute; top: 10px; left: 10px; background-color: var(--price-color); color: var(--white);
+    padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; z-index: 10;
 }
-.product-img-container {
-    position: relative;
+
+.product-title {
+    min-height: 48px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; color: var(--dark-color); font-size: 1rem; text-decoration: none; transition: color 0.3s ease;
+}
+.product-card .product-title:hover, .card-sh .product-title:hover { color: var(--primary-color); }
+
+.price-box { min-height: 70px; }
+.current-price { font-size: 18px; font-weight: bold; color: var(--price-color); margin-bottom: 5px; }
+.discount-area { height: 24px; }
+.old-price { font-size: 14px; margin-right: 5px; color: #888; }
+
+/* =========================================
+   6. SIDEBAR & PHÂN TRANG (PAGINATION)
+   ========================================= */
+.list-group-item { transition: all 0.2s ease; }
+.list-group-item.active { background-color: var(--darker-color); border-color: var(--darker-color); color: var(--white); }
+.list-group-item:hover { color: var(--primary-color); padding-left: 18px; }
+
+.pagination .page-link { color: var(--darker-color); border: 1px solid var(--border-color); transition: all 0.25s ease; }
+.pagination .page-link:hover {
+    color: var(--primary-color); border-color: var(--primary-color); background-color: #fff7f0;
+}
+.pagination .page-item.active .page-link {
+    background-color: var(--darker-color); border-color: var(--darker-color); color: var(--white); font-weight: 600;
+}
+.pagination .page-item.disabled .page-link { color: #aaa; background-color: var(--light-bg); border-color: var(--border-color); }
+
+/* =========================================
+   7. FOOTER
+   ========================================= */
+.footer-giovanni {
+    background-color: var(--footer-bg); color: #f1f1f1; font-family: 'Montserrat', sans-serif;
+}
+.footer-top { background-color: var(--dark-color); border-bottom: 1px solid rgba(255,255,255,0.1); }
+.footer-top .social-icon {
+    color: var(--white); font-size: 1.1rem; margin-left: 10px; border: 1px solid var(--white);
+    border-radius: 50%; width: 36px; height: 36px; display: inline-flex; align-items: center;
+    justify-content: center; transition: all 0.3s ease;
+}
+.footer-top .social-icon:hover {
+    background-color: var(--primary-color); border-color: var(--primary-color); color: var(--white);
+}
+.footer-main a:hover { text-decoration: underline; color: var(--primary-color); }
+.footer-bottom { background-color: #111; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; color: #ccc; }
+
+/* =========================================
+   8. RESPONSIVE QUERIES
+   ========================================= */
+@media (max-width: 576px) {
+    .carousel-item img { height: 250px; }
+    .category-section { padding: 30px 10px; }
+    .category-card { margin-bottom: 20px; }
+    .category-img-wrapper img { aspect-ratio: 1/1; }
+    .product-section { padding: 30px 10px; }
+    .product-card img { aspect-ratio: 1/1; }
+    .product-card .product-title { font-size: 0.9rem; }
+    .footer-giovanni { text-align: center; }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .carousel-item img { height: 380px; }
+    .category-section { padding: 40px; }
+    .category-img-wrapper img { aspect-ratio: 4/3; }
+    .product-card img { height: 220px; }
+    .product-card .product-title { font-size: 1rem; }
+}
+
+@media (max-width: 768px) {
+    .product-card img { aspect-ratio: 1/1; }
+}
+
+@media (min-width: 992px) {
+    .carousel-item img { height: 500px; }
+    .category-section { padding: 60px; }
+    .category-img-wrapper img { aspect-ratio: 3/2; }
+    .product-card img { height: 250px; }
+    .product-card .product-title { font-size: 1.05rem; }
+}
+
+/* =========================================
+   TRANG THANH TOÁN (CHECKOUT)
+   ========================================= */
+.cursor-pointer {
     cursor: pointer;
 }
 
-.main-img {
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    opacity: 1;
+.form-control-lg, .form-select-lg {
+    font-size: 0.95rem;
+    border: 1px solid var(--border-color);
+}
+.form-control-lg:focus, .form-select-lg:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 102, 0, 0.15); 
+    border-color: var(--primary-color);
 }
 
-.product-card:hover .main-img, 
-.card-sh:hover .main-img {
-    opacity: 0;
-    transform: scale(0.9);
+.payment-box {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+.payment-box:hover {
+    background-color: #fcfcfc;
+    border-color: #e0e0e0 !important;
 }
 
-.product-card:hover .hover-img,
-.card-sh:hover .hover-img {
-    opacity: 1 !important;
-    transform: translate(-50%, -50%) scale(1.05) !important;
+.payment-box.selected {
+    border-color: var(--primary-color) !important;
+    background-color: #fffaf6; 
 }
 
+.custom-radio {
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: var(--primary-color);
+}
