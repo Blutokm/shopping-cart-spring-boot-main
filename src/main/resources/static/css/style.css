@@ -164,3 +164,35 @@ body { padding-top: 55px; }
 @media (min-width: 992px) {
     .carousel-item img { max-height: 500px; }
 }
+
+.category-img-box {
+    width: 100%; 
+    height: 230px; 
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.category-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.category-text {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin-top: 10px;
+}
+
+.category-card {
+    transition: all 0.3s ease;
+}
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 102, 0, 0.15) !important;
+    border-color: var(--primary-color) !important;
+}
+.category-card:hover .category-text {
+    color: var(--primary-color);
+}

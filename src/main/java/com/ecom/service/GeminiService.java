@@ -78,15 +78,13 @@ public class GeminiService {
 						return ChatResponseDTO.error("API server bị lỗi. Vui lòng thử lại sau.");
 					}
 				} else if (response.statusCode() == 429) {
-					System.err
-							.println("[GeminiService] Rate Limited (attempt " + (attempt + 1) + "/" + maxRetries + ")");
-
-					if (attempt < maxRetries - 1) {
-						Thread.sleep(retryDelay * (attempt + 2));
-						continue;
-					} else {
-						return ChatResponseDTO.error("Yêu cầu quá nhanh. Vui lòng chờ vài giây rồi thử lại.");
-					}
+				    System.err.println("[GeminiService] Rate Limited (attempt " + (attempt + 1) + "/" + maxRetries + ")");
+				    if (attempt < maxRetries - 1) {
+				        Thread.sleep(3000 * (attempt + 1)); 
+				        continue;
+				    } else {
+				        return ChatResponseDTO.error("Hệ thống đang quá tải. Vui lòng chờ 10 giây rồi gửi lại tin nhắn.");
+				    }
 				} else {
 					System.err.println("[GeminiService] API Error " + response.statusCode() + ": " + response.body());
 					return ChatResponseDTO.error("Không thể kết nối AI lúc này. Vui lòng thử lại sau.");
@@ -161,10 +159,12 @@ public class GeminiService {
 			sb.append("- Địa chỉ: ").append(storeAddress).append("\n");
 		sb.append("- Chính sách: Miễn phí vận chuyển đơn trên 500.000đ | Đổi trả trong 7 ngày\n\n");
 
-		String productList = chatContextService.getProductListText();
-		if (productList != null && !productList.isBlank()) {
-			sb.append("## Danh sách sản phẩm hiện có:\n").append(productList).append("\n");
-		}
+		/*
+		 * String productList = chatContextService.getProductListText(); if (productList
+		 * != null && !productList.isBlank()) {
+		 * sb.append("## Danh sách sản phẩm hiện có:\n").append(productList).append("\n"
+		 * ); }
+		 */
 		if ("product".equals(request.getPageContext()) && request.getContextId() != null) {
 			String productDetail = chatContextService.getProductDetailText(request.getContextId());
 			if (productDetail != null && !productDetail.isBlank()) {

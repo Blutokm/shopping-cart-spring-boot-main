@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,8 @@ import com.ecom.util.OrderStatus;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+	private static final Logger logger = Logger.getLogger(OrderServiceImpl.class.getName());
+
 	@Autowired
 	private ProductOrderRepository orderRepository;
 
@@ -44,39 +47,34 @@ public class OrderServiceImpl implements OrderService {
 
 		List<Cart> carts = cartRepository.findByUserId(userid);
 
+		if (carts == null || carts.isEmpty()) {
+			throw new Exception("Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.");
+		}
+
+		for (Cart cart : carts) {
+			if (!validateAndCheckStock(cart)) {
+				throw new Exception("Số lượng sản phẩm '" + cart.getProduct().getTitle() 
+					+ "' (Size: " + cart.getSize() + ", Color: " + cart.getColor() 
+					+ ") không đủ. Hiện có: " + getAvailableStock(cart));
+			}
+		}
+
 		String commonOrderId = UUID.randomUUID().toString();
 
 		for (Cart cart : carts) {
-
 			ProductOrder order = new ProductOrder();
-
 			order.setOrderId(commonOrderId);
 			order.setOrderDate(LocalDate.now());
-
 			order.setProduct(cart.getProduct());
 			order.setPrice(cart.getProduct().getDiscountPrice());
-
 			order.setQuantity(cart.getQuantity());
 			order.setUser(cart.getUser());
-
 			order.setStatus(OrderStatus.IN_PROGRESS.getName());
 			order.setPaymentType(orderRequest.getPaymentType());
-
 			order.setColor(cart.getColor());
 			order.setSize(cart.getSize());
 
-			if (cart.getProduct().getVariants() != null) {
-				for (ProductVariant variant : cart.getProduct().getVariants()) {
-					if (variant.getColor().equals(cart.getColor()) && variant.getSize().equals(cart.getSize())) {
-
-						int newStock = variant.getStock() - cart.getQuantity();
-
-						variant.setStock(newStock < 0 ? 0 : newStock);
-						variantRepository.save(variant);
-						break;
-					}
-				}
-			}
+			updateProductVariantStock(cart);
 
 			OrderAddress address = new OrderAddress();
 			address.setFirstName(orderRequest.getFirstName());
@@ -99,14 +97,54 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	private boolean validateAndCheckStock(Cart cart) {
+		if (cart.getProduct().getVariants() == null || cart.getProduct().getVariants().isEmpty()) {
+			return false;
+		}
+
+		for (ProductVariant variant : cart.getProduct().getVariants()) {
+			if (variant.getColor().equals(cart.getColor()) && variant.getSize().equals(cart.getSize())) {
+				return variant.getStock() >= cart.getQuantity();
+			}
+		}
+		return false;
+	}
+
+	private Integer getAvailableStock(Cart cart) {
+		if (cart.getProduct().getVariants() == null) {
+			return 0;
+		}
+
+		for (ProductVariant variant : cart.getProduct().getVariants()) {
+			if (variant.getColor().equals(cart.getColor()) && variant.getSize().equals(cart.getSize())) {
+				return variant.getStock();
+			}
+		}
+		return 0;
+	}
+
+	private void updateProductVariantStock(Cart cart) {
+		if (cart.getProduct().getVariants() == null) {
+			return;
+		}
+
+		for (ProductVariant variant : cart.getProduct().getVariants()) {
+			if (variant.getColor().equals(cart.getColor()) && variant.getSize().equals(cart.getSize())) {
+				int newStock = variant.getStock() - cart.getQuantity();
+				variant.setStock(newStock < 0 ? 0 : newStock);
+				variantRepository.save(variant);
+				break;
+			}
+		}
+	}
+
 	private void resetCart(UserDtls user) {
 		cartRepository.deleteByUser(user);
 	}
 
 	@Override
 	public List<ProductOrder> getOrdersByUser(Integer userId) {
-		List<ProductOrder> orders = orderRepository.findByUserId(userId);
-		return orders;
+		return orderRepository.findByUserId(userId);
 	}
 
 	@Override
@@ -115,8 +153,7 @@ public class OrderServiceImpl implements OrderService {
 		if (findById.isPresent()) {
 			ProductOrder productOrder = findById.get();
 			productOrder.setStatus(status);
-			ProductOrder updateOrder = orderRepository.save(productOrder);
-			return updateOrder;
+			return orderRepository.save(productOrder);
 		}
 		return null;
 	}

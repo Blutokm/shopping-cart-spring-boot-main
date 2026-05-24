@@ -7,13 +7,12 @@
 </head>
 <body>
 	<section>
-
 		<div class="container mt-3">
 			<div class="hero-card bg-white p-2">
 				<div id="carouselExample" class="carousel slide carousel-fade"
 					data-bs-ride="carousel">
 					<div class="carousel-inner rounded-4">
-						<div class="carousel-item active" data-bs-interval="3000">	
+						<div class="carousel-item active" data-bs-interval="3000">
 							<img src="/img/ecom1.png" class="d-block w-100" alt="Banner 1">
 						</div>
 						<div class="carousel-item" data-bs-interval="3000">
@@ -44,17 +43,19 @@
 						style="font-size: 1.1rem; color: #333;">Danh mục sản phẩm</h4>
 				</div>
 
-				<div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 g-3">
-					<div class="col" th:each="c:${category}">
+				<div class="row row-cols-2 row-cols-md-4 row-cols-lg-4 g-4">
+					<div class="col" th:each="c, iterStat : ${category}"
+						th:if="${iterStat.index < 4}">
 						<a th:href="@{'/products?category=' + ${c.name}}"
 							class="text-decoration-none text-dark category-card d-flex flex-column align-items-center justify-content-center p-3 h-100 border rounded-3 transition-all">
 
-							<div class="category-img-box rounded-circle bg-light d-flex align-items-center justify-content-center mb-2">
-								<img th:src="@{'/img/category_img/' + ${c.imageName}}" alt="Category" class="img-fluid category-img">
-							</div> 
-							<span class="text-center fw-medium category-text" style="font-size: 0.85rem; line-height: 1.3;">
-								[[${c.name}]] 
-							</span>
+							<div
+								class="category-img-box bg-light d-flex align-items-center justify-content-center mb-2 rounded-3 w-100">
+								<img th:src="@{'/img/category_img/' + ${c.imageName}}"
+									alt="Category" class="img-fluid category-img rounded-3">
+							</div> <span class="text-center fw-medium category-text"
+							style="font-size: 1rem; line-height: 1.3;"> [[${c.name}]]
+						</span>
 						</a>
 					</div>
 				</div>
@@ -62,7 +63,8 @@
 		</div>
 
 		<div class="container mb-5">
-			<div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+			<div
+				class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
 				<div>
 					<h3 class="fw-bold mb-0">
 						<i class="fa-solid fa-fire text-danger me-2"></i>Sản phẩm Trend
@@ -77,15 +79,16 @@
 			<div class="row g-4">
 				<div class="col-6 col-md-4 col-lg-3" th:each="p:${products}">
 					<div class="product-card h-100 d-flex flex-column p-2">
-						<span class="bg-danger text-white badge-sale fs-6" th:if="${p.discount > 0}">-[[${p.discount}]]%</span>
+						<span class="bg-danger text-white badge-sale fs-6"
+							th:if="${p.discount > 0}">-[[${p.discount}]]%</span>
 
 						<div class="text-center p-3 product-img-container">
-							<a th:href="@{'/product/' + ${p.id}}" class="d-block w-100 h-100"> 
-								<img th:src="@{'/img/product_img/' + ${p.image}}" class="product-img main-img">
-
-								<img th:if="${p.extraImages != null and !p.extraImages.isEmpty() and p.extraImages[0].imageName != null}"
-								     th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
-								     class="product-img hover-img">
+							<a th:href="@{'/product/' + ${p.id}}" class="d-block w-100 h-100">
+								<img th:src="@{'/img/product_img/' + ${p.image}}"
+								class="product-img main-img"> <img
+								th:if="${p.extraImages != null and !p.extraImages.isEmpty() and p.extraImages[0].imageName != null}"
+								th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
+								class="product-img hover-img">
 							</a>
 						</div>
 
@@ -93,25 +96,33 @@
 							<div class="text-warning small mb-1">
 								<i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i>
 								<i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i>
-								<i class="fa-solid fa-star-half-stroke"></i> <span class="text-muted ms-1">(4.8)</span>
+								<i class="fa-solid fa-star-half-stroke"></i> <span
+									class="text-muted ms-1">(4.8)</span>
 							</div>
 
-							<a th:href="@{'/product/' + ${p.id}}" class="text-decoration-none text-dark">
-								<h6 class="fw-bold text-truncate mb-3" style="font-size: 1.05rem;" title="[[${p.title}]]">[[${p.title}]]</h6>
+							<a th:href="@{'/product/' + ${p.id}}"
+								class="text-decoration-none text-dark">
+								<h6 class="fw-bold text-truncate mb-3"
+									style="font-size: 1.05rem;" title="[[${p.title}]]">[[${p.title}]]</h6>
 							</a>
 
-							<div class="d-flex justify-content-between align-items-end mt-auto">
+							<div
+								class="d-flex justify-content-between align-items-end mt-auto">
 								<div class="d-flex flex-column justify-content-center">
-									<span class="fw-bold text-danger fs-5" style="line-height: 1.2;">
-										[[${#numbers.formatDecimal(p.discountPrice, 0, 'COMMA', 0, 'POINT')}]] ₫ 
-									</span> 
-									<small class="text-muted text-decoration-line-through mt-1" th:classappend="${p.discount <= 0 ? 'invisible' : ''}" style="line-height: 1.2;">
-										[[${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}]] ₫ 
-									</small>
+									<span class="fw-bold text-danger fs-5"
+										style="line-height: 1.2;">
+										[[${#numbers.formatDecimal(p.discountPrice, 0, 'COMMA', 0,
+										'POINT')}]] ₫ </span> <small
+										class="text-muted text-decoration-line-through mt-1"
+										th:classappend="${p.discount <= 0 ? 'invisible' : ''}"
+										style="line-height: 1.2;">
+										[[${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}]]
+										₫ </small>
 								</div>
 
-								<a th:href="@{'/product/' + ${p.id}}" class="btn btn-dark rounded-circle shadow-sm btn-cart-action" title="Tùy chọn mua hàng"> 
-									<i class="fa-solid fa-cart-plus"></i>
+								<a th:href="@{'/product/' + ${p.id}}"
+									class="btn btn-dark rounded-circle shadow-sm btn-cart-action"
+									title="Tùy chọn mua hàng"> <i class="fa-solid fa-cart-plus"></i>
 								</a>
 							</div>
 						</div>
@@ -128,41 +139,45 @@
 					Nhận ngay mã giảm giá <span class="text-warning fw-bold">50.000₫</span>
 					cho đơn hàng đầu tiên
 				</p>
-				<a href="/register" class="btn btn-light btn-lg rounded-pill px-5 fw-bold mt-2 shadow-sm">Đăng ký ngay</a>
+				<a href="/register"
+					class="btn btn-light btn-lg rounded-pill px-5 fw-bold mt-2 shadow-sm">Đăng
+					ký ngay</a>
 			</div>
 		</div>
 
 		<div class="container my-5">
-			<h4 class="fw-bold mb-4 border-bottom pb-2">Gợi ý dành cho bạn</h4>
+			<h4 class="fw-bold mb-4 border-bottom pb-2" style="color: #dc3545;">
+				<i class="fa-solid fa-tags me-2"></i>Sản Phẩm Khuyến Mãi
+			</h4>
 			<div class="row g-4">
-				<div class="col-6 col-md-4 col-lg-3" th:each="p:${products}">
+				<div class="col-6 col-md-4 col-lg-3" th:each="p:${discountProducts}">
 					<div class="product-card p-3 h-100 d-flex flex-column text-center">
-						<span class="bg-danger text-white badge-sale fs-6" th:if="${p.discount > 0}">-[[${p.discount}]]%</span> 
-						
-						<a th:href="@{'/product/' + ${p.id}}" class="product-img-container" style="height: 160px;">
-							<img th:src="@{'/img/product_img/' + ${p.image}}" class="product-img rounded main-img">
-							
-							<img th:if="${p.extraImages != null and !p.extraImages.isEmpty()}"
-							     th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
-							     class="product-img rounded hover-img">
-						</a> 
+						<span class="bg-danger text-white badge-sale fs-6">-[[${p.discount}]]%</span>
 
-						<a th:href="@{'/product/' + ${p.id}}" class="text-decoration-none text-dark">
+						<a th:href="@{'/product/' + ${p.id}}"
+							class="product-img-container" style="height: 160px;"> <img
+							th:src="@{'/img/product_img/' + ${p.image}}"
+							class="product-img rounded main-img"> <img
+							th:if="${p.extraImages != null and !p.extraImages.isEmpty()}"
+							th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
+							class="product-img rounded hover-img">
+						</a> <a th:href="@{'/product/' + ${p.id}}"
+							class="text-decoration-none text-dark">
 							<h6 class="mt-3 fw-semibold text-truncate">[[${p.title}]]</h6>
 						</a>
 
 						<div class="mt-2 mb-3 mt-auto">
 							<span class="text-danger fw-bold fs-6">
-								[[${#numbers.formatDecimal(p.discountPrice, 0, 'COMMA', 0, 'POINT')}]] ₫ 
-							</span> <br> 
-							<small class="text-muted text-decoration-line-through" th:if="${p.discount > 0}">
+								[[${#numbers.formatDecimal(p.discountPrice, 0, 'COMMA', 0,
+								'POINT')}]] ₫ </span> <br> <small
+								class="text-muted text-decoration-line-through">
 								[[${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}]] ₫
 							</small>
 						</div>
 
-						<a th:href="@{'/product/' + ${p.id}}" class="btn btn-outline-dark mt-auto rounded-pill px-3 fw-medium w-100 btn-cart-action" style="height: auto;"> 
-							Xem chi tiết 
-						</a>
+						<a th:href="@{'/product/' + ${p.id}}"
+							class="btn btn-outline-dark mt-auto rounded-pill px-3 fw-medium w-100 btn-cart-action"
+							style="height: auto;"> Xem chi tiết </a>
 					</div>
 				</div>
 			</div>
