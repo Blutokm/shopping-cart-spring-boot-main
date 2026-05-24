@@ -82,12 +82,10 @@ $(function(){
                 all: 'Địa chỉ không hợp lệ'
             },
             city: {
-                required: 'Thành phố không được để trống',
-                space: 'Không được chứa khoảng trắng'
+                required: 'Thành phố không được để trống'
             },
             state: {
-                required: 'Tỉnh/Thành không được để trống',
-                space: 'Không được chứa khoảng trắng'
+                required: 'Tỉnh/Thành không được để trống'
             },
             pincode: {
                 required: 'Mã bưu điện không được để trống',
@@ -300,12 +298,10 @@ $(function(){
                 all: 'Địa chỉ không hợp lệ'
             },
             city: {
-                required: 'Thành phố không được để trống',
-                space: 'Không được chứa khoảng trắng'
+                required: 'Thành phố không được để trống'
             },
             state: {
-                required: 'Tỉnh/Thành không được để trống',
-                space: 'Không được chứa khoảng trắng'
+                required: 'Tỉnh/Thành không được để trống'
             },
             pincode: {
                 required: 'Mã bưu điện không được để trống',
@@ -389,15 +385,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 jQuery.validator.addMethod('lettersonly', function(value, element) {
-    return /^[^-\s][a-zA-Z_\s-]+$/.test(value);
+    return /^[a-zA-ZÀ-ỹ\s]+$/.test(value);
 });
 
 jQuery.validator.addMethod('space', function(value, element) {
-    return /^[^-\s]+$/.test(value);
+    return !/\s/.test(value);
 });
 
 jQuery.validator.addMethod('all', function(value, element) {
-    return /^[^-\s][a-zA-Z0-9_,.\s-]+$/.test(value);
+    return /^[^-\s][a-zA-Z0-9À-ỹ_,\.\s-]+$/.test(value);
 });
 
 jQuery.validator.addMethod('numericOnly', function(value, element) {

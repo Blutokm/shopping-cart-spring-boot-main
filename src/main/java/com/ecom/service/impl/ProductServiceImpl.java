@@ -191,7 +191,7 @@ public class ProductServiceImpl implements ProductService {
 		Page<Product> pageProduct = null;
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-		pageProduct = productRepository.findByisActiveTrueAndTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch,
+		pageProduct = productRepository.findByIsActiveTrueAndTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch,
 				ch, pageable);
 
 		return pageProduct;
