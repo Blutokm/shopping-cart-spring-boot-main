@@ -24,9 +24,10 @@ public class ChatContextService {
             }
 
             for (Product p : products) {
-                sb.append("- ").append(p.getTitle())
-                  .append(" | Giá: ").append(String.format("%,.0f", p.getDiscountPrice()))
-                  .append(" VND\n");
+            	sb.append("- ").append(p.getTitle())
+            	  .append(" | Giá gốc: ").append(String.format("%,.0f", p.getPrice()))
+            	  .append(" VND | Giá hiện tại: ").append(String.format("%,.0f", p.getDiscountPrice()))
+            	  .append(" VND\n");
             }
         } catch (Exception e) {
             System.err.println("Lỗi khi lấy dữ liệu cho Chatbot: " + e.getMessage());

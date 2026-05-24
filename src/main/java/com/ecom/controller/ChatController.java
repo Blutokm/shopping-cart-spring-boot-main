@@ -39,10 +39,10 @@ public class ChatController {
                     .body(ChatResponseDTO.error("Tin nhắn quá dài. Vui lòng rút gọn."));
         }
 
-        if (request.getMessages().size() > 10) {
+        if (request.getMessages().size() > 20) {
             request.setMessages(
                 request.getMessages().subList(
-                    request.getMessages().size() - 10,
+                    request.getMessages().size() - 20,
                     request.getMessages().size()
                 )
             );
