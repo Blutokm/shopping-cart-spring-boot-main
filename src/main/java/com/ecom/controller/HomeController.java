@@ -24,11 +24,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ecom.dto.ProductFilterDTO;
 import com.ecom.model.Category;
 import com.ecom.model.Product;
 import com.ecom.model.UserDtls;
+import com.ecom.repository.CategoryRepository;
 import com.ecom.service.CartService;
 import com.ecom.service.CategoryService;
+import com.ecom.service.ProductFilterService;
 import com.ecom.service.ProductService;
 import com.ecom.service.UserService;
 import com.ecom.util.CommonUtil;
@@ -58,6 +61,12 @@ public class HomeController {
 
 	@Autowired
 	private CartService cartService;
+	
+	@Autowired
+	private ProductFilterService filterService;
+
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
@@ -96,43 +105,65 @@ public class HomeController {
 	}
 
 	@GetMapping("/products")
-	public String products(Model m, @RequestParam(value = "category", defaultValue = "") String category,
-			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
-			@RequestParam(defaultValue = "") String ch) {
+	public String products(
+	        @RequestParam(defaultValue = "0") Integer pageNo,
+	        @RequestParam(defaultValue = "") String category,
+	        @RequestParam(defaultValue = "0") Double minPrice,
+	        @RequestParam(defaultValue = "10000000") Double maxPrice,
+	        @RequestParam(defaultValue = "false") Boolean hasDiscount,
+	        @RequestParam(defaultValue = "") String keyword,
+	        @RequestParam(defaultValue = "") String sort,
+	        Model model) {
 
-		List<Category> categories = categoryService.getAllActiveCategory();
-		m.addAttribute("paramValue", category);
-		m.addAttribute("categories", categories);
+	    try {
+	        ProductFilterDTO filter = new ProductFilterDTO(
+	                category, minPrice, maxPrice, hasDiscount, sort, pageNo, keyword);
 
-//		List<Product> products = productService.getAllActiveProducts(category);
-//		m.addAttribute("products", products);
-		Page<Product> page = null;
-		if (StringUtils.isEmpty(ch)) {
-			page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
-		} else {
-			page = productService.searchActiveProductPagination(pageNo, pageSize, category, ch);
-		}
+	        Page<Product> page = filterService.applyFilter(filter);
+	        List<Category> categories = categoryRepository.findAll();
 
-		List<Product> products = page.getContent();
-		m.addAttribute("products", products);
-		m.addAttribute("productsSize", products.size());
+	        model.addAttribute("products", page.getContent());
+	        model.addAttribute("productsSize", page.getContent().size());
+	        model.addAttribute("totalElements", page.getTotalElements());
+	        model.addAttribute("totalPages", page.getTotalPages());
+	        model.addAttribute("pageNo", pageNo);
+	        model.addAttribute("categories", categories);
+	        model.addAttribute("isFirst", page.isFirst());
+	        model.addAttribute("isLast", page.isLast());
 
-		m.addAttribute("pageNo", page.getNumber());
-		m.addAttribute("pageSize", pageSize);
-		m.addAttribute("totalElements", page.getTotalElements());
-		m.addAttribute("totalPages", page.getTotalPages());
-		m.addAttribute("isFirst", page.isFirst());
-		m.addAttribute("isLast", page.isLast());
+	        model.addAttribute("category", category);
+	        model.addAttribute("minPrice", minPrice);
+	        model.addAttribute("maxPrice", maxPrice);
+	        model.addAttribute("hasDiscount", hasDiscount);
+	        model.addAttribute("keyword", keyword);
+	        model.addAttribute("sort", sort);
+	        model.addAttribute("minPriceRange", filterService.getMinPrice());
+	        model.addAttribute("maxPriceRange", filterService.getMaxPrice());
 
-		return "product";
+	        return "product"; 
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("error", "Có lỗi xảy ra khi tải sản phẩm");
+	        return "error";
+	    }
 	}
 
 	@GetMapping("/product/{id}")
-	public String product(@PathVariable int id, Model m) {
-		Product productById = productService.getProductById(id);
-		m.addAttribute("product", productById);
-		return "view_product";
+	public String viewProduct(@PathVariable Integer id, Model model) {
+	    try {
+	        Product product = productService.getProductById(id);
+	        if (product != null) {
+	            model.addAttribute("product", product);
+	            return "view_product"; 
+	        }
+	        model.addAttribute("error", "Không tìm thấy sản phẩm");
+	        return "error";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("error", "Có lỗi xảy ra");
+	        return "error";
+	    }
 	}
 
 	@PostMapping("/saveUser")
