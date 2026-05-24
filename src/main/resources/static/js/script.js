@@ -219,6 +219,105 @@ $(function(){
     });
 });
 
+    var $adminRegister = $("#adminRegister");
+
+    $adminRegister.validate({
+        rules: {
+            name: {
+                required: true,
+                lettersonly: true
+            },
+            email: {
+                required: true,
+                space: true,
+                email: true
+            },
+            mobileNumber: {
+                required: true,
+                space: true,
+                numericOnly: true,
+                minlength: 10,
+                maxlength: 12
+            },
+            password: {
+                required: true,
+                space: true
+            },
+            cpassword: {
+                required: true,
+                space: true,
+                equalTo: '#adminPass' 
+            },
+            address: {
+                required: true,
+                all: true
+            },
+            city: {
+                required: true,
+                space: true
+            },
+            state: {
+                required: true,
+                space: true
+            },
+            pincode: {
+                required: true,
+                space: true,
+                numericOnly: true
+            },
+            img: {
+                required: true
+            }
+        },
+        messages: {
+            name: {
+                required: 'Tên không được để trống',
+                lettersonly: 'Tên không hợp lệ'
+            },
+            email: {
+                required: 'Email không được để trống',
+                space: 'Không được chứa khoảng trắng',
+                email: 'Email không hợp lệ'
+            },
+            mobileNumber: {
+                required: 'Số điện thoại không được để trống',
+                space: 'Không được chứa khoảng trắng',
+                numericOnly: 'Số điện thoại không hợp lệ',
+                minlength: 'Tối thiểu 10 chữ số',
+                maxlength: 'Tối đa 12 chữ số'
+            },
+            password: {
+                required: 'Mật khẩu không được để trống',
+                space: 'Không được chứa khoảng trắng'
+            },
+            cpassword: {
+                required: 'Xác nhận mật khẩu không được để trống',
+                space: 'Không được chứa khoảng trắng',
+                equalTo: 'Mật khẩu không khớp'
+            },
+            address: {
+                required: 'Địa chỉ không được để trống',
+                all: 'Địa chỉ không hợp lệ'
+            },
+            city: {
+                required: 'Thành phố không được để trống',
+                space: 'Không được chứa khoảng trắng'
+            },
+            state: {
+                required: 'Tỉnh/Thành không được để trống',
+                space: 'Không được chứa khoảng trắng'
+            },
+            pincode: {
+                required: 'Mã bưu điện không được để trống',
+                space: 'Không được chứa khoảng trắng',
+                numericOnly: 'Mã bưu điện không hợp lệ'
+            },
+            img: {
+                required: 'Hình ảnh không được để trống'
+            }
+        }
+    });
+
 document.addEventListener("DOMContentLoaded", function() {
    
     var path = window.location.pathname;

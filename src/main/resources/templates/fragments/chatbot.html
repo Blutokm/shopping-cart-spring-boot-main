@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="chatbot">
+
+    <!-- Load CSS -->
+    <link rel="stylesheet" th:href="@{/css/chatbot.css}">
+
+    <!-- ── Floating Button ── -->
+    <button id="chat-fab" aria-label="Mở trợ lý mua sắm AI">
+        <!-- Icon được inject bởi chatbot.js -->
+    </button>
+
+    <!-- ── Chat Window ── -->
+    <div id="chat-window" role="dialog" aria-label="Trợ lý mua sắng AI Gemini">
+
+        <!-- Header -->
+        <div id="chat-header">
+            <div class="header-info">
+                <div class="avatar">🛍️</div>
+                <div>
+                    <div class="title">Trợ lý mua sắm AI</div>
+                    <div class="subtitle">
+                        <span class="online-dot"></span>
+                        Powered by Gemini
+                    </div>
+                </div>
+            </div>
+            <button id="chat-close-btn" aria-label="Đóng chat">✕</button>
+        </div>
+
+        <!-- Messages -->
+        <div id="chat-messages" role="log" aria-live="polite" aria-label="Cuộc hội thoại">
+
+            <!-- Tin nhắn chào mừng (tĩnh, hiển thị ngay) -->
+            <div class="msg-bot-wrapper">
+                <div class="msg-bot-avatar">✨</div>
+                <div>
+                    <div class="msg-bot">
+                        Xin chào! Tôi là trợ lý AI của cửa hàng, được hỗ trợ bởi <strong>Google Gemini</strong>. 🎉<br><br>
+                        Tôi có thể giúp bạn:
+                        <ul style="margin: 8px 0 0 16px; padding: 0; line-height: 1.8;">
+                            <li>🔍 Tìm kiếm &amp; tư vấn sản phẩm</li>
+                            <li>🛒 Hỗ trợ giỏ hàng &amp; đặt hàng</li>
+                            <li>📦 Kiểm tra đơn hàng</li>
+                            <li>❓ Giải đáp mọi thắc mắc</li>
+                        </ul>
+                    </div>
+                    <div class="msg-time">Bây giờ · Gemini</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Quick Replies -->
+        <div id="quick-replies">
+            <button class="quick-btn" data-text="Cửa hàng có những sản phẩm gì?">🏷️ Sản phẩm</button>
+            <button class="quick-btn" data-text="Chính sách đổi trả như thế nào?">🔄 Đổi trả</button>
+            <button class="quick-btn" data-text="Phí vận chuyển bao nhiêu?">🚚 Vận chuyển</button>
+            <button class="quick-btn" data-text="Cách thanh toán">💳 Thanh toán</button>
+        </div>
+
+        <!-- Input Area -->
+        <div id="chat-input-area">
+            <textarea
+                id="chat-input"
+                placeholder="Nhập câu hỏi của bạn..."
+                rows="1"
+                maxlength="2000"
+                aria-label="Nhập tin nhắn"></textarea>
+            <button id="send-btn" aria-label="Gửi tin nhắn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div id="chat-footer">
+            Trợ lý AI có thể mắc lỗi • <a href="#" onclick="return false;">Liên hệ hỗ trợ</a>
+        </div>
+
+    </div>
+
+    <!-- Load JS (cuối cùng) -->
+    <script th:src="@{/js/chatbot.js}"></script>
+
+</th:block>
+
+</body>
+</html>

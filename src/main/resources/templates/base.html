@@ -32,7 +32,7 @@
 				</button>
 
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					
+
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 						<th:block th:if="${user==null}">
 							<li class="nav-item"><a class="nav-link active"
@@ -51,10 +51,10 @@
 									class="fa-solid fa-house"></i> Trang chủ
 							</a></li>
 						</th:block>
-						
+
 						<li class="nav-item"><a class="nav-link active"
 							aria-current="page" href="/products">Sản phẩm</a></li>
-						
+
 						<li class="nav-item dropdown"><a
 							class="nav-link dropdown-toggle" href="#" role="button"
 							data-bs-toggle="dropdown" aria-expanded="false"> Danh mục </a>
@@ -65,7 +65,8 @@
 							</ul></li>
 					</ul>
 
-					<form class="d-flex mx-auto w-100 px-lg-3" action="/products" method="get" style="max-width: 500px;">
+					<form class="d-flex mx-auto w-100 px-lg-3" action="/products"
+						method="get" style="max-width: 500px;">
 						<div class="input-group">
 							<input type="search" class="form-control" name="ch"
 								placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
@@ -75,7 +76,8 @@
 						</div>
 					</form>
 
-					<ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center mt-3 mt-lg-0">
+					<ul
+						class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center mt-3 mt-lg-0">
 						<th:block th:if="${user==null}">
 							<li class="nav-item"><a class="nav-link active"
 								href="/signin"> <i class="fa-solid fa-user"></i> Đăng nhập
@@ -83,7 +85,7 @@
 							<li class="nav-item"><a class="nav-link active"
 								href="/register">Đăng ký</a></li>
 						</th:block>
-					
+
 						<th:block th:if="${user!=null}">
 							<th:block th:if="${user.role=='ROLE_USER'}">
 								<li class="nav-item position-relative"><a href="/user/cart"
@@ -92,7 +94,7 @@
 										class="cart-badge" th:text="${countCart}">0</span>
 								</a></li>
 							</th:block>
-					
+
 							<li class="nav-item dropdown"><a
 								class="nav-link dropdown-toggle active" href="#" role="button"
 								data-bs-toggle="dropdown" aria-expanded="false"> <i
@@ -135,12 +137,12 @@
 			<div class="row">
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Về ShopPKTH</h6>
-					<p class="small mb-1">CÔNG TY CỔ PHẦN ShopPKTH</p>
+					<p class="small mb-1">CÔNG TY CỔ PHẦN SHOPPKTH</p>
 					<p class="small mb-1">Mã số doanh nghiệp: 0102196094</p>
-					<p class="small mb-1">Người chịu trách nhiệm: Nguyễn Văn A</p>
+					<p class="small mb-1">Người chịu trách nhiệm: Phạm Gia Khiêm</p>
 					<p class="small mb-1">
-						<i class="fa-solid fa-location-dot me-2"></i>123 Tam Trinh, Hoàng
-						Mai, Hà Nội
+						<i class="fa-solid fa-location-dot me-2"></i>20 Hồ Tùng Mậu, Cầu
+						Giấy, Mai Dịch,Hà Nội
 					</p>
 					<p class="small mb-1">
 						<i class="fa-solid fa-phone me-2"></i>1800 888 838
@@ -157,9 +159,12 @@
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Hỗ trợ khách hàng</h6>
 					<ul class="list-unstyled small">
-						<li><a href="#" class="text-white text-decoration-none">Sản phẩm khuyến mãi</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Sản phẩm nổi bật</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Tất cả sản phẩm</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Sản
+								phẩm khuyến mãi</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Sản
+								phẩm nổi bật</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Tất
+								cả sản phẩm</a></li>
 					</ul>
 					<img src="/img/vnpost/vnpost.png" alt="Vietnam Post"
 						style="height: 40px;">
@@ -167,36 +172,48 @@
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Liên kết</h6>
 					<ul class="list-unstyled small">
-						<li><a href="#" class="text-white text-decoration-none">Sản phẩm mới</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Sản
+								phẩm mới</a></li>
 						<li><a href="#" class="text-white text-decoration-none">Nam</a></li>
 						<li><a href="#" class="text-white text-decoration-none">Nữ</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Phụ kiện</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Thương hiệu</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Phụ
+								kiện</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Thương
+								hiệu</a></li>
 						<li><a href="#" class="text-white text-decoration-none">SALE</a></li>
 					</ul>
 				</div>
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Chính sách</h6>
 					<ul class="list-unstyled small">
-						<li><a href="#" class="text-white text-decoration-none">Giới thiệu</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Hướng dẫn mua hàng</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính sách kiểm hàng</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính sách vận chuyển</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính sách thanh toán</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính sách bảo mật</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Chính sách đổi trả</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Liên hệ</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Giới
+								thiệu</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Hướng
+								dẫn mua hàng</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính
+								sách kiểm hàng</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính
+								sách vận chuyển</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính
+								sách thanh toán</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính
+								sách bảo mật</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Chính
+								sách đổi trả</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Liên
+								hệ</a></li>
 					</ul>
 				</div>
 			</div>
 			<hr class="bg-secondary">
 			<div class="text-center pb-3 small">
-				<p class="mb-0">
-					&copy; 2025 ShopPKTH
-				</p>
+				<p class="mb-0">&copy; 2025 ShopPKTH</p>
 			</div>
 		</div>
 	</footer>
+	<!-- Gemini Chatbot Widget -->
+	<div th:replace="~{fragments/chatbot :: chatbot}"></div>
+
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script
