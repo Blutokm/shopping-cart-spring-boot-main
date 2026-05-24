@@ -1,8 +1,8 @@
-package com.ecommerce.shoppingcart.service;
+package com.ecom.service;
 
-import com.ecommerce.shoppingcart.dto.ChatMessageDTO;
-import com.ecommerce.shoppingcart.dto.ChatRequestDTO;
-import com.ecommerce.shoppingcart.dto.ChatResponseDTO;
+import com.ecom.dto.ChatMessageDTO;
+import com.ecom.dto.ChatRequestDTO;
+import com.ecom.dto.ChatResponseDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -18,12 +18,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 
-/**
- * FILE: src/main/java/com/ecommerce/shoppingcart/service/GeminiService.java
- *
- * Service chính: xây dựng prompt, gọi Google Gemini REST API,
- * và parse kết quả trả về.
- */
 @Service
 public class GeminiService {
 
@@ -49,25 +43,19 @@ public class GeminiService {
     private String storeAddress;
 
     @Autowired
-    private ChatContextService chatContextService; // Lấy dữ liệu sản phẩm từ DB
+    private ChatContextService chatContextService; 
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(15))
             .build();
 
-    /**
-     * Gửi cuộc hội thoại lên Gemini và nhận phản hồi.
-     */
     public ChatResponseDTO chat(ChatRequestDTO request) {
         try {
-            // 1. Xây dựng system instruction (context cửa hàng + sản phẩm)
             String systemInstruction = buildSystemInstruction(request);
 
-            // 2. Xây dựng JSON body theo định dạng Gemini API
             String requestBody = buildGeminiRequestBody(systemInstruction, request.getMessages());
 
-            // 3. Gọi Gemini REST API
             String fullUrl = apiUrl + "?key=" + apiKey;
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(fullUrl))
@@ -79,7 +67,6 @@ public class GeminiService {
             HttpResponse<String> response = httpClient.send(
                     httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            // 4. Parse kết quả
             if (response.statusCode() == 200) {
                 String replyText = parseGeminiResponse(response.body());
                 return ChatResponseDTO.ok(replyText);
@@ -94,13 +81,6 @@ public class GeminiService {
         }
     }
 
-    // -----------------------------------------------------------------------
-    // PRIVATE HELPERS
-    // -----------------------------------------------------------------------
-
-    /**
-     * Xây dựng system instruction với dữ liệu thực từ cửa hàng.
-     */
     private String buildSystemInstruction(ChatRequestDTO request) {
         StringBuilder sb = new StringBuilder();
 

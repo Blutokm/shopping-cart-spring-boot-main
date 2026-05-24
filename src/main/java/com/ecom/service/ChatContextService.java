@@ -1,41 +1,38 @@
 package com.ecom.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ecom.model.Product;
 import com.ecom.repository.ProductRepository;
-
-import java.util.List;
 
 @Service
 public class ChatContextService {
-	
+
     @Autowired
-    private ProductRepository productRepository; 
+    private ProductRepository productRepository;
 
-    public String getProductList() {
+    public String getProductListText() {
+        StringBuilder sb = new StringBuilder();
         try {
-            List<?> products = productRepository.findAll();
-            if (products.isEmpty()) return "";
-
-            StringBuilder sb = new StringBuilder();
-            for (Object obj : products) {
+            List<Product> products = productRepository.findByIsActiveTrue(); 
+            
+            if (products.isEmpty()) {
+                return "Hiện tại cửa hàng chưa có sản phẩm nào.";
             }
-            return sb.toString();
+
+            for (Product p : products) {
+                sb.append("- ").append(p.getTitle())
+                  .append(" | Giá: ").append(String.format("%,.0f", p.getDiscountPrice()))
+                  .append(" VND\n");
+            }
         } catch (Exception e) {
-            System.err.println("[ChatContextService] Cannot load products: " + e.getMessage());
+            System.err.println("Lỗi khi lấy dữ liệu cho Chatbot: " + e.getMessage());
             return "";
         }
+        
+        return sb.toString();
     }
-
-    public String getProductDetail(Long productId) {
-        try {
-            return productRepository.findById(productId).map(p -> {
-                return "";
-            }).orElse("");
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
 }
