@@ -35,4 +35,32 @@ public class ChatContextService {
         
         return sb.toString();
     }
+    
+    public String getProductDetailText(Long productId) { 
+        try {
+            if (productId == null) {
+                return null;
+            }
+            
+            Product product = productRepository.findById(productId.intValue()).orElse(null);
+            
+            if (product == null) {
+                return null;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("- Tên: ").append(product.getTitle()).append("\n");
+            sb.append("- Giá gốc: ").append(String.format("%,.0f", product.getPrice())).append(" VND\n");
+            sb.append("- Giá khuyến mãi: ").append(String.format("%,.0f", product.getDiscountPrice())).append(" VND\n");
+            
+            if (product.getDescription() != null && !product.getDescription().isBlank()) {
+                sb.append("- Mô tả: ").append(product.getDescription()).append("\n");
+            }
+            
+            return sb.toString();
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy chi tiết sản phẩm cho Chatbot: " + e.getMessage());
+            return null;
+        }
+    }
 }

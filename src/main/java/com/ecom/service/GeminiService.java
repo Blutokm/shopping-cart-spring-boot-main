@@ -127,20 +127,7 @@ public class GeminiService {
         return sb.toString();
     }
 
-    /**
-     * Xây dựng JSON body theo đúng định dạng Gemini API v1beta.
-     *
-     * Cấu trúc:
-     * {
-     *   "system_instruction": { "parts": [{ "text": "..." }] },
-     *   "contents": [
-     *     { "role": "user", "parts": [{ "text": "..." }] },
-     *     { "role": "model", "parts": [{ "text": "..." }] },
-     *     ...
-     *   ],
-     *   "generationConfig": { "maxOutputTokens": 1024, "temperature": 0.7 }
-     * }
-     */
+ 
     private String buildGeminiRequestBody(String systemInstruction, List<ChatMessageDTO> messages) throws Exception {
         ObjectNode root = mapper.createObjectNode();
 
