@@ -53,6 +53,12 @@ public class GeminiService {
 		int retryDelay = 1000;
 		for (int attempt = 0; attempt < maxRetries; attempt++) {
 			try {
+				// Validate API Key is configured
+				if (apiKey == null || apiKey.isBlank() || apiKey.equals("${gemini.api.key}")) {
+					System.err.println("[GeminiService] ERROR: Gemini API Key is not configured!");
+					return ChatResponseDTO.error("API Key chưa được cấu hình. Vui lòng liên hệ quản trị viên.");
+				}
+
 				String systemInstruction = buildSystemInstruction(request);
 				String requestBody = buildGeminiRequestBody(systemInstruction, request.getMessages());
 
@@ -80,11 +86,17 @@ public class GeminiService {
 				} else if (response.statusCode() == 429) {
 				    System.err.println("[GeminiService] Rate Limited (attempt " + (attempt + 1) + "/" + maxRetries + ")");
 				    if (attempt < maxRetries - 1) {
-				        Thread.sleep(3000 * (attempt + 1)); 
+				        // FIX: Increase delay for rate limiting (exponential backoff: 5s, 10s, 15s)
+				        long delayMs = 5000L * (attempt + 1);
+				        System.err.println("[GeminiService] Waiting " + delayMs + "ms before retry...");
+				        Thread.sleep(delayMs);
 				        continue;
 				    } else {
 				        return ChatResponseDTO.error("Hệ thống đang quá tải. Vui lòng chờ 10 giây rồi gửi lại tin nhắn.");
 				    }
+				} else if (response.statusCode() == 401 || response.statusCode() == 403) {
+					System.err.println("[GeminiService] Authentication Error " + response.statusCode() + ": " + response.body());
+					return ChatResponseDTO.error("API Key không hợp lệ. Vui lòng kiểm tra cấu hình.");
 				} else {
 					System.err.println("[GeminiService] API Error " + response.statusCode() + ": " + response.body());
 					return ChatResponseDTO.error("Không thể kết nối AI lúc này. Vui lòng thử lại sau.");

@@ -1,16 +1,13 @@
 (function () {
     'use strict';
 
-    // ── State ──────────────────────────────────────────────────────────────
-    let conversationHistory = []; // Lưu lịch sử hội thoại trong phiên
+    let conversationHistory = [];
     let isLoading = false;
     let isOpen = false;
     let messageCount = 0;
 
-    // ── DOM References ─────────────────────────────────────────────────────
     let fab, chatWindow, messagesContainer, inputEl, sendBtn, quickRepliesEl;
 
-    // ── Init ───────────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', function () {
         fab            = document.getElementById('chat-fab');
         chatWindow     = document.getElementById('chat-window');
@@ -120,11 +117,18 @@
             const data = await response.json();
             typingEl.remove();
 
+            // FIX: Properly handle both success and error responses
             if (data.success && data.reply) {
                 appendBotMessage(data.reply);
                 conversationHistory.push({ role: 'model', content: data.reply });
+            } else if (data.error) {
+                // Display error message from backend
+                appendBotMessage(data.error);
+                console.warn('[Chatbot] Server error:', data.error);
             } else {
-                appendBotMessage(data.error || 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại.');
+                // Fallback error message
+                appendBotMessage('Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại.');
+                console.warn('[Chatbot] Unknown error response:', data);
             }
 
         } catch (err) {
@@ -138,7 +142,6 @@
         }
     }
 
-    // ── DOM Helpers ────────────────────────────────────────────────────────
     function appendUserMessage(text) {
         const wrapper = document.createElement('div');
         wrapper.innerHTML =
@@ -151,7 +154,6 @@
     }
 
     function appendBotMessage(text) {
-        // Render markdown đơn giản (bold, list)
         const formattedText = simpleMarkdown(text);
 
         const wrapper = document.createElement('div');
@@ -210,13 +212,7 @@
         if (badge) badge.remove();
     }
 
-    // ── Utilities ──────────────────────────────────────────────────────────
 
-    /**
-     * Đọc context trang từ data attribute (được set bởi Thymeleaf).
-     * Thêm vào trang sản phẩm:
-     *   <div id="chat-page-ctx" data-context="product" data-id="42" style="display:none"></div>
-     */
     function getPageContext() {
         const el = document.getElementById('chat-page-ctx');
         if (el) {
@@ -238,10 +234,6 @@
         return div.innerHTML;
     }
 
-    /**
-     * Chuyển đổi markdown đơn giản sang HTML.
-     * Hỗ trợ: **bold**, *italic*, - list items, xuống dòng
-     */
     function simpleMarkdown(text) {
         return escapeHtml(text)
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -251,7 +243,6 @@
             .replace(/\n/g, '<br>');
     }
 
-    // ── Icons SVG ──────────────────────────────────────────────────────────
     function getChatIcon() {
         return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
                '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' +
@@ -264,10 +255,9 @@
                '</svg>';
     }
 
-    // Khởi động icon ban đầu
     document.addEventListener('DOMContentLoaded', function () {
         const f = document.getElementById('chat-fab');
         if (f) f.innerHTML = getChatIcon();
     });
 
-})(); // IIFE - tránh ô nhiễm global scope
+})();
