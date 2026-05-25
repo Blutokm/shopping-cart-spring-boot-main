@@ -171,16 +171,19 @@ public class UserController {
 			} else {
 				return "redirect:" + paymentUrl;
 			}
-		}
+		} else {
+            cartService.clearCartByUser(user.getId());
+            model.addAttribute("countCart", 0);
+        }
 
 		return "user/success";
-
 	}
 
 	@GetMapping("/success")
 	public String loadSuccess(Principal p, Model model) {
 		UserDtls user = getLoggedInUserDetails(p);
 		List<Cart> carts = cartService.getCartsByUser(user.getId());
+		
 		double total = 0;
 		if (!carts.isEmpty()) {
 			total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
@@ -188,12 +191,15 @@ public class UserController {
 
 		model.addAttribute("orderId", "HD" + System.currentTimeMillis());
 		model.addAttribute("user", user);
-		model.addAttribute("paymentType", "Thanh toán khi nhận hàng");
+		model.addAttribute("paymentType", "Thanh toán VNPay / Khi nhận hàng");
 		model.addAttribute("totalOrderPrice", total);
 		model.addAttribute("carts", carts);
 
-		return "user/success";
+		cartService.clearCartByUser(user.getId());
+		
+		model.addAttribute("countCart", 0); 
 
+		return "user/success";
 	}
 
 	@GetMapping("/update-status")

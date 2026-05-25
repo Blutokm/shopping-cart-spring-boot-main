@@ -8,11 +8,9 @@
 <body>
 <section>
     <div class="container">
-     	<!-- Tiêu đề trang -->
-        <h2 class="text-center fw-bold text-uppercase mb-4">Quản lý danh mục</h2>
+        <p class="text-center fs-3 mt-2">Quản lý danh mục</p>
 
         <div class="row">
-            <!-- Form thêm danh mục -->
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-header text-center bg-light">
@@ -20,7 +18,6 @@
                     </div>
 
                     <div class="card-body">
-                        <!-- Thông báo -->
                         <div class="text-center mb-3">
                             <th:block th:if="${session.succMsg}">
                                 <p class="text-success fw-bold">[[${session.succMsg}]]</p>

@@ -98,8 +98,7 @@ public class AdminController {
 
 	@GetMapping("/category")
 	public String category(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-		// m.addAttribute("categorys", categoryService.getAllCategory());
+			@RequestParam(name = "pageSize", defaultValue = "4") Integer pageSize) {
 		Page<Category> page = categoryService.getAllCategorPagination(pageNo, pageSize);
 		List<Category> categorys = page.getContent();
 		m.addAttribute("categorys", categorys);
@@ -317,10 +316,10 @@ public class AdminController {
 
 	@PostMapping("/updateProduct")
 	public String updateProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
-	        @RequestParam(value = "extraImageFiles", required = false) MultipartFile[] extraImages,
-	        @RequestParam(value = "colors", required = false) List<String> colors,
-	        @RequestParam(value = "sizes", required = false) List<String> sizes,
-	        @RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session, Model m) {
+			@RequestParam(value = "extraImageFiles", required = false) MultipartFile[] extraImages,
+			@RequestParam(value = "colors", required = false) List<String> colors,
+			@RequestParam(value = "sizes", required = false) List<String> sizes,
+			@RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session, Model m) {
 
 		if (product.getDiscount() < 0 || product.getDiscount() > 100) {
 			session.setAttribute("errorMsg", "invalid Discount");

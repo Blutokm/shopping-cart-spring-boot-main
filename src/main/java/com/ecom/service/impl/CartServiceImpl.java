@@ -32,6 +32,11 @@ public class CartServiceImpl implements CartService {
 	private com.ecom.repository.ProductVariantRepository variantRepository;
 
 	@Override
+	public void clearCartByUser(Integer userId) {
+	    cartRepository.deleteByUserId(userId);
+	}
+
+	@Override
 	public Cart saveCart(Integer productId, Integer userId, Integer variantId) {
 
 		UserDtls userDtls = userRepository.findById(userId).get();
