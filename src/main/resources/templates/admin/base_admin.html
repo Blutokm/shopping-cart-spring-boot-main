@@ -121,16 +121,6 @@ body {
 						<!-- Sản phẩm -->
 						<li class="nav-item"><a class="nav-link" aria-current="page"
 							href="/products">Sản phẩm</a></li>
-
-						<!-- Danh mục động -->
-						<li class="nav-item dropdown"><a
-							class="nav-link dropdown-toggle" href="#" role="button"
-							data-bs-toggle="dropdown" aria-expanded="false"> Danh mục </a>
-							<ul class="dropdown-menu">
-								<li th:each="c:${categorys}"><a class="dropdown-item"
-									th:href="@{'/products?category='+${c.name}}"> [[${c.name}]]
-								</a></li>
-							</ul></li>
 					</ul>
 					<ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
 						<th:block th:if="${user!=null}">
@@ -142,7 +132,7 @@ body {
 								</a></li>
 							</th:block>
 							<li class="nav-item dropdown"><a
-								class="nav-link dropdown-toggle active" href="#" role="button"
+								class="nav-link dropdown-toggle" href="#" role="button"
 								data-bs-toggle="dropdown" aria-expanded="false"> <i
 									class="fa-solid fa-user"></i> [[${user.name}]]
 							</a>

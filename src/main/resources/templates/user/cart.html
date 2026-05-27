@@ -42,6 +42,7 @@
 										<th>Giá</th>
 										<th>Số lượng</th>
 										<th>Thành tiền</th>
+										<th>Thao tác</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -51,7 +52,22 @@
 											th:src="@{'/img/product_img/' + ${cart.product.image}}"
 											alt="Sản phẩm" class="rounded" width="75" height="75"
 											style="object-fit: cover;"></td>
-										<td class="fw-semibold text-start">[[${cart.product.title}]]</td>
+										<td class="text-start" style="max-width: 250px;">
+											<div class="fw-semibold mb-1">[[${cart.product.title}]]</div>
+
+											<a class="text-decoration-none text-primary fw-bold"
+											data-bs-toggle="collapse" th:href="'#desc-' + ${cart.id}"
+											role="button" aria-expanded="false" style="font-size: 13px;">
+												<i class="fa-solid fa-circle-chevron-down"></i> Xem mô tả
+											</a>
+
+											<div class="collapse mt-2" th:id="'desc-' + ${cart.id}">
+												<div class="card card-body p-2 text-muted shadow-sm"
+													style="font-size: 12px; text-align: justify; max-height: 120px; overflow-y: auto;">
+													<span th:utext="${cart.product.description}"></span>
+												</div>
+											</div>
+										</td>
 
 										<td class="text-center align-middle"><span
 											class="badge bg-info text-dark">Màu: [[${cart.color}]]</span><br>
@@ -69,6 +85,15 @@
 												class="fa-solid fa-plus"></i>
 										</a></td>
 										<td class="fw-bold">[[${@commnServiceImpl.formatCurrency(cart.totalPrice)}]]</td>
+										
+										<td>
+											<a th:href="@{'/user/deleteCartItem?cid=' + ${cart.id}}" 
+											   class="text-danger fs-5" 
+											   title="Xóa sản phẩm"
+											   onclick="return confirm('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?');">
+												<i class="fa-solid fa-trash"></i>
+											</a>
+										</td>
 									</tr>
 
 									<tr class="table-light">
@@ -76,19 +101,26 @@
 										<td class="fw-bold">Tổng cộng</td>
 										<td class="fw-bold text-danger fs-5"
 											th:text="${@commnServiceImpl.formatCurrency(totalOrderPrice)}"></td>
+										<td></td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
 
-						<div
-							class="d-flex justify-content-between align-items-center mt-4">
-							<a href="/" class="btn btn-outline-dark"> ← Tiếp tục mua sắm
-							</a> <a href="/user/orders" class="btn btn-dark px-4"> Thanh toán
-								→ </a>
+						<div class="d-flex justify-content-between align-items-center mt-4">
+							<a href="/" class="btn btn-outline-dark"> ← Tiếp tục mua sắm</a>
+							
+							<div class="d-flex gap-2">
+								<a href="/user/clearCart" 
+								   class="btn btn-outline-danger" 
+								   onclick="return confirm('Bạn có chắc chắn muốn xóa TẤT CẢ sản phẩm trong giỏ hàng?');">
+									<i class="fa-solid fa-trash-can"></i> Xóa tất cả
+								</a>
+								<a href="/user/orders" class="btn btn-dark px-4"> Thanh toán → </a>
+							</div>
 						</div>
-						
-						<div id="chat-page-ctx" data-context="cart" style="display:none"></div>
+
+						<div id="chat-page-ctx" data-context="cart" style="display: none"></div>
 					</div>
 				</div>
 			</div>

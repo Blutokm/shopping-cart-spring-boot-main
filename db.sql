@@ -105,10 +105,6 @@ create table product_image
     foreign key (product_id) references Product(id) on delete cascade
 );
 
--- ========================================================
--- DỮ LIỆU TÀI KHOẢN ADMIN MẶC ĐỊNH
--- Email: admin@gmail.com
--- Mật khẩu: 123 (Đã được mã hóa BCrypt)
--- ========================================================
+
 INSERT INTO User_Dtls (name, mobileNumber, address, email, city, state, pincode, password, profileImage, role, isEnable, accountNonLocked, failedAttempt) 
 VALUES ('Administrator', '0988888888', 'Hà Nội', 'admin@gmail.com', 'Hà Nội', 'Hà Nội', '100000', '$2a$10$123456789012345678901uiaLpJxTpf6VbfI5NADlsRsfvEm6aq9C', 'default.jpg', 'ROLE_ADMIN', 1, 1, 0);

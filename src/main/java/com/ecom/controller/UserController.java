@@ -70,6 +70,19 @@ public class UserController {
 			m.addAttribute("user", userDtls);
 			Integer countCart = cartService.getCountCart(userDtls.getId());
 			m.addAttribute("countCart", countCart);
+
+			boolean hasPending = false;
+			List<ProductOrder> orders = orderService.getOrdersByUser(userDtls.getId());
+			for (ProductOrder order : orders) {
+				if (order.getStatus() == null || order.getStatus().equalsIgnoreCase("Pending")
+						|| order.getStatus().equalsIgnoreCase("Chờ xác nhận")
+						|| order.getStatus().equalsIgnoreCase("Đang xử lý")) {
+					hasPending = true;
+					break;
+				}
+			}
+			m.addAttribute("hasPendingOrders", hasPending);
+			// ----------------------------------------------
 		}
 
 		List<Category> allActiveCategory = categoryService.getAllActiveCategory();
@@ -106,6 +119,27 @@ public class UserController {
 	@GetMapping("/cartQuantityUpdate")
 	public String updateCartQuantity(@RequestParam String sy, @RequestParam Integer cid) {
 		cartService.updateQuantity(sy, cid);
+		return "redirect:/user/cart";
+	}
+
+	@GetMapping("/deleteCartItem") 
+	public String deleteCartItem(@RequestParam Integer cid, HttpSession session) {
+		cartService.deleteCartItem(cid);
+
+		session.setAttribute("succMsg", "Đã xóa sản phẩm khỏi giỏ hàng!");
+		return "redirect:/user/cart";
+	}
+
+	@GetMapping("/clearCart")
+	public String clearCart(Principal p, HttpSession session) {
+		if (p != null) {
+			String email = p.getName();
+			UserDtls user = userService.getUserByEmail(email);
+
+			cartService.clearCartByUser(user.getId());
+
+			session.setAttribute("succMsg", "Đã dọn sạch giỏ hàng!");
+		}
 		return "redirect:/user/cart";
 	}
 
@@ -172,9 +206,9 @@ public class UserController {
 				return "redirect:" + paymentUrl;
 			}
 		} else {
-            cartService.clearCartByUser(user.getId());
-            model.addAttribute("countCart", 0);
-        }
+			cartService.clearCartByUser(user.getId());
+			model.addAttribute("countCart", 0);
+		}
 
 		return "user/success";
 	}
@@ -183,7 +217,7 @@ public class UserController {
 	public String loadSuccess(Principal p, Model model) {
 		UserDtls user = getLoggedInUserDetails(p);
 		List<Cart> carts = cartService.getCartsByUser(user.getId());
-		
+
 		double total = 0;
 		if (!carts.isEmpty()) {
 			total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
@@ -196,8 +230,8 @@ public class UserController {
 		model.addAttribute("carts", carts);
 
 		cartService.clearCartByUser(user.getId());
-		
-		model.addAttribute("countCart", 0); 
+
+		model.addAttribute("countCart", 0);
 
 		return "user/success";
 	}
@@ -295,7 +329,7 @@ public class UserController {
 
 	@GetMapping("/order")
 	public String orderPage(@RequestParam(value = "error", required = false) String error, Model model, Principal p) {
-				UserDtls user = getLoggedInUserDetails(p);
+		UserDtls user = getLoggedInUserDetails(p);
 		List<Cart> carts = cartService.getCartsByUser(user.getId());
 		model.addAttribute("carts", carts);
 		if (!carts.isEmpty()) {

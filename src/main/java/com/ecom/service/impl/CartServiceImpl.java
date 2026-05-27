@@ -30,6 +30,11 @@ public class CartServiceImpl implements CartService {
 
 	@Autowired
 	private com.ecom.repository.ProductVariantRepository variantRepository;
+	
+	@Override
+	public void deleteCartItem(Integer cid) {
+	    cartRepository.deleteById(cid);
+	}
 
 	@Override
 	public void clearCartByUser(Integer userId) {

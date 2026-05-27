@@ -151,7 +151,7 @@ body { padding-top: 55px; }
     width: 100%;
     height: auto; 
     max-height: 500px;
-    object-fit: contain !important; 
+    object-fit: cover !important; 
     object-position: center center !important; 
 }
 
@@ -195,4 +195,34 @@ body { padding-top: 55px; }
 }
 .category-card:hover .category-text {
     color: var(--primary-color);
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: #495057;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.category-item:hover {
+    background-color: #fff0e6;
+    color: var(--primary-color);
+    transform: translateX(4px);
+}
+
+.category-item.active {
+    background-color: #ffe6d9;
+    color: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+    font-weight: bold;
+}
+
+.category-item i.icon-left {
+    width: 20px;
+    text-align: center;
 }

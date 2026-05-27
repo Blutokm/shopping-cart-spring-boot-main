@@ -27,16 +27,17 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ecom.dto.ProductFilterDTO;
 import com.ecom.model.Category;
 import com.ecom.model.Product;
+import com.ecom.model.ProductOrder;
 import com.ecom.model.UserDtls;
 import com.ecom.repository.CategoryRepository;
 import com.ecom.service.CartService;
 import com.ecom.service.CategoryService;
+import com.ecom.service.OrderService;
 import com.ecom.service.ProductFilterService;
 import com.ecom.service.ProductService;
 import com.ecom.service.UserService;
 import com.ecom.util.CommonUtil;
 
-import io.micrometer.common.util.StringUtils;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -63,6 +64,9 @@ public class HomeController {
 	private CartService cartService;
 	
 	@Autowired
+	private OrderService orderService;
+
+	@Autowired
 	private ProductFilterService filterService;
 
 	@Autowired
@@ -76,6 +80,17 @@ public class HomeController {
 			m.addAttribute("user", userDtls);
 			Integer countCart = cartService.getCountCart(userDtls.getId());
 			m.addAttribute("countCart", countCart);
+			boolean hasPending = false;
+			List<ProductOrder> orders = orderService.getOrdersByUser(userDtls.getId());
+			for (ProductOrder order : orders) {
+				if (order.getStatus() == null || order.getStatus().equalsIgnoreCase("Pending")
+						|| order.getStatus().equalsIgnoreCase("Chờ xác nhận")
+						|| order.getStatus().equalsIgnoreCase("Đang xử lý")) {
+					hasPending = true;
+					break;
+				}
+			}
+			m.addAttribute("hasPendingOrders", hasPending);
 		}
 
 		List<Category> allActiveCategory = categoryService.getAllActiveCategory();
@@ -84,21 +99,21 @@ public class HomeController {
 
 	@GetMapping("/")
 	public String index(Model m) {
-	    List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
-	            .sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
+		List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
+				.sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
 
-	    List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
-	            .sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
+		List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
+				.sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
 
-	    List<Product> discountProducts = productService.getAllActiveProducts("").stream()
-	            .filter(p -> p.getDiscount() > 0) 
-	            .sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
+		List<Product> discountProducts = productService.getAllActiveProducts("").stream()
+				.filter(p -> p.getDiscount() > 0).sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8)
+				.toList();
 
-	    m.addAttribute("category", allActiveCategory);
-	    m.addAttribute("products", allActiveProducts);
-	    m.addAttribute("discountProducts", discountProducts); 
+		m.addAttribute("category", allActiveCategory);
+		m.addAttribute("products", allActiveProducts);
+		m.addAttribute("discountProducts", discountProducts);
 
-	    return "index";
+		return "index";
 	}
 
 	@GetMapping("/signin")
@@ -112,65 +127,61 @@ public class HomeController {
 	}
 
 	@GetMapping("/products")
-	public String products(
-	        @RequestParam(defaultValue = "0") Integer pageNo,
-	        @RequestParam(defaultValue = "") String category,
-	        @RequestParam(defaultValue = "0") Double minPrice,
-	        @RequestParam(defaultValue = "10000000") Double maxPrice,
-	        @RequestParam(defaultValue = "false") Boolean hasDiscount,
-	        @RequestParam(defaultValue = "") String keyword,
-	        @RequestParam(defaultValue = "") String sort,
-	        Model model) {
+	public String products(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "") String category, @RequestParam(defaultValue = "0") Double minPrice,
+			@RequestParam(defaultValue = "10000000") Double maxPrice,
+			@RequestParam(defaultValue = "false") Boolean hasDiscount, @RequestParam(defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "") String sort, Model model) {
 
-	    try {
-	        ProductFilterDTO filter = new ProductFilterDTO(
-	                category, minPrice, maxPrice, hasDiscount, sort, pageNo, keyword);
+		try {
+			ProductFilterDTO filter = new ProductFilterDTO(category, minPrice, maxPrice, hasDiscount, sort, pageNo,
+					keyword);
 
-	        Page<Product> page = filterService.applyFilter(filter);
-	        List<Category> categories = categoryRepository.findAll();
+			Page<Product> page = filterService.applyFilter(filter);
+			List<Category> categories = categoryRepository.findAll();
 
-	        model.addAttribute("products", page.getContent());
-	        model.addAttribute("productsSize", page.getContent().size());
-	        model.addAttribute("totalElements", page.getTotalElements());
-	        model.addAttribute("totalPages", page.getTotalPages());
-	        model.addAttribute("pageNo", pageNo);
-	        model.addAttribute("categories", categories);
-	        model.addAttribute("isFirst", page.isFirst());
-	        model.addAttribute("isLast", page.isLast());
+			model.addAttribute("products", page.getContent());
+			model.addAttribute("productsSize", page.getContent().size());
+			model.addAttribute("totalElements", page.getTotalElements());
+			model.addAttribute("totalPages", page.getTotalPages());
+			model.addAttribute("pageNo", pageNo);
+			model.addAttribute("categories", categories);
+			model.addAttribute("isFirst", page.isFirst());
+			model.addAttribute("isLast", page.isLast());
 
-	        model.addAttribute("category", category);
-	        model.addAttribute("minPrice", minPrice);
-	        model.addAttribute("maxPrice", maxPrice);
-	        model.addAttribute("hasDiscount", hasDiscount);
-	        model.addAttribute("keyword", keyword);
-	        model.addAttribute("sort", sort);
-	        model.addAttribute("minPriceRange", filterService.getMinPrice());
-	        model.addAttribute("maxPriceRange", filterService.getMaxPrice());
+			model.addAttribute("category", category);
+			model.addAttribute("minPrice", minPrice);
+			model.addAttribute("maxPrice", maxPrice);
+			model.addAttribute("hasDiscount", hasDiscount);
+			model.addAttribute("keyword", keyword);
+			model.addAttribute("sort", sort);
+			model.addAttribute("minPriceRange", filterService.getMinPrice());
+			model.addAttribute("maxPriceRange", filterService.getMaxPrice());
 
-	        return "product"; 
+			return "product";
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        model.addAttribute("error", "Có lỗi xảy ra khi tải sản phẩm");
-	        return "error";
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("error", "Có lỗi xảy ra khi tải sản phẩm");
+			return "error";
+		}
 	}
 
 	@GetMapping("/product/{id}")
 	public String viewProduct(@PathVariable Integer id, Model model) {
-	    try {
-	        Product product = productService.getProductById(id);
-	        if (product != null) {
-	            model.addAttribute("product", product);
-	            return "view_product"; 
-	        }
-	        model.addAttribute("error", "Không tìm thấy sản phẩm");
-	        return "error";
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        model.addAttribute("error", "Có lỗi xảy ra");
-	        return "error";
-	    }
+		try {
+			Product product = productService.getProductById(id);
+			if (product != null) {
+				model.addAttribute("product", product);
+				return "view_product";
+			}
+			model.addAttribute("error", "Không tìm thấy sản phẩm");
+			return "error";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("error", "Có lỗi xảy ra");
+			return "error";
+		}
 	}
 
 	@PostMapping("/saveUser")
@@ -225,7 +236,6 @@ public class HomeController {
 			String resetToken = UUID.randomUUID().toString();
 			userService.updateUserResetToken(email, resetToken);
 
-
 			String url = CommonUtil.generateUrl(request) + "/reset-password?token=" + resetToken;
 
 			Boolean sendMail = commonUtil.sendMail(url, email);
@@ -243,34 +253,33 @@ public class HomeController {
 	@GetMapping("/reset-password")
 	public String showResetPassword(@RequestParam String token, HttpSession session, Model m) {
 
-	    UserDtls userByToken = userService.getUserByToken(token);
+		UserDtls userByToken = userService.getUserByToken(token);
 
-	    if (userByToken == null) {
-	        m.addAttribute("msg", "Liên kết không hợp lệ hoặc đã hết hạn!");
-	        return "message";
-	    }
-	    m.addAttribute("token", token);
-	    return "reset_password";
+		if (userByToken == null) {
+			m.addAttribute("msg", "Liên kết không hợp lệ hoặc đã hết hạn!");
+			return "message";
+		}
+		m.addAttribute("token", token);
+		return "reset_password";
 	}
 
 	@PostMapping("/reset-password")
-	public String resetPassword(@RequestParam String token, @RequestParam String password, 
-	                            HttpSession session, Model m) {
+	public String resetPassword(@RequestParam String token, @RequestParam String password, HttpSession session,
+			Model m) {
 
-	    UserDtls userByToken = userService.getUserByToken(token);
-	    if (userByToken == null) {
-	        m.addAttribute("errorMsg", "Liên kết không hợp lệ hoặc đã hết hạn!");
-	        return "message";
-	    } else {
-	        userByToken.setPassword(passwordEncoder.encode(password));
-	        userByToken.setResetToken(null);
-	        userService.updateUser(userByToken);
+		UserDtls userByToken = userService.getUserByToken(token);
+		if (userByToken == null) {
+			m.addAttribute("errorMsg", "Liên kết không hợp lệ hoặc đã hết hạn!");
+			return "message";
+		} else {
+			userByToken.setPassword(passwordEncoder.encode(password));
+			userByToken.setResetToken(null);
+			userService.updateUser(userByToken);
 
-	        m.addAttribute("msg", "Đổi mật khẩu thành công!");
-	        return "message";
-	    }
+			m.addAttribute("msg", "Đổi mật khẩu thành công!");
+			return "message";
+		}
 	}
-
 
 	@GetMapping("/search")
 	public String searchProduct(@RequestParam String ch, Model m) {

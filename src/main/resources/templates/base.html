@@ -55,21 +55,12 @@
 
 						<li class="nav-item"><a class="nav-link active"
 							aria-current="page" href="/products">Sản phẩm</a></li>
-
-						<li class="nav-item dropdown"><a
-							class="nav-link dropdown-toggle" href="#" role="button"
-							data-bs-toggle="dropdown" aria-expanded="false"> Danh mục </a>
-							<ul class="dropdown-menu">
-								<li th:each="c:${categorys}"><a class="dropdown-item"
-									th:href="@{'/products?category='+${c.name}}"> [[${c.name}]]
-								</a></li>
-							</ul></li>
 					</ul>
 
 					<form class="d-flex mx-auto w-100 px-lg-3" action="/products"
 						method="get" style="max-width: 500px;">
 						<div class="input-group">
-							<input type="search" class="form-control" name="ch"
+							<input type="search" class="form-control" name="keyword"
 								placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
 							<button class="btn btn-dark" type="submit">
 								<i class="fa-solid fa-magnifying-glass"></i>
@@ -89,15 +80,25 @@
 
 						<th:block th:if="${user!=null}">
 							<th:block th:if="${user.role=='ROLE_USER'}">
-								<li class="nav-item position-relative"><a href="/user/cart"
-									class="nav-link position-relative"> <i
-										class="fa-solid fa-cart-shopping"></i> <span
+
+								<li class="nav-item position-relative me-2"><a href="/user/cart"
+									class="nav-link position-relative" title="Giỏ hàng"> <i
+										class="fa-solid fa-cart-shopping fs-5"></i> <span
 										class="cart-badge" th:text="${countCart}">0</span>
+								</a></li>
+								<li class="nav-item position-relative me-2"><a
+									href="/user/user-orders" class="nav-link position-relative"
+									title="Đơn hàng của tôi"> <i
+										class="fa-solid fa-file-invoice fs-5"></i> <span
+										th:if="${hasPendingOrders}"
+										class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle">
+											<span class="visually-hidden">Có đơn hàng mới</span>
+									</span>
 								</a></li>
 							</th:block>
 
 							<li class="nav-item dropdown"><a
-								class="nav-link dropdown-toggle active" href="#" role="button"
+								class="nav-link dropdown-toggle fw-bold" href="#" role="button"
 								data-bs-toggle="dropdown" aria-expanded="false"> <i
 									class="fa-solid fa-user"></i> [[${user.name}]]
 							</a>
@@ -106,9 +107,9 @@
 										class="dropdown-item" href="/user/profile">Hồ sơ</a></li>
 									<li th:if="${user.role=='ROLE_ADMIN'}"><a
 										class="dropdown-item" href="/admin/profile">Hồ sơ</a></li>
-									<li th:if="${user.role=='ROLE_USER'}"><a
-										class="dropdown-item" href="/user/user-orders">Đơn hàng</a></li>
-									<li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+									<li><hr class="dropdown-divider"></li>
+									<li><a class="dropdown-item" href="/logout">Đăng
+											xuất</a></li>
 								</ul></li>
 						</th:block>
 					</ul>
@@ -161,7 +162,8 @@
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Hỗ trợ khách hàng</h6>
 					<ul class="list-unstyled small">
-						<li><a href="/products?keyword=&category=&minPrice=&maxPrice=&hasDiscount=true&sort="
+						<li><a
+							href="/products?keyword=&category=&minPrice=&maxPrice=&hasDiscount=true&sort="
 							class="text-white text-decoration-none">Sản phẩm khuyến mãi</a></li>
 						<li><a href="/products"
 							class="text-white text-decoration-none">Sản phẩm nổi bật</a></li>
@@ -174,9 +176,9 @@
 				<div class="col-md-3 mb-4">
 					<h6 class="fw-bold">Danh mục & Liên kết</h6>
 					<ul class="list-unstyled small">
-						<li th:each="c:${categorys}">
-							<a th:href="@{'/products?category='+${c.name}}" class="text-white text-decoration-none">[[${c.name}]]</a>
-						</li>
+						<li th:each="c:${categorys}"><a
+							th:href="@{'/products?category='+${c.name}}"
+							class="text-white text-decoration-none">[[${c.name}]]</a></li>
 					</ul>
 				</div>
 				<div class="col-md-3 mb-4">
