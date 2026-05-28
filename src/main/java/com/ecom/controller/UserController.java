@@ -122,7 +122,7 @@ public class UserController {
 		return "redirect:/user/cart";
 	}
 
-	@GetMapping("/deleteCartItem") 
+	@GetMapping("/deleteCartItem")
 	public String deleteCartItem(@RequestParam Integer cid, HttpSession session) {
 		cartService.deleteCartItem(cid);
 
@@ -180,6 +180,8 @@ public class UserController {
 		}
 
 		orderService.saveOrder(user.getId(), request);
+
+		model.addAttribute("hasPendingOrders", true);
 
 		model.addAttribute("orderId", orderId);
 		model.addAttribute("user", user);

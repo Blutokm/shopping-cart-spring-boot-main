@@ -58,13 +58,31 @@
 											<a class="text-decoration-none text-primary fw-bold"
 											data-bs-toggle="collapse" th:href="'#desc-' + ${cart.id}"
 											role="button" aria-expanded="false" style="font-size: 13px;">
-												<i class="fa-solid fa-circle-chevron-down"></i> Xem mô tả
-											</a>
+												<i class="fa-solid fa-circle-chevron-down"></i> Xem chi tiết
+										</a>
 
 											<div class="collapse mt-2" th:id="'desc-' + ${cart.id}">
 												<div class="card card-body p-2 text-muted shadow-sm"
-													style="font-size: 12px; text-align: justify; max-height: 120px; overflow-y: auto;">
-													<span th:utext="${cart.product.description}"></span>
+													style="font-size: 12px; text-align: justify; max-height: 180px; overflow-y: auto;">
+
+													<div class="mb-2 border-bottom pb-1">
+														<div class="mb-1">
+															<strong><i class="fa-solid fa-tags"></i> Danh
+																mục:</strong> [[${cart.product.category}]]
+														</div>
+														<div class="mb-1" th:if="${cart.product.discount > 0}">
+															<strong><i class="fa-solid fa-money-bill-wave"></i>
+																Giá gốc:</strong>
+															<del class="text-danger">[[${@commnServiceImpl.formatCurrency(cart.product.price)}]]</del>
+															<span class="badge bg-danger ms-1">-[[${cart.product.discount}]]%</span>
+														</div>
+													</div>
+
+													<strong><i class="fa-solid fa-circle-info"></i> Mô
+														tả:</strong>
+													<div class="mt-1">
+														<span th:utext="${cart.product.description}"></span>
+													</div>
 												</div>
 											</div>
 										</td>
@@ -85,15 +103,13 @@
 												class="fa-solid fa-plus"></i>
 										</a></td>
 										<td class="fw-bold">[[${@commnServiceImpl.formatCurrency(cart.totalPrice)}]]</td>
-										
-										<td>
-											<a th:href="@{'/user/deleteCartItem?cid=' + ${cart.id}}" 
-											   class="text-danger fs-5" 
-											   title="Xóa sản phẩm"
-											   onclick="return confirm('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?');">
+
+										<td><a
+											th:href="@{'/user/deleteCartItem?cid=' + ${cart.id}}"
+											class="text-danger fs-5" title="Xóa sản phẩm"
+											onclick="return confirm('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?');">
 												<i class="fa-solid fa-trash"></i>
-											</a>
-										</td>
+										</a></td>
 									</tr>
 
 									<tr class="table-light">
@@ -107,16 +123,16 @@
 							</table>
 						</div>
 
-						<div class="d-flex justify-content-between align-items-center mt-4">
+						<div
+							class="d-flex justify-content-between align-items-center mt-4">
 							<a href="/" class="btn btn-outline-dark"> ← Tiếp tục mua sắm</a>
-							
+
 							<div class="d-flex gap-2">
-								<a href="/user/clearCart" 
-								   class="btn btn-outline-danger" 
-								   onclick="return confirm('Bạn có chắc chắn muốn xóa TẤT CẢ sản phẩm trong giỏ hàng?');">
+								<a href="/user/clearCart" class="btn btn-outline-danger"
+									onclick="return confirm('Bạn có chắc chắn muốn xóa TẤT CẢ sản phẩm trong giỏ hàng?');">
 									<i class="fa-solid fa-trash-can"></i> Xóa tất cả
-								</a>
-								<a href="/user/orders" class="btn btn-dark px-4"> Thanh toán → </a>
+								</a> <a href="/user/orders" class="btn btn-dark px-4"> Thanh
+									toán → </a>
 							</div>
 						</div>
 
