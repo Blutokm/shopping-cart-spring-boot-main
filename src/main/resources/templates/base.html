@@ -43,10 +43,12 @@
 						</th:block>
 
 						<th:block th:unless="${user==null}">
-							<li class="nav-item" th:if="${user.role=='ROLE_ADMIN'}"><a
-								class="nav-link active" aria-current="page" href="/admin/">
+							<li class="nav-item"
+								th:if="${user.role=='ROLE_SUPERADMIN' or user.role=='ROLE_MANAGER'}">
+								<a class="nav-link active" aria-current="page" href="/admin/">
 									<i class="fa-solid fa-house"></i> Trang chủ
-							</a></li>
+							</a>
+							</li>
 							<li class="nav-item" th:if="${user.role=='ROLE_USER'}"><a
 								class="nav-link active" aria-current="page" href="/"> <i
 									class="fa-solid fa-house"></i> Trang chủ
@@ -81,10 +83,10 @@
 						<th:block th:if="${user!=null}">
 							<th:block th:if="${user.role=='ROLE_USER'}">
 
-								<li class="nav-item position-relative me-2"><a href="/user/cart"
-									class="nav-link position-relative" title="Giỏ hàng"> <i
-										class="fa-solid fa-cart-shopping fs-5"></i> <span
-										class="cart-badge" th:text="${countCart}">0</span>
+								<li class="nav-item position-relative me-2"><a
+									href="/user/cart" class="nav-link position-relative"
+									title="Giỏ hàng"> <i class="fa-solid fa-cart-shopping fs-5"></i>
+										<span class="cart-badge" th:text="${countCart}">0</span>
 								</a></li>
 								<li class="nav-item position-relative me-2"><a
 									href="/user/user-orders" class="nav-link position-relative"
@@ -92,7 +94,6 @@
 										class="fa-solid fa-file-invoice fs-5"></i> <span
 										th:if="${hasPendingOrders}"
 										class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle">
-											<span class="visually-hidden">Có đơn hàng mới</span>
 									</span>
 								</a></li>
 							</th:block>
@@ -105,11 +106,12 @@
 								<ul class="dropdown-menu dropdown-menu-end">
 									<li th:if="${user.role=='ROLE_USER'}"><a
 										class="dropdown-item" href="/user/profile">Hồ sơ</a></li>
-									<li th:if="${user.role=='ROLE_ADMIN'}"><a
-										class="dropdown-item" href="/admin/profile">Hồ sơ</a></li>
+									<li
+										th:if="${user.role=='ROLE_SUPERADMIN' or user.role=='ROLE_MANAGER'}">
+										<a class="dropdown-item" href="/admin/profile">Hồ sơ</a>
+									</li>
 									<li><hr class="dropdown-divider"></li>
-									<li><a class="dropdown-item" href="/logout">Đăng
-											xuất</a></li>
+									<li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
 								</ul></li>
 						</th:block>
 					</ul>

@@ -49,8 +49,10 @@ public class UserDtls {
 	private Integer failedAttempt;
 
 	private Date lockTime;
-	
+
 	private String resetToken;
+
+	private Integer maxProductLimit;
 
 	public Integer getId() {
 		return id;
@@ -180,5 +182,12 @@ public class UserDtls {
 		this.resetToken = resetToken;
 	}
 
-	
+	public Integer getMaxProductLimit() {
+		return maxProductLimit;
+	}
+
+	public void setMaxProductLimit(Integer maxProductLimit) {
+		this.maxProductLimit = maxProductLimit;
+	}
+
 }

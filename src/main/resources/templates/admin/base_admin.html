@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 	th:fragment="layout(content)">
 <head>
 <meta charset="UTF-8">
@@ -86,7 +87,7 @@ body {
 			<div class="container-fluid">
 				<a class="navbar-brand fw-bold d-flex align-items-center" href="/"
 					th:href="@{/}"> <img src="/img/logo.jpg" alt="ShopPKTH Logo"
-					style="height:50px; width: auto; object-fit: contain; border-radius: 6px;">
+					style="height: 50px; width: auto; object-fit: contain; border-radius: 6px;">
 				</a>
 				<button class="navbar-toggler" type="button"
 					data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -108,10 +109,12 @@ body {
 						</th:block>
 
 						<th:block th:unless="${user==null}">
-							<li class="nav-item" th:if="${user.role=='ROLE_ADMIN'}"><a
-								class="nav-link active" aria-current="page" href="/admin/">
+							<li class="nav-item"
+								th:if="${user.role=='ROLE_SUPERADMIN' or user.role=='ROLE_MANAGER'}">
+								<a class="nav-link active" aria-current="page" href="/admin/">
 									<i class="fa-solid fa-house"></i> Trang chủ
-							</a></li>
+							</a>
+							</li>
 							<li class="nav-item" th:if="${user.role=='ROLE_USER'}"><a
 								class="nav-link active" aria-current="page" href="/"> <i
 									class="fa-solid fa-house"></i> Trang chủ
@@ -139,8 +142,10 @@ body {
 								<ul class="dropdown-menu dropdown-menu-end">
 									<li th:if="${user.role=='ROLE_USER'}"><a
 										class="dropdown-item" href="/user/profile">Hồ sơ</a></li>
-									<li th:if="${user.role=='ROLE_ADMIN'}"><a
-										class="dropdown-item" href="/admin/profile">Hồ sơ</a></li>
+									<li
+										th:if="${user.role=='ROLE_SUPERADMIN' or user.role=='ROLE_MANAGER'}">
+										<a class="dropdown-item" href="/admin/profile">Hồ sơ</a>
+									</li>
 									<li th:if="${user.role=='ROLE_USER'}"><a
 										class="dropdown-item" href="/user/user-orders">Đơn hàng</a></li>
 									<li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
@@ -156,25 +161,32 @@ body {
 		<a href="/admin/" class="nav-link-sb active"><i
 			class="fa-solid fa-tachometer-alt"></i> Dashboard</a>
 
+		<div class="sidebar-heading mt-3">Cấu trúc Sàn</div>
+		<a sec:authorize="hasRole('SUPERADMIN')" href="/admin/category"
+			class="nav-link-sb"><i class="fa-solid fa-folder-plus"></i> Quản
+			lý Danh Mục</a>
+
 		<div class="sidebar-heading mt-3">Quản lý Sản Phẩm</div>
-		<a href="/admin/category" class="nav-link-sb"><i
-			class="fa-solid fa-folder-plus"></i> Danh Mục</a> <a
-			href="/admin/loadAddProduct" class="nav-link-sb"><i
-			class="fa-solid fa-square-plus"></i> Thêm Sản Phẩm</a> <a
+		<a sec:authorize="hasRole('MANAGER')" href="/admin/loadAddProduct"
+			class="nav-link-sb"><i class="fa-solid fa-square-plus"></i> Đăng
+			Sản Phẩm mới</a> <a sec:authorize="hasAnyRole('SUPERADMIN', 'MANAGER')"
 			href="/admin/products" class="nav-link-sb"><i
 			class="fa-solid fa-table-list"></i> Kho Sản Phẩm</a>
 
-		<div class="sidebar-heading mt-3">Quản lý Đơn Hàng</div>
-		<a href="/admin/orders" class="nav-link-sb"><i
-			class="fa-solid fa-file-invoice-dollar"></i> Xử Lý Đơn Hàng</a>
+		<div class="sidebar-heading mt-3">Giao Dịch</div>
+		<a sec:authorize="hasAnyRole('SUPERADMIN', 'MANAGER')"
+			href="/admin/orders" class="nav-link-sb"><i
+			class="fa-solid fa-file-invoice-dollar"></i> Quản Lý Đơn Hàng</a>
 
-		<div class="sidebar-heading mt-3">Tài Khoản</div>
-		<a href="/admin/users?type=1" class="nav-link-sb"><i
-			class="fa-solid fa-users"></i> Khách Hàng</a> <a
-			href="/admin/users?type=2" class="nav-link-sb"><i
-			class="fa-solid fa-user-shield"></i> Quản Trị Viên</a> <a
-			href="/admin/add-admin" class="nav-link-sb"><i
-			class="fa-solid fa-user-plus"></i> Thêm Admin</a>
+		<div sec:authorize="hasRole('SUPERADMIN')">
+			<div class="sidebar-heading mt-3">Người Dùng</div>
+			<a href="/admin/users?type=1" class="nav-link-sb"><i
+				class="fa-solid fa-users"></i> Khách Hàng</a> <a
+				href="/admin/users?type=2" class="nav-link-sb"><i
+				class="fa-solid fa-user-shield"></i> Danh sách Cửa Hàng</a> <a
+				href="/admin/add-admin" class="nav-link-sb"><i
+				class="fa-solid fa-user-plus"></i> Mở Cửa Hàng (Manager)</a>
+		</div>
 	</div>
 
 	<div class="admin-content">
@@ -198,7 +210,7 @@ body {
 				if (linkHref === "/admin/" && currentFullUrl === "/admin/") {
 					link.classList.add('active');
 				}
-		
+
 				else if (linkHref !== "/admin/"
 						&& currentFullUrl.startsWith(linkHref)) {
 					link.classList.add('active');

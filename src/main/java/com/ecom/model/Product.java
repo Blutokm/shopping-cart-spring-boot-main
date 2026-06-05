@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,30 +24,34 @@ import java.util.List;
 @Entity
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    
-    public Product() {
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    @Column(length = 500)
-    private String title;
+	public Product() {
+	}
 
-    @Column(length = 5000)
-    private String description;
+	@Column(length = 500)
+	private String title;
 
-    private String category;
+	@Column(length = 5000)
+	private String description;
 
-    private Double price;
+	private String category;
 
-    private String image;
+	private Double price;
 
-    private int discount;
-    
-    private Double discountPrice;
-    
-    public Product(Integer id, String title, String description, String category, Double price, String image,
+	private String image;
+
+	private int discount;
+
+	private Double discountPrice;
+
+	@ManyToOne
+	@JoinColumn(name = "created_by_user_id")
+	private UserDtls createdBy;
+
+	public Product(Integer id, String title, String description, String category, Double price, String image,
 			int discount, Double discountPrice, Boolean isActive, List<ProductVariant> variants) {
 		super();
 		this.id = id;
@@ -142,10 +148,18 @@ public class Product {
 
 	private Boolean isActive;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductVariant> variants = new ArrayList<>();
-    
-    public List<ProductImage> getExtraImages() {
+	public UserDtls getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(UserDtls createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ProductVariant> variants = new ArrayList<>();
+
+	public List<ProductImage> getExtraImages() {
 		return extraImages;
 	}
 
@@ -154,7 +168,7 @@ public class Product {
 	}
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductImage> extraImages = new ArrayList<>();
+	private List<ProductImage> extraImages = new ArrayList<>();
 
 	public int getStock() {
 		// TODO Auto-generated method stub

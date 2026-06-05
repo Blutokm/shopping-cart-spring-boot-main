@@ -82,7 +82,7 @@
                             </thead>
                             <tbody>
                                 <tr th:each="cat,c:${categorys}">
-                                    <td>[[${c.count}]]</td>
+                                    <th>[[${c.count + (pageNo * pageSize)}]]</th>
                                     <td>[[${cat.name}]]</td>
                                     <td>
                                         <span th:text="${cat.isActive} ? 'Hoạt động' : 'Không hoạt động'"></span>

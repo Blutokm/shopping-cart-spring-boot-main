@@ -84,10 +84,11 @@
 
 						<div class="text-center p-3 product-img-container">
 							<a th:href="@{'/product/' + ${p.id}}" class="d-block w-100 h-100">
-								<img th:src="@{'/img/product_img/' + ${p.image}}"
+								<img
+								th:src="@{'/img/product_img/' + ${p.category} + '/' + ${p.image}}"
 								class="product-img main-img"> <img
 								th:if="${p.extraImages != null and !p.extraImages.isEmpty() and p.extraImages[0].imageName != null}"
-								th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
+								th:src="@{'/img/product_img/' + ${p.category} + '/' + ${p.extraImages[0].imageName}}"
 								class="product-img hover-img">
 							</a>
 						</div>
@@ -135,9 +136,8 @@
 			<div class="bg-dark text-white rounded-4 p-5 text-center shadow"
 				style="background: linear-gradient(135deg, #1e1e1e 0%, #3a3a3a 100%); position: relative; overflow: hidden;">
 				<h2 class="fw-bold mb-3">Tham gia cùng ShopPKTH</h2>
-				<p class="opacity-75 fs-5">
-					Để khám phá các sản phẩm của chúng tôi
-				</p>
+				<p class="opacity-75 fs-5">Để khám phá các sản phẩm của chúng
+					tôi</p>
 				<a href="/register"
 					class="btn btn-light btn-lg rounded-pill px-5 fw-bold mt-2 shadow-sm">Đăng
 					ký ngay</a>
@@ -155,10 +155,10 @@
 
 						<a th:href="@{'/product/' + ${p.id}}"
 							class="product-img-container" style="height: 160px;"> <img
-							th:src="@{'/img/product_img/' + ${p.image}}"
+							th:src="@{'/img/product_img/' + ${p.category} + '/' + ${p.image}}"
 							class="product-img rounded main-img"> <img
 							th:if="${p.extraImages != null and !p.extraImages.isEmpty()}"
-							th:src="@{'/img/product_img/' + ${p.extraImages[0].imageName}}"
+							th:src="@{'/img/product_img/' + ${p.category} + '/' + ${p.extraImages[0].imageName}}"
 							class="product-img rounded hover-img">
 						</a> <a th:href="@{'/product/' + ${p.id}}"
 							class="text-decoration-none text-dark">

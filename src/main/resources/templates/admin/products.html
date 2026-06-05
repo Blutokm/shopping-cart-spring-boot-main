@@ -66,64 +66,77 @@
 						<tbody>
 							<tr th:each="p,c:${products}">
 								<th scope="row" class="text-center">[[${c.count}]]</th>
-								<td class="text-center"><img th:src="@{'/img/product_img/'+${p.image}}"
-									width="70px" height="70px" style="object-fit: cover; border-radius: 5px;"></td>
+								<td class="text-center"><img
+									th:src="@{'/img/product_img/' + ${p.category} + '/' + ${p.image}}" width="70px"
+									height="70px" style="object-fit: cover; border-radius: 5px;"></td>
 								<td>[[${p.title}]]</td>
 								<td>[[${p.category}]]</td>
-								
+
 								<td>
-									<ul class="list-unstyled mb-0" style="font-size: 0.9em; min-width: 180px;">
-										<li th:each="v : ${p.variants}" class="mb-1 border-bottom pb-1">
-											<span class="badge bg-secondary">[[${v.color}]]</span> 
-											- Size <b>[[${v.size}]]</b>: 
-											<span th:classappend="${v.stock <= 0} ? 'text-danger fw-bold' : 'text-success fw-bold'">[[${v.stock}]] cái</span>
-										</li>
-										<li th:if="${#lists.isEmpty(p.variants)}" class="text-danger small mt-1">
-											<i class="fa-solid fa-triangle-exclamation"></i> Chưa thêm phân loại
-										</li>
+									<ul class="list-unstyled mb-0"
+										style="font-size: 0.9em; min-width: 180px;">
+										<li th:each="v : ${p.variants}"
+											class="mb-1 border-bottom pb-1"><span
+											class="badge bg-secondary">[[${v.color}]]</span> - Size <b>[[${v.size}]]</b>:
+											<span
+											th:classappend="${v.stock <= 0} ? 'text-danger fw-bold' : 'text-success fw-bold'">[[${v.stock}]]
+												cái</span></li>
+										<li th:if="${#lists.isEmpty(p.variants)}"
+											class="text-danger small mt-1"><i
+											class="fa-solid fa-triangle-exclamation"></i> Chưa thêm phân
+											loại</li>
 									</ul>
 								</td>
-								
-								<td th:text="${#numbers.formatDecimal(p.price, 0, 'POINT', 0, 'POINT')} + '₫'"></td>
+
+								<td
+									th:text="${#numbers.formatDecimal(p.price, 0, 'POINT', 0, 'POINT')} + '₫'"></td>
 								<td class="text-center" th:text="${p.discount} + '%'"></td>
-								<td th:text="${#numbers.formatDecimal(p.discountPrice, 0, 'POINT', 0, 'POINT')} + '₫'"></td>
-								<td class="text-center">
-									<span th:if="${p.isActive}" class="badge bg-success">Đang bán</span>
-									<span th:unless="${p.isActive}" class="badge bg-danger">Ngừng bán</span>
-								</td>
-								<td class="text-center" style="min-width: 160px;">
-                                    <a th:href="@{'/admin/editProduct/'+${p.id}}" class="btn btn-sm btn-primary mb-1 w-100"> 
-                                        <i class="fa-solid fa-pen-to-square"></i> Sửa
-								    </a> 
-                                    <a th:href="@{'/admin/deleteProduct/'+${p.id}}" class="btn btn-sm btn-danger btnDelete w-100"> 
-                                        <i class="fa-solid fa-trash"></i> Xóa
-								    </a>
-                                </td>
+								<td
+									th:text="${#numbers.formatDecimal(p.discountPrice, 0, 'POINT', 0, 'POINT')} + '₫'"></td>
+								<td class="text-center"><span th:if="${p.isActive}"
+									class="badge bg-success">Đang bán</span> <span
+									th:unless="${p.isActive}" class="badge bg-danger">Ngừng
+										bán</span></td>
+								<td class="text-center" style="min-width: 160px;"><a
+									th:href="@{'/admin/editProduct/'+${p.id}}"
+									class="btn btn-sm btn-primary mb-1 w-100"> <i
+										class="fa-solid fa-pen-to-square"></i> Sửa
+								</a> <a th:href="@{'/admin/deleteProduct/'+${p.id}}"
+									class="btn btn-sm btn-danger btnDelete w-100"> <i
+										class="fa-solid fa-trash"></i> Xóa
+								</a></td>
 							</tr>
 						</tbody>
 
 					</table>
 
 					<div class="row mt-3">
-						<div class="col-md-4 fw-bold text-muted">Tổng số sản phẩm: [[${totalElements}]]</div>
+						<div class="col-md-4 fw-bold text-muted">Tổng số sản phẩm:
+							[[${totalElements}]]</div>
 						<div class="col-md-8 d-flex justify-content-end">
-							<nav aria-label="Page navigation example">
+							<nav aria-label="Page navigation example"
+								th:if="${totalPages > 0}">
 								<ul class="pagination">
-									<li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
-										<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo-1}}" aria-label="Previous"> 
-											<span aria-hidden="true">&laquo;</span>
-										</a>
+									<li class="page-item"
+										th:classappend="${isFirst} ? 'disabled':''"><a
+										class="page-link"
+										th:href="@{'/admin/products'(pageNo=${pageNo - 1}, ch=${param.ch})}"
+										aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+									</a></li>
+
+									<li th:each="i : ${#numbers.sequence(1, totalPages)}"
+										class="page-item"
+										th:classappend="${pageNo + 1 == i} ? 'active' : ''"><a
+										class="page-link"
+										th:href="@{'/admin/products'(pageNo=${i - 1}, ch=${param.ch})}">[[${i}]]</a>
 									</li>
 
-									<li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item" th:classappend="${pageNo+1==i}?'active':''">
-										<a class="page-link" th:href="@{'/admin/products?pageNo='+${i-1}}">[[${i}]]</a>
-									</li>
-
-									<li class="page-item" th:classappend="${isLast} ? 'disabled':''">
-										<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo+1}}" aria-label="Next"> 
-											<span aria-hidden="true">&raquo;</span>
-										</a>
-									</li>
+									<li class="page-item"
+										th:classappend="${isLast} ? 'disabled':''"><a
+										class="page-link"
+										th:href="@{'/admin/products'(pageNo=${pageNo + 1}, ch=${param.ch})}"
+										aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+									</a></li>
 								</ul>
 							</nav>
 						</div>
@@ -131,7 +144,7 @@
 				</div>
 			</div>
 		</div>
-			<script>
+		<script>
 document.addEventListener("DOMContentLoaded", function () {
     const deleteButtons = document.querySelectorAll(".btnDelete");
 

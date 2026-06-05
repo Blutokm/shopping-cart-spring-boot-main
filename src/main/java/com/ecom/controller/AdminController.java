@@ -37,6 +37,7 @@ import com.ecom.model.ProductImage;
 import com.ecom.model.ProductOrder;
 import com.ecom.model.ProductVariant;
 import com.ecom.model.UserDtls;
+import com.ecom.repository.ProductRepository;
 import com.ecom.service.CartService;
 import com.ecom.service.CategoryService;
 import com.ecom.service.OrderService;
@@ -74,6 +75,9 @@ public class AdminController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private ProductRepository productRepository;
 
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
@@ -132,10 +136,11 @@ public class AdminController {
 				session.setAttribute("errorMsg", "Lỗi ! Danh Mục Chưa Được Lưu");
 			} else {
 
-				File saveFile = new ClassPathResource("static/img").getFile();
-
-				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
-						+ file.getOriginalFilename());
+				File saveFileDir = new File("uploads/category_img");
+				if (!saveFileDir.exists()) {
+					saveFileDir.mkdirs();
+				}
+				Path path = Paths.get(saveFileDir.getAbsolutePath() + File.separator + file.getOriginalFilename());
 
 				// System.out.println(path);
 				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
@@ -185,10 +190,11 @@ public class AdminController {
 		if (!ObjectUtils.isEmpty(updateCategory)) {
 
 			if (!file.isEmpty()) {
-				File saveFile = new ClassPathResource("static/img").getFile();
-
-				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
-						+ file.getOriginalFilename());
+				File saveFileDir = new File("uploads/category_img");
+				if (!saveFileDir.exists()) {
+				    saveFileDir.mkdirs();
+				}
+				Path path = Paths.get(saveFileDir.getAbsolutePath() + File.separator + file.getOriginalFilename());
 
 				// System.out.println(path);
 				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
@@ -207,11 +213,23 @@ public class AdminController {
 			@RequestParam(value = "extraImageFiles", required = false) MultipartFile[] extraImages,
 			@RequestParam(value = "colors", required = false) List<String> colors,
 			@RequestParam(value = "sizes", required = false) List<String> sizes,
-			@RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session)
-			throws IOException {
+			@RequestParam(value = "stocks", required = false) List<Integer> stocks, HttpSession session,
+			Principal principal) throws IOException {
+
+		UserDtls loggedInUser = userService.getUserByEmail(principal.getName());
+
+		if ("ROLE_MANAGER".equals(loggedInUser.getRole())) {
+			long currentCount = productRepository.countByCreatedBy(loggedInUser);
+			if (loggedInUser.getMaxProductLimit() != null && currentCount >= loggedInUser.getMaxProductLimit()) {
+				session.setAttribute("errorMsg", "Bạn đã đạt giới hạn thêm " + loggedInUser.getMaxProductLimit()
+						+ " sản phẩm. Vui lòng liên hệ Admin!");
+				return "redirect:/admin/loadAddProduct";
+			}
+		}
+
+		product.setCreatedBy(loggedInUser);
 
 		String imageName = image.isEmpty() ? "default.jpg" : image.getOriginalFilename();
-
 		product.setImage(imageName);
 		product.setDiscount(0);
 		product.setDiscountPrice(product.getPrice());
@@ -245,25 +263,32 @@ public class AdminController {
 		Product saveProduct = productService.saveProduct(product);
 
 		if (!ObjectUtils.isEmpty(saveProduct)) {
-			File saveFileDir = new ClassPathResource("static/img").getFile();
+			try {
+				File saveFileDir = new File("uploads/product_img/" + product.getCategory());
+				
+				if (!saveFileDir.exists()) {
+					saveFileDir.mkdirs();
+				}
 
-			if (!image.isEmpty()) {
-				Path mainPath = Paths.get(saveFileDir.getAbsolutePath() + File.separator + "product_img"
-						+ File.separator + image.getOriginalFilename());
-				Files.copy(image.getInputStream(), mainPath, StandardCopyOption.REPLACE_EXISTING);
-			}
+				if (!image.isEmpty()) {
+					Path mainPath = Paths.get(saveFileDir.getAbsolutePath() + File.separator + image.getOriginalFilename());
+					Files.copy(image.getInputStream(), mainPath, StandardCopyOption.REPLACE_EXISTING);
+				}
 
-			if (extraImages != null && extraImages.length > 0) {
-				for (MultipartFile extraFile : extraImages) {
-					if (!extraFile.isEmpty()) {
-						Path extraPath = Paths.get(saveFileDir.getAbsolutePath() + File.separator + "product_img"
-								+ File.separator + extraFile.getOriginalFilename());
-						Files.copy(extraFile.getInputStream(), extraPath, StandardCopyOption.REPLACE_EXISTING);
+				if (extraImages != null && extraImages.length > 0) {
+					for (MultipartFile extraFile : extraImages) {
+						if (!extraFile.isEmpty()) {
+							Path extraPath = Paths.get(saveFileDir.getAbsolutePath() + File.separator + extraFile.getOriginalFilename());
+							Files.copy(extraFile.getInputStream(), extraPath, StandardCopyOption.REPLACE_EXISTING);
+						}
 					}
 				}
-			}
 
-			session.setAttribute("succMsg", "Lưu Sản Phẩm Thành Công");
+				session.setAttribute("succMsg", "Lưu Sản Phẩm Thành Công");
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.setAttribute("errorMsg", "Lưu Sản Phẩm Thành Công nhưng lỗi lưu ảnh!");
+			}
 		} else {
 			session.setAttribute("errorMsg", "Lưu Sản Phẩm Thất Bại");
 		}
@@ -274,16 +299,18 @@ public class AdminController {
 	@GetMapping("/products")
 	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, Principal principal) {
 
+		UserDtls loggedInUser = userService.getUserByEmail(principal.getName());
 		Page<Product> page = null;
-		if (ch != null && ch.length() > 0) {
-			page = productService.searchProductPagination(pageNo, pageSize, ch);
-		} else {
-			page = productService.getAllProductsPagination(pageNo, pageSize);
-		}
-		m.addAttribute("products", page.getContent());
 
+		if (ch != null && ch.length() > 0) {
+			page = productService.searchProductPagination(pageNo, pageSize, ch, loggedInUser);
+		} else {
+			page = productService.getAllProductsPagination(pageNo, pageSize, loggedInUser);
+		}
+
+		m.addAttribute("products", page.getContent());
 		m.addAttribute("pageNo", page.getNumber());
 		m.addAttribute("pageSize", pageSize);
 		m.addAttribute("totalElements", page.getTotalElements());
@@ -354,7 +381,7 @@ public class AdminController {
 		if (type == 1) {
 			users = userService.getUsers("ROLE_USER");
 		} else {
-			users = userService.getUsers("ROLE_ADMIN");
+			users = userService.getUsers("ROLE_MANAGER");
 		}
 		m.addAttribute("userType", type);
 		m.addAttribute("users", users);
@@ -375,9 +402,18 @@ public class AdminController {
 
 	@GetMapping("/orders")
 	public String getAllOrders(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, Principal principal) {
 
-		List<ProductOrder> allOrders = new ArrayList<>(orderService.getAllOrders());
+		UserDtls loggedInUser = userService.getUserByEmail(principal.getName());
+		List<ProductOrder> allOrders = orderService.getAllOrders();
+
+		if ("ROLE_MANAGER".equals(loggedInUser.getRole())) {
+			allOrders = allOrders.stream()
+					.filter(o -> o.getProduct().getCreatedBy() != null
+							&& o.getProduct().getCreatedBy().getId().equals(loggedInUser.getId()))
+					.collect(Collectors.toList());
+		}
+
 		allOrders.sort((o1, o2) -> o2.getId().compareTo(o1.getId()));
 
 		Map<String, List<ProductOrder>> groupedOrders = new LinkedHashMap<>();
@@ -502,9 +538,13 @@ public class AdminController {
 	}
 
 	@GetMapping("/view-order")
-	public String viewOrderDetailsAdmin(@RequestParam String orderId, Model model) {
+	public String viewOrderDetailsAdmin(@RequestParam String orderId, Model model, Principal principal) {
+		UserDtls loggedInUser = userService.getUserByEmail(principal.getName());
 		List<ProductOrder> allOrders = orderService.getAllOrders();
+
 		List<ProductOrder> orderDetails = allOrders.stream().filter(o -> o.getOrderId().equals(orderId))
+				.filter(o -> "ROLE_SUPERADMIN".equals(loggedInUser.getRole()) || (o.getProduct().getCreatedBy() != null
+						&& o.getProduct().getCreatedBy().getId().equals(loggedInUser.getId())))
 				.collect(Collectors.toList());
 
 		if (orderDetails.isEmpty()) {
@@ -512,7 +552,6 @@ public class AdminController {
 		}
 
 		double totalAmount = orderDetails.stream().mapToDouble(o -> o.getPrice() * o.getQuantity()).sum();
-
 		model.addAttribute("orderDetails", orderDetails);
 		model.addAttribute("orderInfo", orderDetails.get(0));
 		model.addAttribute("totalAmount", totalAmount);
@@ -526,8 +565,12 @@ public class AdminController {
 	}
 
 	@PostMapping("/save-admin")
-	public String saveAdmin(@ModelAttribute UserDtls user, @RequestParam("img") MultipartFile file, HttpSession session)
+	public String saveAdmin(@ModelAttribute UserDtls user, @RequestParam("img") MultipartFile file,
+			@RequestParam(value = "maxProductLimit", defaultValue = "50") Integer limit, HttpSession session)
 			throws IOException {
+
+		user.setRole("ROLE_MANAGER");
+		user.setMaxProductLimit(limit);
 
 		String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
 		user.setProfileImage(imageName);
@@ -535,10 +578,11 @@ public class AdminController {
 
 		if (!ObjectUtils.isEmpty(saveUser)) {
 			if (!file.isEmpty()) {
-				File saveFile = new ClassPathResource("static/img").getFile();
-
-				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
-						+ file.getOriginalFilename());
+				File saveFileDir = new File("uploads/profile_img");
+				if (!saveFileDir.exists()) {
+				    saveFileDir.mkdirs();
+				}
+				Path path = Paths.get(saveFileDir.getAbsolutePath() + File.separator + file.getOriginalFilename());
 
 //				System.out.println(path);
 				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
@@ -587,27 +631,34 @@ public class AdminController {
 		return "redirect:/admin/profile";
 	}
 
-	@Autowired
-	private StatisticsService statisticsService;
-
 	@GetMapping({ "", "/" })
 	public String adminHome(Model model, Principal principal) {
-
-		if (principal == null) {
+		if (principal == null)
 			return "redirect:/signin";
-		}
 
-		String email = principal.getName();
-		UserDtls user = userService.getUserByEmail(email);
+		UserDtls user = userService.getUserByEmail(principal.getName());
 		model.addAttribute("user", user);
 
 		List<Product> allProducts = productService.getAllProducts();
+		List<ProductOrder> allOrders = orderService.getAllOrders();
+
+		if ("ROLE_MANAGER".equals(user.getRole())) {
+			allProducts = allProducts.stream()
+					.filter(p -> p.getCreatedBy() != null && p.getCreatedBy().getId().equals(user.getId()))
+					.collect(Collectors.toList());
+
+			allOrders = allOrders.stream().filter(o -> o.getProduct().getCreatedBy() != null
+					&& o.getProduct().getCreatedBy().getId().equals(user.getId())).collect(Collectors.toList());
+		}
+
 		model.addAttribute("products", allProducts.size());
 
-		List<UserDtls> allUsers = userService.getUsers("ROLE_USER");
-		model.addAttribute("users", allUsers.size());
+		if ("ROLE_SUPERADMIN".equals(user.getRole())) {
+			model.addAttribute("users", userService.getUsers("ROLE_USER").size());
+		} else {
+			model.addAttribute("users", 0);
+		}
 
-		List<ProductOrder> allOrders = orderService.getAllOrders();
 		double totalRevenue = 0.0;
 		java.util.Set<String> uniqueOrders = new java.util.HashSet<>();
 

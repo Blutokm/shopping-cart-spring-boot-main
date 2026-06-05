@@ -12,7 +12,7 @@
 			<div class="card card-sh">
 				<div class="card-header text-center">
 					<p class="fs-4" th:if="${userType==1}">Người dùng</p>
-					<p class="fs-4" th:if="${userType==2}">Quản trị viên</p>
+					<p class="fs-4" th:if="${userType==2}">Quản lý của hàng</p>
 
 					<th:block th:if="${session.succMsg}">
 						<p class="text-success fw-bold">[[${session.succMsg}]]</p>

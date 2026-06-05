@@ -148,17 +148,17 @@ public class UserServiceImpl implements UserService {
 		}
 
 		try {
-			if (!img.isEmpty()) {
-				File saveFile = new ClassPathResource("static/img").getFile();
-
-				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
-						+ img.getOriginalFilename());
-
-//			System.out.println(path);
-				Files.copy(img.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-			}
+		    if (!img.isEmpty()) {
+		        File saveFileDir = new File("uploads/profile_img");
+		        if (!saveFileDir.exists()) {
+		            saveFileDir.mkdirs();
+		        }
+		        
+		        Path path = Paths.get(saveFileDir.getAbsolutePath() + File.separator + img.getOriginalFilename());
+		        Files.copy(img.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+		    }
 		} catch (Exception e) {
-			e.printStackTrace();
+		    e.printStackTrace();
 		}
 
 		return dbUser;
@@ -166,7 +166,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDtls saveAdmin(UserDtls user) {
-		user.setRole("ROLE_ADMIN");
+//		user.setRole("ROLE_ADMIN");
 		user.setIsEnable(true);
 		user.setAccountNonLocked(true);
 		user.setFailedAttempt(0);

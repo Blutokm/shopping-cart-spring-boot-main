@@ -151,25 +151,29 @@
 									</div>
 								</div>
 								<div class="mb-3">
-									<label class="fw-semibold">Thay đổi ảnh (Bỏ trống nếu
+									<label class="fw-semibold">Thay đổi Ảnh chính (Bỏ trống nếu
 										giữ nguyên)</label> <input type="file" name="file"
 										class="form-control">
+
 									<div class="mb-3"
 										th:if="${product.extraImages != null and !product.extraImages.isEmpty()}">
-										<label>Ảnh phụ hiện tại:</label>
-										<div class="d-flex gap-2 flex-wrap mt-2">
-											<div th:each="img : ${product.extraImages}">
-												<img th:src="@{'/img/product_img/' + ${img.imageName}}"
-													width="80px" height="80px" class="border rounded"
-													style="object-fit: contain;">
-											</div>
+										<label class="fw-bold">Ảnh phụ hiện tại:</label><br>
+										<div class="d-flex gap-2 mt-2">
+											<th:block th:each="img : ${product.extraImages}">
+												<img
+													th:src="@{'/img/product_img/' + ${product.category} + '/' + ${img.imageName}}"
+													class="border rounded" width="80px" height="80px"
+													style="object-fit: cover;">
+											</th:block>
 										</div>
 									</div>
 
 									<div class="mb-3">
-										<label>Cập nhật ảnh phụ mới (Chọn nhiều ảnh - Sẽ ghi
-											đè các ảnh phụ cũ nếu có chọn)</label> <input type="file"
-											name="extraImageFiles" class="form-control" multiple>
+										<label class="fw-bold">Cập nhật Ảnh phụ mới (Chọn
+											nhiều ảnh)</label> <input type="file" name="extraImageFiles"
+											class="form-control" multiple accept="image/*"> <small
+											class="text-danger fst-italic">* Nếu không chọn ảnh
+											mới, hệ thống sẽ tự động giữ nguyên ảnh phụ cũ.</small>
 									</div>
 								</div>
 								<div class="text-center mb-3">

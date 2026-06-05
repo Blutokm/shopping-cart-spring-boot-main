@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ecom.model.Product;
 import com.ecom.model.ProductVariant;
+import com.ecom.model.UserDtls;
 import com.ecom.repository.ProductRepository;
 import com.ecom.service.ProductService;
 
@@ -126,19 +127,22 @@ public class ProductServiceImpl implements ProductService {
 
 		if (!ObjectUtils.isEmpty(updateProduct)) {
 			try {
-				File saveFile = new ClassPathResource("static/img").getFile();
+				File saveFileDir = new File("uploads/product_img/" + product.getCategory());
+
+				if (!saveFileDir.exists()) {
+					saveFileDir.mkdirs();
+				}
 
 				if (!image.isEmpty()) {
-					Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator
-							+ image.getOriginalFilename());
+					Path path = Paths.get(saveFileDir.getAbsolutePath() + File.separator + image.getOriginalFilename());
 					Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 				}
 
 				if (extraImages != null && extraImages.length > 0 && !extraImages[0].isEmpty()) {
 					for (MultipartFile extraFile : extraImages) {
 						if (!extraFile.isEmpty()) {
-							Path extraPath = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img"
-									+ File.separator + extraFile.getOriginalFilename());
+							Path extraPath = Paths.get(
+									saveFileDir.getAbsolutePath() + File.separator + extraFile.getOriginalFilename());
 							Files.copy(extraFile.getInputStream(), extraPath, StandardCopyOption.REPLACE_EXISTING);
 						}
 					}
@@ -168,22 +172,24 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch) {
+	public Page<Product> getAllProductsPagination(Integer pageNo, Integer pageSize, UserDtls user) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		return productRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch, ch, pageable);
+
+		if ("ROLE_MANAGER".equals(user.getRole())) {
+			return productRepository.findByCreatedBy(user, pageable);
+		}
+		return productRepository.findAll(pageable);
 	}
 
 	@Override
-	public Page<Product> getAllActiveProductPagination(Integer pageNo, Integer pageSize, String category) {
+	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch, UserDtls user) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		Page<Product> pageProduct = null;
 
-		if (ObjectUtils.isEmpty(category)) {
-			pageProduct = productRepository.findByIsActiveTrue(pageable);
-		} else {
-			pageProduct = productRepository.findByCategory(pageable, category);
+		if ("ROLE_MANAGER".equals(user.getRole())) {
+			return productRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCaseAndCreatedBy(ch, ch,
+					user, pageable);
 		}
-		return pageProduct;
+		return productRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch, ch, pageable);
 	}
 
 	@Override

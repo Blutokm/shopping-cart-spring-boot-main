@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.ecom.model.Product;
+import com.ecom.model.UserDtls;
 
 public interface ProductRepository extends JpaRepository<Product, Integer>, JpaSpecificationExecutor<Product> {
 
@@ -24,6 +25,15 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
 	Page<Product> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch, String ch2,
 			Pageable pageable);
 
-	Page<Product> findByIsActiveTrueAndTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(
-	    String ch1, String ch2, Pageable pageable);
+	Page<Product> findByIsActiveTrueAndTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch1, String ch2,
+			Pageable pageable);
+
+	List<Product> findByCreatedBy(UserDtls user);
+
+	Page<Product> findByCreatedBy(UserDtls user, Pageable pageable);
+
+	Page<Product> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCaseAndCreatedBy(String ch, String ch2,
+			UserDtls user, Pageable pageable);
+
+	long countByCreatedBy(UserDtls user);
 }
