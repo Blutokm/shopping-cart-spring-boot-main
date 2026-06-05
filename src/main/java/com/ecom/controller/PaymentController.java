@@ -2,6 +2,8 @@ package com.ecom.controller;
 
 import com.ecom.config.VNPayConfig;
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,15 +23,15 @@ public class PaymentController {
      * ✅ Hàm static dùng để tạo URL thanh toán VNPay.
      * Được gọi trực tiếp từ UserController.saveOrder(...)
      */
-    public static String buildVnPayUrl(HttpServletRequest request, long amount) throws Exception {
-        String vnp_Version = "2.1.0";
-        String vnp_Command = "pay";
-        String orderType = "other";
-        long amountInVND = amount * 100; // VNPay yêu cầu nhân 100
+	public static String buildVnPayUrl(HttpServletRequest request, long amount, String orderId) throws Exception {
+	    String vnp_Version = "2.1.0";
+	    String vnp_Command = "pay";
+	    String orderType = "other";
+	    long amountInVND = amount * 100; // VNPay yêu cầu nhân 100
 
-        String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
-        String vnp_IpAddr = getClientIpAddress(request);
-        String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
+	    String vnp_TxnRef = orderId; 
+	    String vnp_IpAddr = getClientIpAddress(request);
+	    String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
         // --- Các tham số bắt buộc gửi tới VNPay ---
         Map<String, String> vnp_Params = new HashMap<>();
@@ -66,13 +68,13 @@ public class PaymentController {
             String fieldName = itr.next();
             String fieldValue = vnp_Params.get(fieldName);
             if (fieldValue != null && !fieldValue.isEmpty()) {
-                // Thêm vào chuỗi hash
+      
                 hashData.append(fieldName).append('=')
-                        .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-                // Thêm vào query string
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII))
+                        .append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
+              
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8.toString()))
                         .append('=')
-                        .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                        .append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
                 if (itr.hasNext()) {
                     query.append('&');
                     hashData.append('&');
@@ -102,14 +104,26 @@ public class PaymentController {
     /**
      * ✅ Hàm callback khi VNPay trả kết quả về (redirect URL)
      */
+    @Autowired
+    private com.ecom.service.OrderService orderService;
+
     @GetMapping("/payment/vnpay-return")
     public String vnpayReturn(@RequestParam Map<String, String> params) {
         String responseCode = params.get("vnp_ResponseCode");
+        String txnRef = params.get("vnp_TxnRef");
+
         if ("00".equals(responseCode)) {
-            // Thanh toán thành công
             return "redirect:/user/success";
         } else {
-            // Thanh toán thất bại hoặc bị hủy
+            try {
+                com.ecom.model.ProductOrder order = orderService.getOrdersByOrderId(txnRef);
+                if (order != null) {
+                    orderService.updateOrderStatus(order.getId(), "Hủy"); 
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
             return "redirect:/user/order?error=payment";
         }
     }

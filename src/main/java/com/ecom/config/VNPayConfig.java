@@ -7,8 +7,8 @@ import java.util.Random;
 
 public class VNPayConfig {
 
-    public static String vnp_TmnCode = "I18E26XA";
-    public static String vnp_HashSecret = "5LR6M4GZ13G9RHST7ADRZDVFKJXRJJRE";
+    public static String vnp_TmnCode = "ERJBSVN1";
+    public static String vnp_HashSecret = "SAJUTH7KD46XIKDWBP1D2XP1MLLZX1PR";
     public static String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     // Chuẩn hoá về URL callback giống application.properties
     public static String vnp_Returnurl = "http://localhost:8080/payment/vnpay-return";

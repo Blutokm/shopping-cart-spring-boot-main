@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.ecom.model.UserDtls;
 import com.ecom.repository.UserRepository;
 import com.ecom.service.UserService;
-import com.ecom.service.impl.UserServiceImpl;
 import com.ecom.util.AppConstant;
 
 import jakarta.servlet.ServletException;
@@ -47,6 +47,9 @@ public class AuthFailureHandlerImpl extends SimpleUrlAuthenticationFailureHandle
                 if (nonLocked) {
                     if (userDtls.getFailedAttempt() < AppConstant.ATTEMPT_TIME) {
                         userService.increaseFailedAttempt(userDtls);
+                        
+                        exception = new BadCredentialsException("Email hoặc mật khẩu không đúng");
+                        
                     } else {
                         userService.userAccountLock(userDtls);
                         exception = new LockedException("Tài khoản của bạn đã bị khóa do nhập sai 3 lần");
@@ -63,7 +66,7 @@ public class AuthFailureHandlerImpl extends SimpleUrlAuthenticationFailureHandle
             }
 
         } else {
-            exception = new LockedException("Email hoặc mật khẩu không đúng");
+            exception = new BadCredentialsException("Email hoặc mật khẩu không đúng");
         }
 
         super.setDefaultFailureUrl("/signin?error");

@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
 	private CommonUtil commonUtil;
 
 	@Override
-	public void saveOrder(Integer userid, OrderRequest orderRequest) throws Exception {
+	public String saveOrder(Integer userid, OrderRequest orderRequest) throws Exception {
 
 		List<Cart> carts = cartRepository.findByUserId(userid);
 
@@ -92,9 +92,10 @@ public class OrderServiceImpl implements OrderService {
 			commonUtil.sendMailForProductOrder(saveOrder, "success");
 		}
 
-		if (!carts.isEmpty()) {
-			resetCart(carts.get(0).getUser());
-		}
+		/*
+		 * if (!carts.isEmpty()) { resetCart(carts.get(0).getUser()); }
+		 */
+		return commonOrderId;
 	}
 
 	private boolean validateAndCheckStock(Cart cart) {

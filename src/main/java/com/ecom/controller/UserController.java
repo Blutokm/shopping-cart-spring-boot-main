@@ -165,54 +165,53 @@ public class UserController {
 
 	@PostMapping("/save-order")
 	public Object saveOrder(@ModelAttribute OrderRequest request,
-			@RequestParam(name = "paymentType", required = false) String paymentType,
-			@RequestParam(name = "amount", required = false) Double amount, Principal p,
-			HttpServletRequest servletRequest, Model model) throws Exception {
+	        @RequestParam(name = "paymentType", required = false) String paymentType,
+	        @RequestParam(name = "amount", required = false) Double amount, Principal p,
+	        HttpServletRequest servletRequest, Model model) throws Exception {
 
-		UserDtls user = getLoggedInUserDetails(p);
-		List<Cart> carts = cartService.getCartsByUser(user.getId());
+	    UserDtls user = getLoggedInUserDetails(p);
+	    List<Cart> carts = cartService.getCartsByUser(user.getId());
 
-		String orderId = "HD" + System.currentTimeMillis();
+	    double total = 0;
+	    if (!carts.isEmpty()) {
+	        total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
+	    }
 
-		double total = 0;
-		if (!carts.isEmpty()) {
-			total = carts.get(carts.size() - 1).getTotalOrderPrice() + 250 + 100;
-		}
+	    String realOrderId = orderService.saveOrder(user.getId(), request);
 
-		orderService.saveOrder(user.getId(), request);
+	    model.addAttribute("hasPendingOrders", true);
+	    
+	    model.addAttribute("orderId", realOrderId); 
+	    model.addAttribute("user", user);
+	    model.addAttribute("paymentType",
+	            "VNPAY".equalsIgnoreCase(paymentType) ? "Thanh toán VNPay" : "Thanh toán khi nhận hàng");
+	    model.addAttribute("totalOrderPrice", total);
+	    model.addAttribute("carts", carts);
 
-		model.addAttribute("hasPendingOrders", true);
+	    boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(servletRequest.getHeader("X-Requested-With"));
 
-		model.addAttribute("orderId", orderId);
-		model.addAttribute("user", user);
-		model.addAttribute("paymentType",
-				"VNPAY".equalsIgnoreCase(paymentType) ? "Thanh toán VNPay" : "Thanh toán khi nhận hàng");
-		model.addAttribute("totalOrderPrice", total);
-		model.addAttribute("carts", carts);
+	    if ("VNPAY".equalsIgnoreCase(paymentType)) {
+	        if (amount == null || amount <= 0) {
+	            if (isAjax) {
+	                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid_amount");
+	            } else {
+	                return "redirect:/user/order?error=invalid_amount";
+	            }
+	        }
 
-		boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(servletRequest.getHeader("X-Requested-With"));
+	        String paymentUrl = PaymentController.buildVnPayUrl(servletRequest, amount.longValue(), realOrderId);
+	        
+	        if (isAjax) {
+	            return ResponseEntity.ok(paymentUrl);
+	        } else {
+	            return "redirect:" + paymentUrl;
+	        }
+	    } else {
+	        cartService.clearCartByUser(user.getId());
+	        model.addAttribute("countCart", 0);
+	    }
 
-		if ("VNPAY".equalsIgnoreCase(paymentType)) {
-			if (amount == null || amount <= 0) {
-				if (isAjax) {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid_amount");
-				} else {
-					return "redirect:/user/order?error=invalid_amount";
-				}
-			}
-
-			String paymentUrl = PaymentController.buildVnPayUrl(servletRequest, amount.longValue());
-			if (isAjax) {
-				return ResponseEntity.ok(paymentUrl);
-			} else {
-				return "redirect:" + paymentUrl;
-			}
-		} else {
-			cartService.clearCartByUser(user.getId());
-			model.addAttribute("countCart", 0);
-		}
-
-		return "user/success";
+	    return "user/success";
 	}
 
 	@GetMapping("/success")
