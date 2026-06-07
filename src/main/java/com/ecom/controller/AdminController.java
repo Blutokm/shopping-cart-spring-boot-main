@@ -704,5 +704,32 @@ public class AdminController {
 
 		return "admin/index";
 	}
+	
+	@GetMapping("/userDetails/{id}")
+	public String viewUserDetails(@PathVariable Integer id, Model m) {
+		UserDtls targetUser = userService.getUserById(id);
+		m.addAttribute("targetUser", targetUser);
+		
+		if ("ROLE_USER".equals(targetUser.getRole())) {
+			List<ProductOrder> allOrders = orderService.getAllOrders();
+			List<ProductOrder> userOrders = allOrders.stream()
+					.filter(o -> o.getUser() != null && o.getUser().getId().equals(id))
+					.collect(Collectors.toList());
+			
+			long totalOrders = userOrders.stream().map(ProductOrder::getOrderId).distinct().count();
+			long successOrders = userOrders.stream()
+					.filter(o -> "Delivered".equalsIgnoreCase(o.getStatus()))
+					.map(ProductOrder::getOrderId).distinct().count();
+			
+			m.addAttribute("totalOrders", totalOrders);
+			m.addAttribute("successOrders", successOrders);
+			
+		} else if ("ROLE_MANAGER".equals(targetUser.getRole())) {
+			long totalProducts = productRepository.countByCreatedBy(targetUser);
+			m.addAttribute("totalProducts", totalProducts);
+		}
+		
+		return "admin/user_details";
+	}
 
 }

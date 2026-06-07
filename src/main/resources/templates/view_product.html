@@ -126,14 +126,25 @@
 
 							<div class="mt-4">
 								<th:block th:if="${user == null}">
-									<a href="/signin" class="btn btn-dark col-12 py-2"> <i
-										class="fa-solid fa-cart-plus me-2"></i>Đăng nhập để mua hàng
+									<a href="/signin" class="btn btn-dark col-12 py-2 fw-bold">
+										<i class="fa-solid fa-cart-plus me-2"></i>Đăng nhập để mua
+										hàng
 									</a>
 								</th:block>
-								<th:block th:unless="${user == null}">
-									<button type="submit" class="btn btn-dark col-12 py-2"
+
+								<th:block th:if="${user != null and user.role == 'ROLE_USER'}">
+									<button type="submit" class="btn btn-dark col-12 py-2 fw-bold"
 										th:disabled="${#lists.isEmpty(product.variants)}">
 										<i class="fa-solid fa-cart-plus me-2"></i>Thêm vào giỏ hàng
+									</button>
+								</th:block>
+
+								<th:block th:if="${user != null and user.role != 'ROLE_USER'}">
+									<button type="button"
+										class="btn btn-secondary col-12 py-2 fw-bold opacity-75"
+										disabled>
+										<i class="fa-solid fa-ban me-2"></i>Quản trị viên không thể
+										mua hàng
 									</button>
 								</th:block>
 							</div>

@@ -9,43 +9,67 @@
 	<section class="mt-3 mb-5">
 		<div class="container-fluid">
 			<div class="mb-3">
-				<a href="/admin/orders" class="btn btn-outline-secondary"> 
-					<i class="fa-solid fa-arrow-left"></i> Trở lại danh sách quản lý
+				<a href="/admin/orders" class="btn btn-outline-secondary"> <i
+					class="fa-solid fa-arrow-left"></i> Trở lại danh sách quản lý
 				</a>
 			</div>
 
-			<h3 class="text-center fw-bold mb-4">Chi tiết mã đơn hàng: <span class="text-primary">[[${orderInfo.orderId}]]</span></h3>
+			<h3 class="text-center fw-bold mb-4">
+				Chi tiết mã đơn hàng: <span class="text-primary">[[${orderInfo.orderId}]]</span>
+			</h3>
 
 			<div class="row">
 				<div class="col-md-4">
 					<div class="card shadow-sm border-0 mb-3">
-						<div class="card-header bg-light fw-bold text-uppercase text-secondary">
+						<div
+							class="card-header bg-light fw-bold text-uppercase text-secondary">
 							<i class="fa-solid fa-location-dot me-2"></i> Thông tin giao hàng
 						</div>
 						<div class="card-body fs-6">
-							<p class="mb-2"><strong>Người nhận:</strong> [[${orderInfo.orderAddress.firstName}]] [[${orderInfo.orderAddress.lastName}]]</p>
-							<p class="mb-2"><strong>Số điện thoại:</strong> [[${orderInfo.orderAddress.mobileNo}]]</p>
-							<p class="mb-2"><strong>Email:</strong> [[${orderInfo.orderAddress.email}]]</p>
-							<p class="mb-0"><strong>Địa chỉ nhận hàng:</strong> [[${orderInfo.orderAddress.address}]], [[${orderInfo.orderAddress.city}]], [[${orderInfo.orderAddress.state}]] - [[${orderInfo.orderAddress.pincode}]]</p>
+							<p class="mb-2">
+								<strong>Người nhận:</strong>
+								[[${orderInfo.orderAddress.firstName}]]
+								[[${orderInfo.orderAddress.lastName}]]
+							</p>
+							<p class="mb-2">
+								<strong>Số điện thoại:</strong>
+								[[${orderInfo.orderAddress.mobileNo}]]
+							</p>
+							<p class="mb-2">
+								<strong>Email:</strong> [[${orderInfo.orderAddress.email}]]
+							</p>
+							<p class="mb-0">
+								<strong>Địa chỉ nhận hàng:</strong>
+								[[${orderInfo.orderAddress.state}]],
+								[[${orderInfo.orderAddress.city}]],
+								[[${orderInfo.orderAddress.address}]] -
+								[[${orderInfo.orderAddress.pincode}]]
+							</p>
 						</div>
 					</div>
 
 					<div class="card shadow-sm border-0 mb-3">
-						<div class="card-header bg-light fw-bold text-uppercase text-secondary">
+						<div
+							class="card-header bg-light fw-bold text-uppercase text-secondary">
 							<i class="fa-solid fa-credit-card me-2"></i> Thông tin thanh toán
 						</div>
 						<div class="card-body fs-6">
-							<p class="mb-2"><strong>Ngày đặt hàng:</strong> [[${orderInfo.orderDate}]]</p>
-							<p class="mb-2"><strong>Phương thức mua:</strong> [[${orderInfo.paymentType}]]</p>
-							<p class="mb-0"><strong>Trạng thái hiện tại:</strong> 
-								<span th:switch="${orderInfo.status}"> 
-									<span th:case="'Pending'" class="badge bg-secondary">Đang xử lý</span> 
-									<span th:case="'Received'" class="badge bg-info">Đã nhận đơn</span> 
-									<span th:case="'Packed'" class="badge bg-warning">Đã đóng gói</span> 
-									<span th:case="'Shipping'" class="badge bg-primary">Đang giao</span> 
-									<span th:case="'Delivered'" class="badge bg-success">Hoàn tất</span> 
-									<span th:case="'Cancelled'" class="badge bg-danger">Đã hủy</span> 
-									<span th:case="*">Không xác định</span>
+							<p class="mb-2">
+								<strong>Ngày đặt hàng:</strong> [[${orderInfo.orderDate}]]
+							</p>
+							<p class="mb-2">
+								<strong>Phương thức mua:</strong> [[${orderInfo.paymentType}]]
+							</p>
+							<p class="mb-0">
+								<strong>Trạng thái hiện tại:</strong> <span
+									th:switch="${orderInfo.status}"> <span
+									th:case="'Pending'" class="badge bg-secondary">Đang xử
+										lý</span> <span th:case="'Received'" class="badge bg-info">Đã
+										nhận đơn</span> <span th:case="'Packed'" class="badge bg-warning">Đã
+										đóng gói</span> <span th:case="'Shipping'" class="badge bg-primary">Đang
+										giao</span> <span th:case="'Delivered'" class="badge bg-success">Hoàn
+										tất</span> <span th:case="'Cancelled'" class="badge bg-danger">Đã
+										hủy</span> <span th:case="*">Không xác định</span>
 								</span>
 							</p>
 						</div>
@@ -54,8 +78,10 @@
 
 				<div class="col-md-8">
 					<div class="card shadow-sm border-0">
-						<div class="card-header bg-light fw-bold text-uppercase text-secondary">
-							<i class="fa-solid fa-boxes-stacked me-2"></i> Danh sách mặt hàng sản phẩm đã đặt
+						<div
+							class="card-header bg-light fw-bold text-uppercase text-secondary">
+							<i class="fa-solid fa-boxes-stacked me-2"></i> Danh sách mặt hàng
+							sản phẩm đã đặt
 						</div>
 						<div class="card-body p-0">
 							<div class="table-responsive">
@@ -72,29 +98,33 @@
 										<tr th:each="item : ${orderDetails}">
 											<td class="text-start ps-4">
 												<div class="d-flex align-items-center">
-													<img th:src="@{'/img/product_img/'+${item.product.image}}" 
-														alt="Ảnh sản phẩm" class="me-3 rounded border shadow-sm" 
+													<img
+														th:src="@{'/img/product_img/' + ${item.product.category} + '/' + ${item.product.image}}"
+														alt="Ảnh sản phẩm" class="me-3 rounded border shadow-sm"
 														style="width: 60px; height: 60px; object-fit: cover;">
 													<div>
 														<span class="fw-bold d-block text-dark">[[${item.product.title}]]</span>
-														<small class="badge bg-info text-dark mt-1">Màu: [[${item.color}]]</small>
-														<small class="badge bg-secondary mt-1">Size: [[${item.size}]]</small>
+														<small class="badge bg-info text-dark mt-1">Màu:
+															[[${item.color}]]</small> <small class="badge bg-secondary mt-1">Size:
+															[[${item.size}]]</small>
 													</div>
 												</div>
 											</td>
-											<td>[[${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}]] đ</td>
+											<td>[[${#numbers.formatDecimal(item.price, 0, 'COMMA',
+												0, 'POINT')}]] đ</td>
 											<td class="fw-bold">x[[${item.quantity}]]</td>
 											<td class="text-danger fw-bold text-end pe-4">
-												[[${#numbers.formatDecimal(item.quantity * item.price, 0, 'COMMA', 0, 'POINT')}]] đ
-											</td>
+												[[${#numbers.formatDecimal(item.quantity * item.price, 0,
+												'COMMA', 0, 'POINT')}]] đ</td>
 										</tr>
 									</tbody>
 									<tfoot class="table-light">
 										<tr>
-											<td colspan="3" class="text-end fw-bold py-3">Tổng cộng giá trị tiền hàng:</td>
+											<td colspan="3" class="text-end fw-bold py-3">Tổng cộng
+												giá trị tiền hàng:</td>
 											<td class="text-danger fw-bold text-end pe-4 py-3 fs-5">
-												[[${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')}]] VNĐ
-											</td>
+												[[${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0,
+												'POINT')}]] VNĐ</td>
 										</tr>
 									</tfoot>
 								</table>

@@ -129,7 +129,7 @@ public class HomeController {
 	@GetMapping("/products")
 	public String products(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "") String category, @RequestParam(defaultValue = "0") Double minPrice,
-			@RequestParam(defaultValue = "10000000") Double maxPrice,
+			@RequestParam(defaultValue = "9999999999") Double maxPrice,
 			@RequestParam(defaultValue = "false") Boolean hasDiscount, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam(defaultValue = "") String sort, Model model) {
 
@@ -218,36 +218,34 @@ public class HomeController {
 
 //	Forgot Password Code 
 
-	@GetMapping("/forgot-password")
-	public String showForgotPassword() {
-		return "forgot_password.html";
-	}
-
 	@PostMapping("/forgot-password")
 	public String processForgotPassword(@RequestParam String email, HttpSession session, HttpServletRequest request)
-			throws UnsupportedEncodingException, MessagingException {
+	        throws UnsupportedEncodingException, MessagingException {
 
-		UserDtls userByEmail = userService.getUserByEmail(email);
+	    UserDtls userByEmail = userService.getUserByEmail(email);
 
-		if (ObjectUtils.isEmpty(userByEmail)) {
-			session.setAttribute("errorMsg", "Invalid email");
-		} else {
+	    if (ObjectUtils.isEmpty(userByEmail)) {
+	        session.setAttribute("errorMsg", "Email không tồn tại trong hệ thống!");
+	    }
+	    else if (!"ROLE_USER".equals(userByEmail.getRole())) {
+	        session.setAttribute("errorMsg", "Tính năng này chỉ dành cho tài khoản khách hàng!");
+	    }
+	    else {
+	        String resetToken = UUID.randomUUID().toString();
+	        userService.updateUserResetToken(email, resetToken);
 
-			String resetToken = UUID.randomUUID().toString();
-			userService.updateUserResetToken(email, resetToken);
+	        String url = CommonUtil.generateUrl(request) + "/reset-password?token=" + resetToken;
 
-			String url = CommonUtil.generateUrl(request) + "/reset-password?token=" + resetToken;
+	        Boolean sendMail = commonUtil.sendMail(url, email);
 
-			Boolean sendMail = commonUtil.sendMail(url, email);
+	        if (sendMail) {
+	            session.setAttribute("succMsg", "Vui lòng kiểm tra email của bạn để nhận liên kết đặt lại mật khẩu!");
+	        } else {
+	            session.setAttribute("errorMsg", "Có lỗi xảy ra trên máy chủ! Không thể gửi email.");
+	        }
+	    }
 
-			if (sendMail) {
-				session.setAttribute("succMsg", "Please check your email..Password Reset link sent");
-			} else {
-				session.setAttribute("errorMsg", "Somethong wrong on server ! Email not send");
-			}
-		}
-
-		return "redirect:/forgot-password";
+	    return "redirect:/forgot-password";
 	}
 
 	@GetMapping("/reset-password")

@@ -65,7 +65,7 @@
 						</thead>
 						<tbody>
 							<tr th:each="p,c:${products}">
-								<th scope="row" class="text-center">[[${c.count}]]</th>
+								<th scope="row" class="text-center">[[${c.count + (pageNo * pageSize)}]]</th>
 								<td class="text-center"><img
 									th:src="@{'/img/product_img/' + ${p.category} + '/' + ${p.image}}" width="70px"
 									height="70px" style="object-fit: cover; border-radius: 5px;"></td>

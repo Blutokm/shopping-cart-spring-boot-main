@@ -181,5 +181,11 @@ public class UserServiceImpl implements UserService {
 	public Boolean existsEmail(String email) {
 		return userRepository.existsByEmail(email);
 	}
+	
+	@Override
+	public UserDtls getUserById(Integer id) {
+	    Optional<UserDtls> user = userRepository.findById(id);
+	    return user.orElse(null);
+	}
 
 }

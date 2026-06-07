@@ -2,7 +2,6 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
 	th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
-<!-- Đổi charset sang UTF-8 -->
 <meta charset="UTF-8">
 <title>Quản lý Người dùng</title>
 </head>
@@ -11,8 +10,8 @@
 		<div class="container-fluid">
 			<div class="card card-sh">
 				<div class="card-header text-center">
-					<p class="fs-4" th:if="${userType==1}">Người dùng</p>
-					<p class="fs-4" th:if="${userType==2}">Quản lý của hàng</p>
+					<p class="fs-4" th:if="${userType==1}">Quản lý Người dùng</p>
+					<p class="fs-4" th:if="${userType==2}">Quản lý Cửa hàng</p>
 
 					<th:block th:if="${session.succMsg}">
 						<p class="text-success fw-bold">[[${session.succMsg}]]</p>
@@ -26,37 +25,59 @@
 				</div>
 
 				<div class="card-body">
-					<table class="table">
-						<thead>
-							<tr>
-								<th scope="col">STT</th>
-								<th scope="col">Ảnh đại diện</th>
-								<th scope="col">Họ và tên</th>
-								<th scope="col">Email</th>
-								<th scope="col">Số điện thoại</th>
-								<th scope="col">Địa chỉ</th>
-								<th scope="col">Trạng thái</th>
-								<th scope="col">Hành động</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="u,c:${users}">
-								<th scope="row">[[${c.count}]]</th>
-								<td><img th:src="@{'/img/profile_img/'+${u.profileImage}}"
-									width="70px" height="70px"></td>
-								<td>[[${u.name}]]</td>
-								<td>[[${u.email}]]</td>
-								<td>[[${u.mobileNumber}]]</td>
-								<td>[[${u.address+','+u.city+','+u.state+','+u.pincode}]]</td>
-								<td>[[${u.isEnable ? 'Đang hoạt động' : 'Ngừng hoạt động'}]]</td>
-								<td><a
-									th:href="@{'/admin/updateSts?status=true&id='+${u.id}}+'&type='+${userType}"
-									class="btn btn-sm btn-primary">Kích hoạt</a> <a
-									th:href="@{'/admin/updateSts?status=false&id='+${u.id}}+'&type='+${userType}"
-									class="btn btn-sm btn-danger">Vô hiệu</a></td>
-							</tr>
-						</tbody>
-					</table>
+					<div class="table-responsive">
+						<table class="table table-hover align-middle">
+							<thead class="table-light">
+								<tr>
+									<th scope="col">STT</th>
+									<th scope="col">Ảnh đại diện</th>
+									<th scope="col">Họ và tên</th>
+									<th scope="col">Liên hệ</th>
+									<th scope="col">Địa chỉ (Tỉnh/Thành)</th>
+									<th scope="col">Trạng thái</th>
+									<th scope="col" class="text-center">Hành động</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="u,c:${users}">
+									<th scope="row">[[${c.count}]]</th>
+									<td><img th:src="@{'/img/profile_img/'+${u.profileImage}}"
+										class="rounded-circle" width="60px" height="60px" alt="Avatar">
+									</td>
+									<td class="fw-bold">[[${u.name}]]</td>
+									<td>
+										<div>
+											<i class="fa-solid fa-envelope text-muted"></i>
+											[[${u.email}]]
+										</div>
+										<div>
+											<i class="fa-solid fa-phone text-muted"></i>
+											[[${u.mobileNumber}]]
+										</div>
+									</td>
+
+									<td><span th:text="${u.state + ', ' +u.city }">Hà
+											Nội, VN</span></td>
+
+									<td><span class="badge bg-success" th:if="${u.isEnable}">Đang
+											hoạt động</span> <span class="badge bg-danger"
+										th:unless="${u.isEnable}">Ngừng hoạt động</span></td>
+									<td><a th:href="@{'/admin/userDetails/' + ${u.id}}"
+										class="btn btn-sm btn-info text-white mb-1"> <i
+											class="fa-solid fa-eye"></i> Chi tiết
+									</a> <br /> <a th:if="${!u.isEnable}"
+										th:href="@{'/admin/updateSts?status=true&id='+${u.id}}+'&type='+${userType}"
+										class="btn btn-sm btn-primary mb-1"> <i
+											class="fa-solid fa-unlock"></i> Kích hoạt
+									</a> <a th:if="${u.isEnable}"
+										th:href="@{'/admin/updateSts?status=false&id='+${u.id}}+'&type='+${userType}"
+										class="btn btn-sm btn-warning mb-1"> <i
+											class="fa-solid fa-lock"></i> Vô hiệu
+									</a></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>

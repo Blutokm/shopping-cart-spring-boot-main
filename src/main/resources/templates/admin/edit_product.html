@@ -49,7 +49,8 @@
 									</div>
 									<div class="mb-3 col">
 										<label class="fw-semibold">Giá (VNĐ)</label> <input
-											type="number" name="price" th:value="${product.price}"
+											type="number" name="price"
+											th:value="${#numbers.formatDecimal(product.price, 0, 'NONE', 0, 'POINT')}"
 											class="form-control" placeholder="Nhập giá sản phẩm">
 									</div>
 								</div>
@@ -62,7 +63,8 @@
 									</div>
 									<div class="mb-3 col">
 										<label class="fw-semibold">Giá sau giảm</label> <input
-											type="number" readonly th:value="${product.discountPrice}"
+											type="number" readonly
+											th:value="${#numbers.formatDecimal(product.discountPrice, 0, 'NONE', 0, 'POINT')}"
 											class="form-control">
 									</div>
 								</div>
@@ -151,8 +153,8 @@
 									</div>
 								</div>
 								<div class="mb-3">
-									<label class="fw-semibold">Thay đổi Ảnh chính (Bỏ trống nếu
-										giữ nguyên)</label> <input type="file" name="file"
+									<label class="fw-semibold">Thay đổi Ảnh chính (Bỏ trống
+										nếu giữ nguyên)</label> <input type="file" name="file"
 										class="form-control">
 
 									<div class="mb-3"
@@ -177,7 +179,7 @@
 									</div>
 								</div>
 								<div class="text-center mb-3">
-									<img th:src="@{'/img/product_img/'+${product.image}}"
+									<img th:src="@{'/img/product_img/' + ${product.category} + '/' + ${product.image}}"
 										width="120px" height="120px"
 										style="border-radius: 8px; object-fit: cover; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
 								</div>

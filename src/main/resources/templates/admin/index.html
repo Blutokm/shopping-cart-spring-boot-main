@@ -1,154 +1,297 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{admin/base_admin::layout(~{::section})}">
+	th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
 <meta charset="UTF-8">
 <title>Bảng điều khiển Quản trị</title>
 </head>
 <body>
-<section class="container-fluid">
+	<section class="container-fluid py-4">
 
-    <p class="text-start fs-3 mt-2">Thống Kê Tổng Quan</p>
+		<style>
+.hover-card {
+	transition: all 0.3s ease;
+}
 
-    <div class="row g-4 mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="card shadow-sm border-0 border-start border-primary border-4 h-100 py-2">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs fw-bold text-primary text-uppercase mb-1" style="font-size: 0.8rem;">Tổng Doanh Thu</div>
-                            <div class="h5 mb-0 fw-bold text-dark" th:text="${#numbers.formatDecimal(revenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</div>
-                        </div>
-                        <div class="col-auto"><i class="fa-solid fa-sack-dollar fa-2x text-secondary opacity-50"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card shadow-sm border-0 border-start border-success border-4 h-100 py-2">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs fw-bold text-success text-uppercase mb-1" style="font-size: 0.8rem;">Đơn Hàng</div>
-                            <div class="h5 mb-0 fw-bold text-dark" th:text="${orders}">0</div>
-                        </div>
-                        <div class="col-auto"><i class="fa-solid fa-cart-shopping fa-2x text-secondary opacity-50"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card shadow-sm border-0 border-start border-info border-4 h-100 py-2">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs fw-bold text-info text-uppercase mb-1" style="font-size: 0.8rem;">Sản Phẩm</div>
-                            <div class="h5 mb-0 fw-bold text-dark" th:text="${products}">0</div>
-                        </div>
-                        <div class="col-auto"><i class="fa-solid fa-box-open fa-2x text-secondary opacity-50"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card shadow-sm border-0 border-start border-warning border-4 h-100 py-2">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs fw-bold text-warning text-uppercase mb-1" style="font-size: 0.8rem;">Người Dùng</div>
-                            <div class="h5 mb-0 fw-bold text-dark" th:text="${users}">0</div>
-                        </div>
-                        <div class="col-auto"><i class="fa-solid fa-users fa-2x text-secondary opacity-50"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+.hover-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+</style>
 
-    <div class="row g-4 mb-4">
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white fw-bold text-primary py-3">
-                    <i class="fa-solid fa-chart-line me-2"></i>Biểu đồ Doanh Thu
-                </div>
-                <div class="card-body">
-                    <div style="position: relative; height:320px; width:100%">
-                        <canvas id="revenueLineChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white fw-bold text-primary py-3">
-                    <i class="fa-solid fa-chart-pie me-2"></i>Cơ cấu Sản Phẩm
-                </div>
-                <div class="card-body d-flex flex-column justify-content-center">
-                    <div style="position: relative; height:240px; width:100%">
-                        <canvas id="categoryPieChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h3 class="fw-bold text-gray-800 m-0">Thống Kê Tổng Quan</h3>
+		</div>
 
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        
-        // --- DATA BIỂU ĐỒ ĐƯỜNG (DOANH THU) ---
-        var revenueLabels = /*[[${chartRevenueLabels}]]*/ ["Tháng 1", "Tháng 2"];
-        var revenueData = /*[[${chartRevenueData}]]*/ [0, 0];
+		<div class="row g-4 mb-4">
+			<div class="col-xl-3 col-md-6">
+				<div
+					class="card shadow-sm border-0 border-start border-primary border-4 h-100 py-2 hover-card rounded-3">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col me-2">
+								<div class="text-xs fw-bold text-primary text-uppercase mb-1"
+									style="font-size: 0.8rem; letter-spacing: 0.5px;">Tổng
+									Doanh Thu</div>
+								<div class="h4 mb-0 fw-bold text-dark"
+									th:text="${#numbers.formatDecimal(revenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0
+									₫</div>
+							</div>
+							<div class="col-auto">
+								<div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+									<i class="fa-solid fa-sack-dollar fa-2x text-primary"></i>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-        const ctxLine = document.getElementById('revenueLineChart').getContext('2d');
-        new Chart(ctxLine, {
-            type: 'line',
-            data: {
-                labels: revenueLabels,
-                datasets: [{
-                    label: "Doanh thu (VNĐ)",
-                    backgroundColor: "rgba(13, 110, 253, 0.1)",
-                    borderColor: "#0d6efd",
-                    pointBackgroundColor: "#0d6efd",
-                    data: revenueData,
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true, 
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+			<div class="col-xl-3 col-md-6">
+				<div
+					class="card shadow-sm border-0 border-start border-success border-4 h-100 py-2 hover-card rounded-3">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col me-2">
+								<div class="text-xs fw-bold text-success text-uppercase mb-1"
+									style="font-size: 0.8rem; letter-spacing: 0.5px;">Đơn
+									Hàng</div>
+								<div class="h4 mb-0 fw-bold text-dark" th:text="${orders}">0</div>
+							</div>
+							<div class="col-auto">
+								<div class="bg-success bg-opacity-10 p-3 rounded-circle">
+									<i class="fa-solid fa-cart-shopping fa-2x text-success"></i>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-        // --- DATA BIỂU ĐỒ TRÒN (DANH MỤC) ---
-        var categoryLabels = /*[[${chartCategoryLabels}]]*/ ["Danh mục"];
-        var categoryData = /*[[${chartCategoryData}]]*/ [0];
+			<div class="col-xl-3 col-md-6">
+				<div
+					class="card shadow-sm border-0 border-start border-info border-4 h-100 py-2 hover-card rounded-3">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col me-2">
+								<div class="text-xs fw-bold text-info text-uppercase mb-1"
+									style="font-size: 0.8rem; letter-spacing: 0.5px;">Sản
+									Phẩm</div>
+								<div class="h4 mb-0 fw-bold text-dark" th:text="${products}">0</div>
+							</div>
+							<div class="col-auto">
+								<div class="bg-info bg-opacity-10 p-3 rounded-circle">
+									<i class="fa-solid fa-box-open fa-2x text-info"></i>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-        const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
-        new Chart(ctxPie, {
-            type: 'doughnut',
-            data: {
-                labels: categoryLabels,
-                datasets: [{
-                    data: categoryData,
-                    backgroundColor: ['#0d6efd', '#198754', '#0dcaf0', '#ffc107', '#dc3545', '#6610f2']
-                }]
-            },
-            options: {
-                responsive: true, 
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } },
-                cutout: '75%'
-            }
-        });
-        /*]]>*/
-    </script>
-</section>
+			<div class="col-xl-3 col-md-6">
+				<div
+					class="card shadow-sm border-0 border-start border-warning border-4 h-100 py-2 hover-card rounded-3">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col me-2">
+								<div class="text-xs fw-bold text-warning text-uppercase mb-1"
+									style="font-size: 0.8rem; letter-spacing: 0.5px;">Người
+									Dùng</div>
+								<div class="h4 mb-0 fw-bold text-dark" th:text="${users}">0</div>
+							</div>
+							<div class="col-auto">
+								<div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+									<i class="fa-solid fa-users fa-2x text-warning"></i>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row g-4 mb-4">
+			<div class="col-xl-8 col-lg-7">
+				<div class="card shadow-sm border-0 rounded-4 h-100">
+					<div class="card-header bg-white border-0 pt-4 pb-0">
+						<h6 class="fw-bold text-primary m-0">
+							<i class="fa-solid fa-chart-line me-2"></i>Biểu đồ Doanh Thu Năm
+							Nay
+						</h6>
+					</div>
+					<div class="card-body">
+						<div style="position: relative; height: 350px; width: 100%">
+							<canvas id="revenueLineChart"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-4 col-lg-5">
+				<div class="card shadow-sm border-0 rounded-4 h-100">
+					<div class="card-header bg-white border-0 pt-4 pb-0">
+						<h6 class="fw-bold text-primary m-0">
+							<i class="fa-solid fa-chart-pie me-2"></i>Tỷ trọng Danh mục
+						</h6>
+					</div>
+					<div class="card-body d-flex flex-column justify-content-center">
+						<div style="position: relative; height: 280px; width: 100%">
+							<canvas id="categoryPieChart"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+
+			// --- 1. CONFIG BIỂU ĐỒ ĐƯỜNG (DOANH THU) ---
+			var revenueLabels = /*[[${chartRevenueLabels}]]*/[ "Tháng 1",
+					"Tháng 2" ];
+			var revenueData = /*[[${chartRevenueData}]]*/[ 0, 0 ];
+
+			// Format tiền tệ chuẩn Việt Nam (VD: 1.000.000 ₫)
+			const vndFormat = new Intl.NumberFormat('vi-VN', {
+				style : 'currency',
+				currency : 'VND'
+			});
+
+			const ctxLine = document.getElementById('revenueLineChart')
+					.getContext('2d');
+
+			// Tạo hiệu ứng đổ bóng Gradient siêu đẹp
+			let gradientFill = ctxLine.createLinearGradient(0, 0, 0, 350);
+			gradientFill.addColorStop(0, 'rgba(13, 110, 253, 0.5)'); // Đậm ở trên
+			gradientFill.addColorStop(1, 'rgba(13, 110, 253, 0.02)'); // Mờ dần xuống dưới
+
+			new Chart(ctxLine, {
+				type : 'line',
+				data : {
+					labels : revenueLabels,
+					datasets : [ {
+						label : "Doanh thu",
+						backgroundColor : gradientFill,
+						borderColor : "#0d6efd",
+						borderWidth : 3,
+						pointBackgroundColor : "#fff",
+						pointBorderColor : "#0d6efd",
+						pointBorderWidth : 2,
+						pointRadius : 4,
+						pointHoverRadius : 6,
+						data : revenueData,
+						fill : true,
+						tension : 0.4
+					// Làm cong đường nối cực mượt
+					} ]
+				},
+				options : {
+					responsive : true,
+					maintainAspectRatio : false,
+					plugins : {
+						legend : {
+							display : false
+						},
+						tooltip : {
+							backgroundColor : 'rgba(0,0,0,0.8)',
+							padding : 12,
+							titleFont : {
+								size : 14,
+								family : "'Nunito', sans-serif"
+							},
+							bodyFont : {
+								size : 15,
+								weight : 'bold',
+								family : "'Nunito', sans-serif"
+							},
+							callbacks : {
+								label : function(context) {
+									return ' '
+											+ vndFormat
+													.format(context.parsed.y);
+								}
+							}
+						}
+					},
+					scales : {
+						x : {
+							grid : {
+								display : false,
+								drawBorder : false
+							}
+						},
+						y : {
+							beginAtZero : true,
+							suggestedMax: 10000000,
+							grid : {
+								color : "rgba(0, 0, 0, 0.05)",
+								drawBorder : false,
+								borderDash : [ 5, 5 ]
+							// Kẻ lưới nét đứt chuyên nghiệp
+							},
+							ticks : {
+								padding : 10,
+								callback : function(value) {
+									if (value >= 1000000000)
+										return (value / 1000000000) + ' Tỷ';
+									if (value >= 1000000)
+										return (value / 1000000) + ' Tr';
+									if (value >= 1000)
+										return (value / 1000) + ' K';
+									return value; // Hiển thị số nguyên nếu dưới 1000
+								}
+							}
+						}
+					}
+				}
+			});
+
+			// --- 2. CONFIG BIỂU ĐỒ TRÒN (DANH MỤC SẢN PHẨM) ---
+			var categoryLabels = /*[[${chartCategoryLabels}]]*/[ "Danh mục" ];
+			var categoryData = /*[[${chartCategoryData}]]*/[ 0 ];
+
+			const ctxPie = document.getElementById('categoryPieChart')
+					.getContext('2d');
+			new Chart(ctxPie, {
+				type : 'doughnut',
+				data : {
+					labels : categoryLabels,
+					datasets : [ {
+						data : categoryData,
+						backgroundColor : [ '#0d6efd', '#198754', '#0dcaf0',
+								'#ffc107', '#dc3545', '#6610f2', '#e83e8c',
+								'#fd7e14' ],
+						borderWidth : 2,
+						hoverOffset : 4
+					} ]
+				},
+				options : {
+					responsive : true,
+					maintainAspectRatio : false,
+					plugins : {
+						legend : {
+							position : 'bottom',
+							labels : {
+								padding : 20,
+								usePointStyle : true,
+								pointStyle : 'circle'
+							}
+						},
+						tooltip : {
+							callbacks : {
+								label : function(context) {
+									return ' ' + context.label + ': '
+											+ context.parsed + ' SP';
+								}
+							}
+						}
+					},
+					cutout : '70%' // Làm vòng tròn mỏng hơn, thanh lịch hơn
+				}
+			});
+			/*]]>*/
+		</script>
+	</section>
 </body>
 </html>
