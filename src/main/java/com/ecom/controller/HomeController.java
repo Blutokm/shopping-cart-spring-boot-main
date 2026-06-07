@@ -199,13 +199,17 @@ public class HomeController {
 
 			if (!ObjectUtils.isEmpty(saveUser)) {
 				if (!file.isEmpty()) {
-					File saveFile = new ClassPathResource("static/img").getFile();
+				    File saveFile = new ClassPathResource("static/img").getFile();
+				    
+				    File profileImgDir = new File(saveFile.getAbsolutePath() + File.separator + "profile_img");
+				    
+				    if (!profileImgDir.exists()) {
+				        profileImgDir.mkdirs();
+				    }
 
-					Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
-							+ file.getOriginalFilename());
+				    Path path = Paths.get(profileImgDir.getAbsolutePath() + File.separator + file.getOriginalFilename());
 
-//					System.out.println(path);
-					Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+				    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 				}
 				session.setAttribute("succMsg", "Đăng Ký Thành Công");
 			} else {
@@ -218,35 +222,40 @@ public class HomeController {
 
 //	Forgot Password Code 
 
-	@PostMapping("/forgot-password")
-	public String processForgotPassword(@RequestParam String email, HttpSession session, HttpServletRequest request)
-	        throws UnsupportedEncodingException, MessagingException {
+		@GetMapping("/forgot-password")
+		public String showForgotPassword() {
+			return "forgot_password";
+		}
 
-	    UserDtls userByEmail = userService.getUserByEmail(email);
+		@PostMapping("/forgot-password")
+		public String processForgotPassword(@RequestParam String email, HttpSession session, HttpServletRequest request)
+		        throws UnsupportedEncodingException, MessagingException {
 
-	    if (ObjectUtils.isEmpty(userByEmail)) {
-	        session.setAttribute("errorMsg", "Email không tồn tại trong hệ thống!");
-	    }
-	    else if (!"ROLE_USER".equals(userByEmail.getRole())) {
-	        session.setAttribute("errorMsg", "Tính năng này chỉ dành cho tài khoản khách hàng!");
-	    }
-	    else {
-	        String resetToken = UUID.randomUUID().toString();
-	        userService.updateUserResetToken(email, resetToken);
+		    UserDtls userByEmail = userService.getUserByEmail(email);
 
-	        String url = CommonUtil.generateUrl(request) + "/reset-password?token=" + resetToken;
+		    if (ObjectUtils.isEmpty(userByEmail)) {
+		        session.setAttribute("errorMsg", "Email không tồn tại trong hệ thống!");
+		    }
+		    else if (!"ROLE_USER".equals(userByEmail.getRole())) {
+		        session.setAttribute("errorMsg", "Tính năng này chỉ dành cho tài khoản khách hàng!");
+		    }
+		    else {
+		        String resetToken = UUID.randomUUID().toString();
+		        userService.updateUserResetToken(email, resetToken);
 
-	        Boolean sendMail = commonUtil.sendMail(url, email);
+		        String url = CommonUtil.generateUrl(request) + "/reset-password?token=" + resetToken;
 
-	        if (sendMail) {
-	            session.setAttribute("succMsg", "Vui lòng kiểm tra email của bạn để nhận liên kết đặt lại mật khẩu!");
-	        } else {
-	            session.setAttribute("errorMsg", "Có lỗi xảy ra trên máy chủ! Không thể gửi email.");
-	        }
-	    }
+		        Boolean sendMail = commonUtil.sendMail(url, email);
 
-	    return "redirect:/forgot-password";
-	}
+		        if (sendMail) {
+		            session.setAttribute("succMsg", "Vui lòng kiểm tra email của bạn để nhận liên kết đặt lại mật khẩu!");
+		        } else {
+		            session.setAttribute("errorMsg", "Có lỗi xảy ra trên máy chủ! Không thể gửi email.");
+		        }
+		    }
+
+		    return "redirect:/forgot-password";
+		}
 
 	@GetMapping("/reset-password")
 	public String showResetPassword(@RequestParam String token, HttpSession session, Model m) {

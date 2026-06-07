@@ -31,16 +31,18 @@ public class CommonUtil {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
-        helper.setFrom("blutokit@gmail.com", "Shopping Cart");
+        helper.setFrom("blutokit@gmail.com", "ShopPKTH");
         helper.setTo(reciepentEmail);
 
-        String content = "<p>Hello,</p>"
-                + "<p>You have requested to reset your password.</p>"
-                + "<p>Click the link below to change your password:</p>"
-                + "<p><a href=\"" + url + "\">Change my password</a></p>";
+        String content = "<p>Xin chào,</p>"
+                + "<p>Bạn vừa yêu cầu đặt lại mật khẩu cho tài khoản của mình trên hệ thống.</p>"
+                + "<p>Vui lòng nhấp vào liên kết bên dưới để tiến hành đổi mật khẩu mới:</p>"
+                + "<p><a href=\"" + url + "\" style=\"display: inline-block; padding: 10px 20px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px;\">Đổi mật khẩu ngay</a></p>"
+                + "<p><i>Lưu ý: Nếu bạn không yêu cầu đổi mật khẩu, vui lòng bỏ qua email này.</i></p>";
 
-        helper.setSubject("Password Reset");
+        helper.setSubject("Yêu cầu đặt lại mật khẩu - ShopPKTH");
         helper.setText(content, true);
+        
         mailSender.send(message);
         return true;
     }
@@ -54,20 +56,23 @@ public class CommonUtil {
 
     public Boolean sendMailForProductOrder(ProductOrder order, String status) throws Exception {
 
-        msg = "<p>Hello [[name]],</p>"
-                + "<p>Thank you for your order. Current status: <b>[[orderStatus]]</b>.</p>"
-                + "<p><b>Product Details:</b></p>"
-                + "<p>Name : [[productName]]</p>"
-                + "<p>Category : [[category]]</p>"
-                + "<p>Quantity : [[quantity]]</p>"
-                + "<p>Price : [[price]]</p>"
-                + "<p>Payment Type : [[paymentType]]</p>";
+        msg = "<p>Xin chào <b>[[name]]</b>,</p>"
+                + "<p>Cảm ơn bạn đã mua sắm tại ShopPKTH. Trạng thái đơn hàng của bạn hiện tại là: <b style=\"color: red;\">[[orderStatus]]</b>.</p>"
+                + "<p><b>Chi tiết sản phẩm:</b></p>"
+                + "<ul>"
+                + "<li><b>Tên sản phẩm:</b> [[productName]]</li>"
+                + "<li><b>Danh mục:</b> [[category]]</li>"
+                + "<li><b>Số lượng:</b> [[quantity]]</li>"
+                + "<li><b>Đơn giá:</b> [[price]] ₫</li>"
+                + "<li><b>Hình thức thanh toán:</b> [[paymentType]]</li>"
+                + "</ul>"
+                + "<p>Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất. Chúc bạn một ngày vui vẻ!</p>";
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
         String email = null;
-        String firstName = "Customer";
+        String firstName = "Quý khách";
 
         if (order.getOrderAddress() != null) {
             email = order.getOrderAddress().getEmail();
@@ -81,7 +86,7 @@ public class CommonUtil {
             return false;
         }
 
-        helper.setFrom("blutokit@gmail.com", "Shopping Cart");
+        helper.setFrom("blutokit@gmail.com", "ShopPKTH");
         helper.setTo(email);
 
         msg = msg.replace("[[name]]", firstName);
@@ -97,9 +102,9 @@ public class CommonUtil {
         msg = msg.replace("[[paymentType]]",
                 order.getPaymentType() != null ? order.getPaymentType() : "N/A");
 
-        helper.setSubject("Product Order Status");
+        helper.setSubject("Cập nhật trạng thái đơn hàng - ShopPKTH");
         helper.setText(msg, true);
-        //mailSender.send(message);
+
         return true;
     }
 

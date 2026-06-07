@@ -36,11 +36,9 @@ $(function(){
             },
             city: {
                 required: true,
-                space: true
             },
             state: {
-                required: true,
-                space: true
+                required: true,        
             },
             pincode: {
                 required: true,
@@ -252,11 +250,9 @@ $(function(){
             },
             city: {
                 required: true,
-                space: true
             },
             state: {
                 required: true,
-                space: true
             },
             pincode: {
                 required: true,
