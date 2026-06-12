@@ -3,132 +3,138 @@
       th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title>Hồ sơ cá nhân</title>
+    <title>Hồ sơ Quản trị viên - ShopPKTH</title>
 </head>
 <body>
     <section>
-        <div class="container-fluid bg-light">
-            <div class="row">
-                <div class="col-md-10 offset-md-1 ">
+        <div class="container-fluid px-4 mt-4 mb-5">
+            
+            <div class="text-center mb-4">
+                <h3 class="fw-bold text-primary text-uppercase mb-1">Hồ sơ Quản trị viên</h3>
+                <p class="text-muted">Quản lý thông tin cá nhân và bảo mật tài khoản Admin</p>
+            </div>
 
-                    <p class="fs-3 text-center">Hồ sơ của tôi</p>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    
                     <th:block th:if="${session.succMsg}">
-                        <p class="text-success fw-bold text-center">[[${session.succMsg}]]</p>
+                        <div class="alert alert-success text-center fw-semibold shadow-sm border-0 rounded-3">
+                            <i class="fa-solid fa-circle-check me-2"></i> [[${session.succMsg}]]
+                        </div>
                         <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
                     </th:block>
 
                     <th:block th:if="${session.errorMsg}">
-                        <p class="text-danger fw-bold text-center">[[${session.errorMsg}]]</p>
+                        <div class="alert alert-danger text-center fw-semibold shadow-sm border-0 rounded-3">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i> [[${session.errorMsg}]]
+                        </div>
                         <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
                     </th:block>
-                    <hr>
-                    <div class="text-center">
-                        <img alt="" th:src="@{'../img/profile_img/'+${user.profileImage}}"
-                             class="border p-2"
-                             style="width: 110px; height: 110px; border-radius: 50%;">
-                    </div>
-                    <div class="col-md-8 offset-md-2 mt-4">
-                        <table class="table table-borderless">
-                            <tbody>
-                                <form action="/admin/update-profile" method="post" enctype="multipart/form-data">
-                                    <tr>
-                                        <th scope="row">Họ và tên</th>
-                                        <td>:</td>
-                                        <td><input type="text" name="name" class="form-control" th:value="${user.name}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Số điện thoại</th>
-                                        <td>:</td>
-                                        <td><input type="text" name="mobileNumber" class="form-control" th:value="${user.mobileNumber}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Email</th>
-                                        <td>:</td>
-                                        <td><input type="text" class="form-control" readonly th:value="${user.email}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Địa chỉ</th>
-                                        <td>:</td>
-                                        <td><input type="text" name="address" class="form-control" th:value="${user.address}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Thành phố</th>
-                                        <td>:</td>
-                                        <td><input type="text" name="city" class="form-control" th:value="${user.city}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Quận/Huyện</th>
-                                        <td>:</td>
-                                        <td><input type="text" name="state" class="form-control" th:value="${user.state}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Mã bưu điện</th>
-                                        <td>:</td>
-                                        <td><input type="text" name="pincode" class="form-control" th:value="${user.pincode}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Ảnh đại diện</th>
-                                        <td>:</td>
-                                        <td><input type="file" name="img" class="form-control"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Vai trò</th>
-                                        <td>:</td>
-                                        <td><input type="text" class="form-control" readonly th:value="${user.role}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Trạng thái tài khoản</th>
-                                        <td>:</td>
-                                        <td>
-                                            <input type="text" class="form-control" readonly th:value="${user.isEnable}">
-                                            <input type="hidden" th:value="${user.id}" name="id">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm bg-primary text-light">Cập nhật</button>
-                                        </td>
-                                    </tr>
-                                </form>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <hr>
-                <div class="col-md-10 offset-md-1 mt-1">
-                    <div class="row">
-                        <p class="text-center fs-3">Đổi mật khẩu</p>
-                        <div class="col-md-6 offset-md-3">
-                            <table class="table table-borderless">
-                                <tbody>
-                                    <form action="/admin/change-password" method="post">
-                                        <tr>
-                                            <th scope="row">Mật khẩu hiện tại</th>
-                                            <td><input type="password" name="currentPassword" class="form-control"></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Mật khẩu mới</th>
-                                            <td><input type="password" name="newPassword" class="form-control"></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Xác nhận mật khẩu</th>
-                                            <td><input type="password" name="confirmPassword" class="form-control"></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td class="text-center">
-                                                <button class="btn btn-sm bg-primary text-light col-md-4">Cập nhật</button>
-                                            </td>
-                                        </tr>
-                                    </form>
-                                </tbody>
-                            </table>
+                    <div class="card shadow-sm border-0 mb-5 rounded-4" style="border-top: 4px solid var(--primary-color) !important;">
+                        <div class="card-body p-4 p-md-5">
+                            <div class="text-center mb-4">
+                                <div class="position-relative d-inline-block">
+                                    <img alt="Admin Avatar" th:src="@{'../img/profile_img/'+${user.profileImage}}"
+                                         class="p-1 rounded-circle shadow-sm bg-white"
+                                         style="width: 130px; height: 130px; object-fit: cover; border: 3px solid var(--primary-color);">
+                                </div>
+                                <h5 class="fw-bold mt-3 mb-0">[[${user.name}]]</h5>
+                                <span class="badge bg-light text-dark border mt-2 px-3 py-2 rounded-pill">
+                                    <i class="fa-solid fa-user-shield text-primary me-1"></i> 
+                                    <th:block th:if="${user.role == 'ROLE_SUPERADMIN'}">Siêu quản trị</th:block>
+                                    <th:block th:if="${user.role == 'ROLE_MANAGER'}">Quản lý</th:block>
+                                    <th:block th:if="${user.role != 'ROLE_SUPERADMIN' and user.role != 'ROLE_MANAGER'}">[[${user.role}]]</th:block>
+                                </span>
+                            </div>
+
+                            <form action="/admin/update-profile" method="post" enctype="multipart/form-data">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-user me-2"></i>Họ và tên</label>
+                                        <input type="text" name="name" class="form-control bg-light" th:value="${user.name}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-phone me-2"></i>Số điện thoại</label>
+                                        <input type="text" name="mobileNumber" class="form-control bg-light" th:value="${user.mobileNumber}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-envelope me-2"></i>Email</label>
+                                        <input type="text" class="form-control" readonly th:value="${user.email}" style="background-color: #e9ecef; cursor: not-allowed;">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-image me-2"></i>Cập nhật ảnh đại diện</label>
+                                        <input type="file" name="img" class="form-control bg-light">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-map-location-dot me-2"></i>Địa chỉ</label>
+                                        <input type="text" name="address" class="form-control bg-light" th:value="${user.address}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-city me-2"></i>Thành phố</label>
+                                        <input type="text" name="city" class="form-control bg-light" th:value="${user.city}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-map me-2"></i>Quận/Huyện</label>
+                                        <input type="text" name="state" class="form-control bg-light" th:value="${user.state}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-envelopes-bulk me-2"></i>Mã bưu điện</label>
+                                        <input type="text" name="pincode" class="form-control bg-light" th:value="${user.pincode}">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-toggle-on me-2"></i>Trạng thái tài khoản</label>
+                                        <input type="text" class="form-control" readonly 
+                                               th:value="${user.isEnable ? 'Đang kích hoạt' : 'Bị khóa'}"
+                                               th:classappend="${user.isEnable ? 'text-success' : 'text-danger'}"
+                                               style="background-color: #e9ecef; cursor: not-allowed; font-weight: 600;">
+                                        
+                                        <input type="hidden" name="isEnable" th:value="${user.isEnable}">
+                                        <input type="hidden" name="id" th:value="${user.id}">
+                                        <input type="hidden" name="role" th:value="${user.role}">
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-5 pt-3 border-top">
+                                    <button class="btn btn-primary px-5 py-2 fw-bold text-uppercase shadow-sm rounded-pill">
+                                        <i class="fa-solid fa-floppy-disk me-2"></i> Cập nhật hồ sơ
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                </div>
 
+                    <div class="card shadow-sm border-0 rounded-4" style="border-top: 4px solid #343a40 !important;">
+                        <div class="card-body p-4 p-md-5">
+                            <div class="text-center mb-4">
+                                <h4 class="fw-bold mb-1"><i class="fa-solid fa-lock text-dark me-2"></i>Đổi mật khẩu</h4>
+                                <p class="text-muted small">Đảm bảo mật khẩu của bạn đủ mạnh và được bảo mật tốt</p>
+                            </div>
+                            
+                            <form action="/admin/change-password" method="post" class="col-md-8 offset-md-2">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-secondary">Mật khẩu hiện tại</label>
+                                    <input type="password" name="currentPassword" class="form-control bg-light" placeholder="Nhập mật khẩu cũ">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-secondary">Mật khẩu mới</label>
+                                    <input type="password" name="newPassword" class="form-control bg-light" placeholder="Nhập mật khẩu mới">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-secondary">Xác nhận mật khẩu</label>
+                                    <input type="password" name="confirmPassword" class="form-control bg-light" placeholder="Nhập lại mật khẩu mới">
+                                </div>
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-dark px-5 py-2 fw-bold text-uppercase shadow-sm rounded-pill">
+                                        <i class="fa-solid fa-key me-2"></i> Cập nhật mật khẩu
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </section>

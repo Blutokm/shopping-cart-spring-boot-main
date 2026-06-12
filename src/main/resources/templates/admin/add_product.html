@@ -3,123 +3,175 @@
 	th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
 <meta charset="UTF-8">
-<title>Thêm Sản Phẩm</title>
+<title>Thêm Sản Phẩm - ShopPKTH</title>
 </head>
 <body>
 	<section>
-		<div class="container">
-			<p class="text-center fs-3 mt-2">Thêm Sản Phẩm Mới</p>
-			<div class="text-center mb-3">
-				<th:block th:if="${session.succMsg}">
-					<p class="text-success fw-bold">[[${session.succMsg}]]</p>
-					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-				</th:block>
-				<th:block th:if="${session.errorMsg}">
-					<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
-					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-				</th:block>
+		<div class="container-fluid px-4 mt-4 mb-5">
+
+			<div class="text-center mb-4">
+				<h3 class="fw-bold text-primary text-uppercase mb-1">Thêm Sản
+					Phẩm Mới</h3>
+				<p class="text-muted">Cập nhật danh mục và hàng hóa mới vào hệ
+					thống</p>
 			</div>
 
-			<div class="row">
-				<div class="col-md-10 offset-md-1">
-					<div class="card shadow-sm">
-						<div class="card-body p-4">
+			<div class="row justify-content-center">
+				<div class="col-lg-10">
+
+					<th:block th:if="${session.succMsg}">
+						<div
+							class="alert alert-success text-center fw-semibold shadow-sm border-0 rounded-3">
+							<i class="fa-solid fa-circle-check me-2"></i>
+							[[${session.succMsg}]]
+						</div>
+						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+					</th:block>
+
+					<th:block th:if="${session.errorMsg}">
+						<div
+							class="alert alert-danger text-center fw-semibold shadow-sm border-0 rounded-3">
+							<i class="fa-solid fa-circle-exclamation me-2"></i>
+							[[${session.errorMsg}]]
+						</div>
+						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+					</th:block>
+
+					<div class="card shadow-sm border-0 mb-5 rounded-4"
+						style="border-top: 4px solid var(--primary-color) !important;">
+						<div class="card-body p-4 p-md-5">
 							<form action="/admin/saveProduct" method="post"
 								enctype="multipart/form-data">
-								<div class="mb-3">
-									<label class="fw-semibold">Tên sản phẩm</label> <input
-										type="text" name="title" class="form-control"
-										placeholder="Nhập tên sản phẩm" required>
-								</div>
-								<div class="mb-3">
-									<label class="fw-semibold">Mô tả</label>
-									<textarea rows="4" name="description" class="form-control"
-										placeholder="Nhập mô tả sản phẩm..." required></textarea>
-								</div>
-								<div class="mb-3">
-									<label class="fw-semibold">Danh mục</label> <select
-										class="form-control" name="category" required>
-										<option value="">--Chọn--</option>
-										<option th:each="c:${categories}" th:value="${c.name}"
-											th:text="${c.name}"></option>
-									</select>
-								</div>
-								<div class="mb-3">
-									<label class="fw-semibold">Giá (VNĐ)</label> <input
-										type="number" name="price" class="form-control"
-										placeholder="Nhập giá sản phẩm" required>
+
+								<div class="row g-4">
+									<div class="col-md-12">
+										<label class="form-label fw-semibold text-secondary"><i
+											class="fa-solid fa-box-open me-2"></i>Tên sản phẩm <span
+											class="text-danger">*</span></label> <input type="text" name="title"
+											class="form-control bg-light" placeholder="Nhập tên sản phẩm"
+											required>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label fw-semibold text-secondary"><i
+											class="fa-solid fa-layer-group me-2"></i>Danh mục <span
+											class="text-danger">*</span></label> <select
+											class="form-select bg-light" name="category" required>
+											<option value="">-- Chọn danh mục --</option>
+											<option th:each="c:${categories}" th:value="${c.name}"
+												th:text="${c.name}"></option>
+										</select>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label fw-semibold text-secondary"><i
+											class="fa-solid fa-money-bill-wave me-2"></i>Giá (VNĐ) <span
+											class="text-danger">*</span></label> <input type="number"
+											name="price" class="form-control bg-light"
+											placeholder="VD: 250000" required min="0"
+											oninput="if(this.value < 0) this.value = '';">
+									</div>
+
+									<div class="col-md-12">
+										<label class="form-label fw-semibold text-secondary"><i
+											class="fa-solid fa-align-left me-2"></i>Mô tả sản phẩm <span
+											class="text-danger">*</span></label>
+										<textarea rows="4" name="description"
+											class="form-control bg-light"
+											placeholder="Nhập mô tả chi tiết cho sản phẩm..." required></textarea>
+									</div>
+
+									<div class="col-md-12">
+										<div class="card border rounded-3 overflow-hidden shadow-sm">
+											<div
+												class="card-header bg-light border-bottom d-flex justify-content-between align-items-center py-3">
+												<span class="fw-bold text-dark"><i
+													class="fa-solid fa-tags text-primary me-2"></i>Phân loại
+													(Màu sắc, Size, Tồn kho)</span>
+												<button type="button"
+													class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3"
+													onclick="addVariantRow()">
+													<i class="fa-solid fa-plus me-1"></i> Thêm phân loại
+												</button>
+											</div>
+											<div class="card-body p-0">
+												<table class="table table-borderless mb-0"
+													id="variantsTable">
+													<thead class="border-bottom bg-white">
+														<tr class="text-secondary">
+															<th>Màu sắc</th>
+															<th>Size</th>
+															<th>Tồn kho</th>
+															<th class="text-center" style="width: 80px;">Xóa</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td><input type="text" name="colors"
+																class="form-control form-control-sm bg-light"
+																placeholder="VD: Đen, Trắng, Đỏ..." required></td>
+															<td><select name="sizes"
+																class="form-select form-select-sm bg-light" required>
+																	<option value="S">S</option>
+																	<option value="M">M</option>
+																	<option value="L">L</option>
+																	<option value="XL">XL</option>
+																	<option value="Free Size">Free Size</option>
+															</select></td>
+															<td><input type="number" name="stocks"
+																class="form-control form-control-sm bg-light"
+																placeholder="Số lượng" required min="0"
+																oninput="if(this.value < 0) this.value = '';"></td>
+															<td class="text-center">
+																<button type="button"
+																	class="btn btn-sm btn-danger rounded-circle"
+																	onclick="removeVariantRow(this)" title="Xóa">
+																	<i class="fa-solid fa-trash"></i>
+																</button>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label fw-semibold text-secondary"><i
+											class="fa-solid fa-image me-2"></i>Ảnh chính (Hiển thị đại
+											diện) <span class="text-danger">*</span></label> <input type="file"
+											name="file" class="form-control bg-light" accept="image/*"
+											required>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label fw-semibold text-secondary"><i
+											class="fa-solid fa-images me-2"></i>Ảnh phụ (Chọn nhiều ảnh)</label>
+										<input type="file" name="extraImageFiles"
+											class="form-control bg-light" accept="image/*" multiple>
+									</div>
+
+									<div class="col-md-12 mt-4 border-top pt-4">
+										<label class="form-label fw-semibold text-secondary me-4"><i
+											class="fa-solid fa-toggle-on me-2"></i>Trạng thái hiển thị:</label>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="isActive"
+												id="active" value="true" checked> <label
+												class="form-check-label fw-medium text-success" for="active">Kích
+												hoạt</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="isActive"
+												id="inactive" value="false"> <label
+												class="form-check-label fw-medium text-danger"
+												for="inactive">Ngừng kích hoạt</label>
+										</div>
+									</div>
 								</div>
 
-								<div class="card mb-3 border-info">
-									<div
-										class="card-header bg-info text-white fw-bold d-flex justify-content-between align-items-center">
-										Phân loại sản phẩm (Màu sắc, Size, Tồn kho)
-										<button type="button"
-											class="btn btn-sm btn-light text-dark fw-bold"
-											onclick="addVariantRow()">+ Thêm phân loại</button>
-									</div>
-									<div class="card-body p-2">
-										<table class="table table-bordered mb-0" id="variantsTable">
-											<thead class="table-light">
-												<tr>
-													<th>Màu sắc</th>
-													<th>Size</th>
-													<th>Tồn kho</th>
-													<th class="text-center">Xóa</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr>
-													<td><input type="text" name="colors"
-														class="form-control form-control-sm"
-														placeholder="VD: Đen, Trắng, Đỏ..." required></td>
-													<td><select name="sizes"
-														class="form-control form-control-sm" required>
-															<option value="S">S</option>
-															<option value="M">M</option>
-															<option value="L">L</option>
-															<option value="XL">XL</option>
-															<option value="Free Size">Free Size</option>
-													</select></td>
-													<td><input type="number" name="stocks" min="0"
-														class="form-control form-control-sm"
-														placeholder="Số lượng" required></td>
-													<td class="text-center"><button type="button"
-															class="btn btn-sm btn-danger"
-															onclick="removeVariantRow(this)">
-															<i class="fa-solid fa-trash"></i>
-														</button></td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-								</div>
-								<div class="mb-3">
-									<label class="fw-semibold">Trạng thái</label><br>
-									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="radio" name="isActive"
-											id="active" value="true" checked> <label
-											class="form-check-label" for="active">Kích hoạt</label>
-									</div>
-									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="radio" name="isActive"
-											id="inactive" value="false"> <label
-											class="form-check-label" for="inactive">Ngừng kích
-											hoạt</label>
-									</div>
-								</div>
-								<div class="mb-3">
-									<label>Ảnh chính sản phẩm</label> <input type="file"
-										name="file" class="form-control" required>
-								</div>
-
-								<div class="mb-3">
-									<label>Ảnh phụ bổ sung (Chọn nhiều ảnh)</label> <input
-										type="file" name="extraImageFiles" class="form-control"
-										multiple>
-								</div>
-								<div class="text-center">
-									<button class="btn btn-primary px-5 py-2">Lưu sản phẩm</button>
+								<div class="text-center mt-5">
+									<button type="submit"
+										class="btn btn-primary px-5 py-2 fw-bold text-uppercase shadow-sm rounded-pill">
+										<i class="fa-solid fa-floppy-disk me-2"></i> Lưu sản phẩm
+									</button>
 								</div>
 							</form>
 						</div>
@@ -129,28 +181,39 @@
 		</div>
 
 		<script>
-			function addVariantRow() {
-				const tbody = document.querySelector("#variantsTable tbody");
-				const tr = document.createElement("tr");
-				tr.innerHTML = `
-					<td><input type="text" name="colors" class="form-control form-control-sm" placeholder="VD: Đen..." required></td>
-					<td>
-						<select name="sizes" class="form-control form-control-sm" required>
-							<option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option><option value="Free Size">Free Size</option>
-						</select>
-					</td>
-					<td><input type="number" name="stocks" min="0" class="form-control form-control-sm" placeholder="Số lượng" required></td>
-					<td class="text-center"><button type="button" class="btn btn-sm btn-danger" onclick="removeVariantRow(this)"><i class="fa-solid fa-trash"></i></button></td>
-				`;
-				tbody.appendChild(tr);
-			}
+		function addVariantRow() {
+		    const tbody = document.querySelector("#variantsTable tbody");
+		    const tr = document.createElement("tr");
+		    tr.innerHTML = `
+		        <td><input type="text" name="colors" class="form-control form-control-sm bg-light" placeholder="VD: Đen..." required></td>
+		        <td>
+		            <select name="sizes" class="form-select form-select-sm bg-light" required>
+		                <option value="S">S</option>
+		                <option value="M">M</option>
+		                <option value="L">L</option>
+		                <option value="XL">XL</option>
+		                <option value="Free Size">Free Size</option>
+		            </select>
+		        </td>
+		        <td>
+		            <input type="number" name="stocks" class="form-control form-control-sm bg-light" placeholder="Số lượng" required 
+		                   min="0" oninput="if(this.value < 0) this.value = '';">
+		        </td>
+		        <td class="text-center">
+		            <button type="button" class="btn btn-sm btn-danger rounded-circle" onclick="removeVariantRow(this)" title="Xóa">
+		                <i class="fa-solid fa-trash"></i>
+		            </button>
+		        </td>
+		    `;
+		    tbody.appendChild(tr);
+		}
 
 			function removeVariantRow(button) {
 				const row = button.closest("tr");
 				if(document.querySelectorAll("#variantsTable tbody tr").length > 1) {
 					row.remove();
 				} else {
-					alert("Phải có ít nhất 1 phân loại sản phẩm!");
+					alert("Cần có ít nhất 1 phân loại cho sản phẩm này!");
 				}
 			}
 		</script>

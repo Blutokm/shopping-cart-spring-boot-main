@@ -3,98 +3,98 @@
 	th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
 <meta charset="UTF-8">
-<title>Thêm Quản Trị Viên</title>
+<title>Thêm Quản Trị Viên - ShopPKTH</title>
 </head>
 <body>
 	<section>
-		<div class="container mt-4">
-			<div class="row">
-				<div class="col-md-7 p-2 offset-md-2">
-					<div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
-						<div class="card-header text-center">
-							<p class="fs-4 text-center">Thêm Quản Lý</p>
+		<div class="container-fluid px-4 mt-4 mb-5">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold text-primary text-uppercase mb-1">Thêm Quản Lý Mới</h3>
+                <p class="text-muted">Cấp quyền truy cập và quản lý cửa hàng cho nhân sự mới</p>
+            </div>
 
-							<th:block th:if="${session.succMsg}">
-								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
-								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-							</th:block>
+			<div class="row justify-content-center">
+				<div class="col-lg-8 col-md-10">
+					<div class="card shadow-sm border-0 rounded-4" style="border-top: 4px solid var(--primary-color) !important;">
+						
+                        <div class="card-body p-4 p-md-5">
+                            <div class="text-center mb-4">
+                                <th:block th:if="${session.succMsg}">
+                                    <div class="alert alert-success py-2 fw-semibold shadow-sm border-0 rounded-3">
+                                        <i class="fa-solid fa-circle-check me-1"></i> [[${session.succMsg}]]
+                                    </div>
+                                    <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                                </th:block>
 
-							<th:block th:if="${session.errorMsg}">
-								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
-								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-							</th:block>
-						</div>
+                                <th:block th:if="${session.errorMsg}">
+                                    <div class="alert alert-danger py-2 fw-semibold shadow-sm border-0 rounded-3">
+                                        <i class="fa-solid fa-circle-exclamation me-1"></i> [[${session.errorMsg}]]
+                                    </div>
+                                    <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                                </th:block>
+                            </div>
 
-						<div class="card-body">
-							<form action="/admin/save-admin" enctype="multipart/form-data"
-								method="post" id="adminRegister" novalidate>
+							<form action="/admin/save-admin" enctype="multipart/form-data" method="post" id="adminRegister" novalidate>
 
-								<div class="row">
-									<div class="col">
-										<label class="form-label">Họ và tên</label> <input required
-											class="form-control" name="name" type="text">
-									</div>
-									<div class="col">
-										<label class="form-label">Số điện thoại</label> <input
-											required class="form-control" name="mobileNumber"
-											type="number">
-									</div>
-								</div>
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-user-tie me-2"></i>Họ và tên <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="name" type="text" placeholder="Nhập họ và tên">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-phone me-2"></i>Số điện thoại <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="mobileNumber" type="number" placeholder="Nhập SĐT">
+                                    </div>
 
-								<div class="mb-3 mt-3">
-									<label class="form-label">Email</label> <input required
-										class="form-control" name="email" type="email">
-								</div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-envelope me-2"></i>Email <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="email" type="email" placeholder="example@gmail.com">
+                                    </div>
 
-								<div class="row">
-									<div class="col">
-										<label class="form-label">Địa chỉ</label> <input required
-											class="form-control" name="address" type="text">
-									</div>
-									<div class="col">
-										<label class="form-label">Thành phố</label> <input required
-											class="form-control" name="city" type="text">
-									</div>
-								</div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-map-location-dot me-2"></i>Địa chỉ cụ thể <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="address" type="text" placeholder="Số nhà, tên đường...">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-city me-2"></i>Thành phố <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="city" type="text" placeholder="VD: Hà Nội">
+                                    </div>
 
-								<div class="row mt-3">
-									<div class="col">
-										<label class="form-label">Quận/Huyện</label> <input required
-											class="form-control" name="state" type="text">
-									</div>
-									<div class="col">
-										<label class="form-label">Mã bưu điện</label> <input required
-											class="form-control" name="pincode" type="number">
-									</div>
-								</div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-map me-2"></i>Quận/Huyện <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="state" type="text" placeholder="VD: Cầu Giấy">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-envelopes-bulk me-2"></i>Mã bưu điện <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="pincode" type="number" placeholder="VD: 100000">
+                                    </div>
 
-								<div class="mb-3">
-									<label class="form-label">Giới hạn số lượng Sản phẩm
-										tối đa</label> <input required type="number" name="maxProductLimit"
-										class="form-control" value="50" min="1"> <small
-										class="text-muted">Mặc định: 50 sản phẩm</small>
-								</div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-box me-2"></i>Giới hạn số lượng Sản phẩm tối đa <span class="text-danger">*</span></label> 
+                                        <input required type="number" name="maxProductLimit" class="form-control bg-light" value="50" min="1" oninput="if(this.value < 0) this.value = '';"> 
+                                        <small class="text-muted"><i class="fa-solid fa-circle-info me-1"></i>Mặc định: 50 sản phẩm</small>
+                                    </div>
 
-								<div class="row mt-3">
-									<div class="col">
-										<label class="form-label">Mật khẩu</label> <input required
-											class="form-control" name="password" type="password"
-											id="adminPass">
-									</div>
-									<div class="col">
-										<label class="form-label">Xác nhận mật khẩu</label> <input
-											required class="form-control" name="cpassword"
-											type="password">
-									</div>
-								</div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-lock me-2"></i>Mật khẩu <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="password" type="password" id="adminPass">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-circle-check me-2"></i>Xác nhận mật khẩu <span class="text-danger">*</span></label> 
+                                        <input required class="form-control bg-light" name="cpassword" type="password">
+                                    </div>
 
-								<div class="mb-3 mt-3">
-									<label class="form-label">Ảnh đại diện</label> <input
-										class="form-control" name="img" type="file" required>
-								</div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-image me-2"></i>Ảnh đại diện <span class="text-danger">*</span></label> 
+                                        <input class="form-control bg-light" name="img" type="file" required accept="image/*">
+                                    </div>
+                                </div>
 
-								<button type="submit"
-									class="btn bg-primary text-white col-md-12">Đăng ký</button>
+                                <div class="text-center mt-5 pt-3 border-top">
+                                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold text-uppercase shadow-sm rounded-pill w-100">
+                                        <i class="fa-solid fa-user-plus me-2"></i> Tạo tài khoản quản lý
+                                    </button>
+                                </div>
 							</form>
 						</div>
 					</div>
@@ -102,18 +102,18 @@
 			</div>
 		</div>
 
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-		<script
-			src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 		<script src="/js/script.js"></script>
 
 		<style>
-.error {
-	color: red !important;
-	font-size: 0.875em;
-	margin-top: 0.25rem;
-}
-</style>
+            .error {
+                color: #dc3545 !important;
+                font-size: 0.85em;
+                margin-top: 0.3rem;
+                font-weight: 500;
+            }
+		</style>
 	</section>
 </body>
 </html>

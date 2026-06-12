@@ -3,90 +3,91 @@
       th:replace="~{base::layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng ký</title>
+    <title>Đăng ký - ShopPKTH</title>
 </head>
 <body>
     <section>
         <div class="container mt-5 p-5">
             <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
-                        <div class="card-header text-center">
-                            <p class="fs-4">Đăng ký</p>
+                <div class="col-md-7">
+                    <div class="card border-0 shadow-lg p-4 mb-5 bg-white rounded" style="border-top: 4px solid var(--primary-color) !important;">
+                        <div class="card-header bg-white border-0 text-center pb-0">
+                            <h3 class="fw-bold text-primary mb-3">ĐĂNG KÝ TÀI KHOẢN</h3>
+                            
                             <th:block th:if="${session.succMsg}">
-                                <p class="text-success fw-bold">[[${session.succMsg}]]</p>
+                                <div class="alert alert-success fw-bold py-2">[[${session.succMsg}]]</div>
                                 <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
                             </th:block>
 
                             <th:block th:if="${session.errorMsg}">
-                                <p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+                                <div class="alert alert-danger fw-bold py-2">[[${session.errorMsg}]]</div>
                                 <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
                             </th:block>
                         </div>
 
                         <div class="card-body">
                             <form action="/saveUser" enctype="multipart/form-data" id="userRegister" novalidate method="post">
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="form-label">Họ và tên</label>
-                                        <input required class="form-control" name="name" type="text">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label class="form-label fw-medium">Họ và tên <span class="text-danger">*</span></label>
+                                        <input required class="form-control focus-ring focus-ring-primary" name="name" type="text" placeholder="Nhập họ và tên">
                                     </div>
-                                    <div class="col">
-                                        <label class="form-label">Số điện thoại</label>
-                                        <input required class="form-control" name="mobileNumber" type="number">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Số điện thoại <span class="text-danger">*</span></label>
+                                        <input required class="form-control" name="mobileNumber" type="number" placeholder="Nhập SĐT">
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input required class="form-control" name="email" type="email">
+                                    <label class="form-label fw-medium">Email <span class="text-danger">*</span></label>
+                                    <input required class="form-control" name="email" type="email" placeholder="example@gmail.com">
                                 </div>
 
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="form-label">Địa chỉ</label>
-                                        <input required class="form-control" name="address" type="text">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label class="form-label fw-medium">Địa chỉ <span class="text-danger">*</span></label>
+                                        <input required class="form-control" name="address" type="text" placeholder="Số nhà, tên đường...">
                                     </div>
-                                    <div class="col">
-                                        <label class="form-label">Thành phố</label>
-                                        <input required class="form-control" name="city" type="text">
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="form-label">Quận/Huyện</label>
-                                        <input required class="form-control" name="state" type="text">
-                                    </div>
-                                    <div class="col">
-                                        <label class="form-label">Mã bưu điện</label>
-                                        <input required class="form-control" name="pincode" type="number">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Thành phố <span class="text-danger">*</span></label>
+                                        <input required class="form-control" name="city" type="text" placeholder="VD: Hà Nội">
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="form-label">Mật khẩu</label>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label class="form-label fw-medium">Quận/Huyện <span class="text-danger">*</span></label>
+                                        <input required class="form-control" name="state" type="text" placeholder="VD: Cầu Giấy">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Mã bưu điện</label>
+                                        <input required class="form-control" name="pincode" type="number" placeholder="VD: 100000">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label class="form-label fw-medium">Mật khẩu <span class="text-danger">*</span></label>
                                         <input required class="form-control" name="password" type="password" id="pass">
                                     </div>
-                                    <div class="col">
-                                        <label class="form-label">Xác nhận mật khẩu</label>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Xác nhận mật khẩu <span class="text-danger">*</span></label>
                                         <input required class="form-control" name="confirmpassword" type="password">
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Ảnh đại diện</label>
+                                <div class="mb-4">
+                                    <label class="form-label fw-medium">Ảnh đại diện</label>
                                     <input class="form-control" name="img" type="file">
                                 </div>
 
-                                <button type="submit" class="btn bg-dark text-white col-md-12">Đăng ký</button>
+                                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold text-uppercase fs-6 shadow-sm">Tạo tài khoản</button>
                             </form>
                         </div>
 
-                        <div class="card-footer text-center">
-                            Đã có tài khoản?
-                            <a href="/signin" class="text-decoration-none">Đăng nhập</a>
+                        <div class="card-footer bg-white border-0 text-center pb-3">
+                            <span class="text-muted">Đã có tài khoản?</span>
+                            <a href="/signin" class="text-primary fw-bold text-decoration-none">Đăng nhập ngay</a>
                         </div>
                     </div>
                 </div>

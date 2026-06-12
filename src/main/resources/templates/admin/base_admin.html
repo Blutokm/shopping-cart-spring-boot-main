@@ -78,6 +78,13 @@ body {
 	border-left: 4px solid #fff;
 	padding-left: 16px;
 }
+
+/* Thêm style làm nổi bật menu Top Navbar khi Active */
+.navbar-nav .nav-link-top.active {
+    color: var(--primary-color) !important;
+    font-weight: bold;
+    border-bottom: 2px solid var(--primary-color);
+}
 </style>
 </head>
 <body>
@@ -85,9 +92,8 @@ body {
 	<header class="main-header">
 		<nav class="navbar navbar-expand-lg bg-light shadow-sm fixed-top">
 			<div class="container-fluid">
-				<a class="navbar-brand fw-bold d-flex align-items-center" href="/"
-					th:href="@{/}"> <img src="/img/logo.jpg" alt="ShopPKTH Logo"
-					style="height: 50px; width: auto; object-fit: contain; border-radius: 6px;">
+				<a class="navbar-brand fw-bold d-flex align-items-center" href="/" th:href="@{/}"> 
+                    <img src="/img/logo.jpg" alt="ShopPKTH Logo" style="height: 50px; width: auto; object-fit: contain; border-radius: 6px;">
 				</a>
 				<button class="navbar-toggler" type="button"
 					data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -96,35 +102,35 @@ body {
 					<span class="navbar-toggler-icon"></span>
 				</button>
 
-				<!-- ===== Nội dung menu ===== -->
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<!-- ===== Menu trái ===== -->
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-						<!-- Trang chủ -->
-						<th:block th:if="${user==null}">
-							<li class="nav-item"><a class="nav-link active"
-								aria-current="page" href="/"> <i class="fa-solid fa-house"></i>
-									Trang chủ
-							</a></li>
+						
+                        <th:block th:if="${user==null}">
+							<li class="nav-item">
+                                <a class="nav-link nav-link-top" href="/"> 
+                                    <i class="fa-solid fa-house"></i> Trang chủ
+							    </a>
+                            </li>
 						</th:block>
 
 						<th:block th:unless="${user==null}">
-							<li class="nav-item"
-								th:if="${user.role=='ROLE_SUPERADMIN' or user.role=='ROLE_MANAGER'}">
-								<a class="nav-link active" aria-current="page" href="/admin/">
+							<li class="nav-item" th:if="${user.role=='ROLE_SUPERADMIN' or user.role=='ROLE_MANAGER'}">
+                                <a class="nav-link nav-link-top" href="/admin/">
 									<i class="fa-solid fa-house"></i> Trang chủ
-							</a>
+							    </a>
 							</li>
-							<li class="nav-item" th:if="${user.role=='ROLE_USER'}"><a
-								class="nav-link active" aria-current="page" href="/"> <i
-									class="fa-solid fa-house"></i> Trang chủ
-							</a></li>
+							<li class="nav-item" th:if="${user.role=='ROLE_USER'}">
+                                <a class="nav-link nav-link-top" href="/"> 
+                                    <i class="fa-solid fa-house"></i> Trang chủ
+							    </a>
+                            </li>
 						</th:block>
 
-						<!-- Sản phẩm -->
-						<li class="nav-item"><a class="nav-link" aria-current="page"
-							href="/products">Sản phẩm</a></li>
+						<li class="nav-item">
+                            <a class="nav-link nav-link-top" href="/products">Sản phẩm</a>
+                        </li>
 					</ul>
+
 					<ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
 						<th:block th:if="${user!=null}">
 							<th:block th:if="${user.role=='ROLE_USER'}">
@@ -142,8 +148,7 @@ body {
 								<ul class="dropdown-menu dropdown-menu-end">
 									<li th:if="${user.role=='ROLE_USER'}"><a
 										class="dropdown-item" href="/user/profile">Hồ sơ</a></li>
-									<li
-										th:if="${user.role=='ROLE_SUPERADMIN' or user.role=='ROLE_MANAGER'}">
+									<li th:if="${user.role=='ROLE_SUPERADMIN' or user.role=='ROLE_MANAGER'}">
 										<a class="dropdown-item" href="/admin/profile">Hồ sơ</a>
 									</li>
 									<li th:if="${user.role=='ROLE_USER'}"><a
@@ -196,32 +201,45 @@ body {
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 
-			var currentFullUrl = window.location.pathname
-					+ window.location.search;
+			var currentPath = window.location.pathname;
 
-			var navLinks = document
-					.querySelectorAll('.admin-sidebar .nav-link-sb');
-
-			navLinks.forEach(function(link) {
-				var linkHref = link.getAttribute('href');
-
+            // 1. Xử lý Highlight cho Menu Dọc (Sidebar)
+			var sbLinks = document.querySelectorAll('.admin-sidebar .nav-link-sb');
+			sbLinks.forEach(function(link) {
+				var href = link.getAttribute('href');
 				link.classList.remove('active');
-
-				if (linkHref === "/admin/" && currentFullUrl === "/admin/") {
+				
+				if (href === "/admin/" && currentPath === "/admin/") {
 					link.classList.add('active');
 				}
+				else if (href !== "/admin/" && currentPath.startsWith(href)) {
+					link.classList.add('active');
+				}
+			});
 
-				else if (linkHref !== "/admin/"
-						&& currentFullUrl.startsWith(linkHref)) {
+            // 2. Xử lý Highlight cho Menu Ngang (Top Navbar)
+            var topLinks = document.querySelectorAll('.nav-link-top');
+            topLinks.forEach(function(link) {
+				var href = link.getAttribute('href');
+				link.classList.remove('active');
+				
+                // Trang chủ Khách hàng
+				if (href === "/" && currentPath === "/") {
+					link.classList.add('active');
+				}
+                // Trang chủ Admin
+				else if (href === "/admin/" && currentPath.startsWith("/admin")) {
+					link.classList.add('active');
+				}
+                // Trang Sản phẩm
+                else if (href === "/products" && currentPath.startsWith("/products")) {
 					link.classList.add('active');
 				}
 			});
 		});
 	</script>
 
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

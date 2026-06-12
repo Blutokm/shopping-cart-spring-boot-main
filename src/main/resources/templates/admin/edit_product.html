@@ -3,188 +3,220 @@
 	th:replace="~{admin/base_admin::layout(~{::section})}">
 <head>
 <meta charset="UTF-8">
-<title>Chỉnh sửa Sản phẩm</title>
+<title>Chỉnh sửa Sản phẩm - ShopPKTH</title>
 </head>
 <body>
 	<section>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-10 offset-md-1">
-					<div class="card card-sh shadow-sm" style="min-height: 90vh;">
-						<div class="card-header text-center">
-							<p class="fs-4 fw-bold">Chỉnh sửa Sản phẩm</p>
-							<th:block th:if="${session.succMsg}">
-								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
-								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-							</th:block>
-							<th:block th:if="${session.errorMsg}">
-								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
-								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-							</th:block>
-						</div>
-						<div class="card-body p-4">
-							<form action="/admin/updateProduct" method="post"
-								enctype="multipart/form-data">
+		<div class="container-fluid px-4 mt-4 mb-5">
+			<div class="text-center mb-4">
+				<h3 class="fw-bold text-primary text-uppercase mb-1">Chỉnh sửa Sản phẩm</h3>
+				<p class="text-muted">Cập nhật thông tin, giá cả và hình ảnh sản phẩm</p>
+			</div>
+
+			<div class="row justify-content-center">
+				<div class="col-lg-8">
+					<div class="card shadow-sm border-0 rounded-4" style="border-top: 4px solid var(--primary-color) !important;">
+						<div class="card-body p-4 p-md-5">
+							
+							<div class="text-center mb-2">
+								<th:block th:if="${session.succMsg}">
+									<div class="alert alert-success py-2 fw-semibold shadow-sm border-0 rounded-3">
+										<i class="fa-solid fa-circle-check me-1"></i> [[${session.succMsg}]]
+									</div>
+									<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+								</th:block>
+								<th:block th:if="${session.errorMsg}">
+									<div class="alert alert-danger py-2 fw-semibold shadow-sm border-0 rounded-3">
+										<i class="fa-solid fa-circle-exclamation me-1"></i> [[${session.errorMsg}]]
+									</div>
+									<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+								</th:block>
+							</div>
+
+							<form action="/admin/updateProduct" method="post" enctype="multipart/form-data">
 								<input type="hidden" name="id" th:value="${product.id}">
 
-								<div class="mb-3">
-									<label class="fw-semibold">Tiêu đề</label> <input type="text"
-										name="title" th:value="${product.title}" class="form-control"
-										placeholder="Nhập tên sản phẩm">
+								<!-- Ảnh chính hiện tại -->
+								<div class="mb-4 text-center">
+									<img th:src="@{'/img/product_img/' + ${product.category} + '/' + ${product.image}}"
+										class="rounded border shadow-sm p-2" 
+										style="width: 150px; height: 150px; object-fit: cover; background-color: #f8f9fa;">
 								</div>
 
+								<!-- Tiêu đề -->
 								<div class="mb-3">
-									<label class="fw-semibold">Mô tả</label>
-									<textarea rows="3" class="form-control" name="description"
-										placeholder="Nhập mô tả sản phẩm...">[[${product.description}]]</textarea>
+									<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-heading me-2"></i>Tiêu đề <span class="text-danger">*</span></label>
+									<input type="text" name="title" th:value="${product.title}" 
+										class="form-control bg-light" placeholder="Nhập tên sản phẩm" required>
 								</div>
 
+								<!-- Mô tả -->
+								<div class="mb-3">
+									<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-align-left me-2"></i>Mô tả <span class="text-danger">*</span></label>
+									<textarea rows="3" class="form-control bg-light" name="description"
+										placeholder="Nhập mô tả sản phẩm..." required>[[${product.description}]]</textarea>
+								</div>
+
+								<!-- Danh mục -->
+								<div class="mb-3">
+									<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-layer-group me-2"></i>Danh mục <span class="text-danger">*</span></label>
+									<select class="form-control bg-light" name="category" required>
+										<option th:value="${product.category}" th:text="${product.category}" selected></option>
+										<option th:each="c:${categories}" th:value="${c.name}" th:text="${c.name}"></option>
+									</select>
+								</div>
+
+								<!-- Giá và giảm giá -->
 								<div class="row">
-									<div class="mb-3 col">
-										<label class="fw-semibold">Danh mục</label> <select
-											class="form-control" name="category">
-											<option>[[${product.category}]]</option>
-											<option th:each="c:${categories}">[[${c.name}]]</option>
-										</select>
-									</div>
-									<div class="mb-3 col">
-										<label class="fw-semibold">Giá (VNĐ)</label> <input
-											type="number" name="price"
+									<div class="mb-3 col-md-6">
+										<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-tag me-2"></i>Giá (VNĐ) <span class="text-danger">*</span></label>
+										<input type="number" name="price"
 											th:value="${#numbers.formatDecimal(product.price, 0, 'NONE', 0, 'POINT')}"
-											class="form-control" placeholder="Nhập giá sản phẩm">
+											class="form-control bg-light" placeholder="Nhập giá sản phẩm" required
+											oninput="calculateDiscountPrice()">
+									</div>
+									<div class="mb-3 col-md-6">
+										<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-percent me-2"></i>Giảm giá (%) <span class="text-danger">*</span></label>
+										<input type="number" name="discount" th:value="${product.discount}"
+											class="form-control bg-light" placeholder="Nhập % giảm giá" required min="0" max="100"
+											oninput="calculateDiscountPrice()">
 									</div>
 								</div>
 
-								<div class="row">
-									<div class="mb-3 col">
-										<label class="fw-semibold">Giảm giá (%)</label> <input
-											type="number" name="discount" th:value="${product.discount}"
-											class="form-control" placeholder="Nhập % giảm giá">
-									</div>
-									<div class="mb-3 col">
-										<label class="fw-semibold">Giá sau giảm</label> <input
-											type="number" readonly
-											th:value="${#numbers.formatDecimal(product.discountPrice, 0, 'NONE', 0, 'POINT')}"
-											class="form-control">
-									</div>
+								<!-- Giá sau giảm -->
+								<div class="mb-3">
+									<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-money-bill me-2"></i>Giá sau giảm (VNĐ)</label>
+									<input type="number" id="discountPriceInput" readonly
+										th:value="${#numbers.formatDecimal(product.discountPrice, 0, 'NONE', 0, 'POINT')}"
+										class="form-control bg-light" style="background-color: #e9ecef !important;">
 								</div>
 
-								<div class="card mb-3 border-info">
-									<div
-										class="card-header bg-info text-white fw-bold d-flex justify-content-between align-items-center">
-										Phân loại sản phẩm (Màu sắc, Size, Tồn kho)
-										<button type="button"
-											class="btn btn-sm btn-light text-dark fw-bold"
-											onclick="addVariantRow()">+ Thêm phân loại</button>
+								<!-- Phân loại sản phẩm -->
+								<div class="card mb-4 border-info bg-light">
+									<div class="card-header bg-info text-white fw-bold d-flex justify-content-between align-items-center rounded-top-4">
+										<span><i class="fa-solid fa-cube me-2"></i>Phân loại sản phẩm (Màu, Size, Tồn kho)</span>
+										<button type="button" class="btn btn-sm btn-light text-dark fw-bold shadow-sm"
+											onclick="addVariantRow()"><i class="fa-solid fa-plus me-1"></i>Thêm phân loại</button>
 									</div>
-									<div class="card-body p-2">
+									<div class="card-body p-3">
 										<table class="table table-bordered mb-0" id="variantsTable">
-											<thead class="table-light">
+											<thead class="table-light text-secondary">
 												<tr>
-													<th>Màu sắc</th>
-													<th>Size</th>
-													<th>Tồn kho</th>
-													<th class="text-center">Xóa</th>
+													<th><i class="fa-solid fa-palette me-1"></i>Màu sắc</th>
+													<th><i class="fa-solid fa-ruler me-1"></i>Size</th>
+													<th><i class="fa-solid fa-boxes me-1"></i>Tồn kho</th>
+													<th class="text-center" style="width: 80px;"><i class="fa-solid fa-trash me-1"></i>Xóa</th>
 												</tr>
 											</thead>
 											<tbody>
 												<tr th:each="v : ${product.variants}">
 													<td><input type="text" name="colors"
-														th:value="${v.color}" class="form-control form-control-sm"
-														required></td>
-													<td><select name="sizes"
-														class="form-control form-control-sm" required>
-															<option th:value="${v.size}" th:text="${v.size}" selected></option>
-															<option value="S">S</option>
-															<option value="M">M</option>
-															<option value="L">L</option>
-															<option value="XL">XL</option>
-															<option value="Free Size">Free Size</option>
+														th:value="${v.color}" class="form-control form-control-sm bg-light"
+														placeholder="VD: Đen..." required></td>
+													<td><select name="sizes" class="form-control form-control-sm bg-light" required>
+														<option th:value="${v.size}" th:text="${v.size}" selected></option>
+														<option value="S">S</option>
+														<option value="M">M</option>
+														<option value="L">L</option>
+														<option value="XL">XL</option>
+														<option value="Free Size">Free Size</option>
 													</select></td>
 													<td><input type="number" name="stocks"
-														th:value="${v.stock}" class="form-control form-control-sm"
-														required></td>
+														th:value="${v.stock}" class="form-control form-control-sm bg-light"
+														placeholder="Số lượng" required min="0"></td>
 													<td class="text-center"><button type="button"
-															class="btn btn-sm btn-danger"
-															onclick="removeVariantRow(this)">
-															<i class="fa-solid fa-trash"></i>
-														</button></td>
+														class="btn btn-sm btn-outline-danger rounded-circle"
+														onclick="removeVariantRow(this)" title="Xóa">
+														<i class="fa-solid fa-trash"></i>
+													</button></td>
 												</tr>
 
 												<tr th:if="${#lists.isEmpty(product.variants)}">
 													<td><input type="text" name="colors"
-														class="form-control form-control-sm"
+														class="form-control form-control-sm bg-light"
 														placeholder="VD: Đen..." required></td>
-													<td><select name="sizes"
-														class="form-control form-control-sm" required>
-															<option value="S">S</option>
-															<option value="M">M</option>
-															<option value="L">L</option>
-															<option value="XL">XL</option>
-															<option value="Free Size">Free Size</option>
+													<td><select name="sizes" class="form-control form-control-sm bg-light" required>
+														<option value="S">S</option>
+														<option value="M">M</option>
+														<option value="L">L</option>
+														<option value="XL">XL</option>
+														<option value="Free Size">Free Size</option>
 													</select></td>
 													<td><input type="number" name="stocks"
-														class="form-control form-control-sm" required></td>
+														class="form-control form-control-sm bg-light"
+														placeholder="Số lượng" required min="0"></td>
 													<td class="text-center"><button type="button"
-															class="btn btn-sm btn-danger"
-															onclick="removeVariantRow(this)">
-															<i class="fa-solid fa-trash"></i>
-														</button></td>
+														class="btn btn-sm btn-outline-danger rounded-circle"
+														onclick="removeVariantRow(this)" title="Xóa">
+														<i class="fa-solid fa-trash"></i>
+													</button></td>
 												</tr>
 											</tbody>
 										</table>
 									</div>
 								</div>
-								<div class="mb-3">
-									<label class="fw-semibold">Trạng thái</label>
-									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="radio"
-											th:checked="${product.isActive==true}" value="true"
-											name="isActive" id="flexRadioDefault1"> <label
-											class="form-check-label" for="flexRadioDefault1">Kích
-											hoạt</label>
-									</div>
-									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="radio" name="isActive"
-											th:checked="${product.isActive==false}" value="false"
-											id="flexRadioDefault2"> <label
-											class="form-check-label" for="flexRadioDefault2">Ngừng
-											kích hoạt</label>
-									</div>
-								</div>
-								<div class="mb-3">
-									<label class="fw-semibold">Thay đổi Ảnh chính (Bỏ trống
-										nếu giữ nguyên)</label> <input type="file" name="file"
-										class="form-control">
 
-									<div class="mb-3"
-										th:if="${product.extraImages != null and !product.extraImages.isEmpty()}">
-										<label class="fw-bold">Ảnh phụ hiện tại:</label><br>
-										<div class="d-flex gap-2 mt-2">
-											<th:block th:each="img : ${product.extraImages}">
-												<img
-													th:src="@{'/img/product_img/' + ${product.category} + '/' + ${img.imageName}}"
-													class="border rounded" width="80px" height="80px"
-													style="object-fit: cover;">
-											</th:block>
+								<!-- Trạng thái -->
+								<div class="mb-4">
+									<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-toggle-on me-2"></i>Trạng thái <span class="text-danger">*</span></label>
+									<div class="d-flex gap-4 mt-2">
+										<div class="form-check">
+											<input class="form-check-input" type="radio"
+												th:checked="${product.isActive==true}" value="true"
+												name="isActive" id="active">
+											<label class="form-check-label text-success fw-medium" for="active">
+												<i class="fa-solid fa-check me-1"></i>Đang bán
+											</label>
+										</div>
+										<div class="form-check">
+											<input class="form-check-input" type="radio" name="isActive"
+												th:checked="${product.isActive==false}" value="false"
+												id="inactive">
+											<label class="form-check-label text-danger fw-medium" for="inactive">
+												<i class="fa-solid fa-ban me-1"></i>Ngừng bán
+											</label>
 										</div>
 									</div>
+								</div>
 
-									<div class="mb-3">
-										<label class="fw-bold">Cập nhật Ảnh phụ mới (Chọn
-											nhiều ảnh)</label> <input type="file" name="extraImageFiles"
-											class="form-control" multiple accept="image/*"> <small
-											class="text-danger fst-italic">* Nếu không chọn ảnh
-											mới, hệ thống sẽ tự động giữ nguyên ảnh phụ cũ.</small>
+								<!-- Ảnh chính -->
+								<div class="mb-4">
+									<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-image me-2"></i>Cập nhật ảnh chính (Bỏ qua nếu giữ nguyên)</label>
+									<input type="file" name="file" class="form-control bg-light" accept="image/*">
+									<small class="text-muted d-block mt-1"><i class="fa-solid fa-circle-info me-1"></i>Định dạng: JPG, PNG. Kích thước tối đa: 5MB</small>
+								</div>
+
+								<!-- Ảnh phụ hiện tại -->
+								<div class="mb-4" th:if="${product.extraImages != null and !product.extraImages.isEmpty()}">
+									<label class="form-label fw-semibold text-secondary d-block mb-2"><i class="fa-solid fa-images me-2"></i>Ảnh phụ hiện tại:</label>
+									<div class="d-flex gap-2 flex-wrap">
+										<th:block th:each="img : ${product.extraImages}">
+											<div class="position-relative">
+												<img th:src="@{'/img/product_img/' + ${product.category} + '/' + ${img.imageName}}"
+													class="border rounded" width="80px" height="80px"
+													style="object-fit: cover;">
+											</div>
+										</th:block>
 									</div>
 								</div>
-								<div class="text-center mb-3">
-									<img th:src="@{'/img/product_img/' + ${product.category} + '/' + ${product.image}}"
-										width="120px" height="120px"
-										style="border-radius: 8px; object-fit: cover; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
+								<!-- Ảnh phụ mới -->
+								<div class="mb-4">
+									<label class="form-label fw-semibold text-secondary"><i class="fa-solid fa-upload me-2"></i>Cập nhật ảnh phụ mới (Chọn nhiều ảnh)</label>
+									<input type="file" name="extraImageFiles" class="form-control bg-light" multiple accept="image/*">
+									<small class="text-muted d-block mt-1"><i class="fa-solid fa-circle-info me-1"></i>Nếu không chọn ảnh mới, hệ thống sẽ giữ nguyên ảnh phụ cũ</small>
 								</div>
-								<button class="btn btn-primary col-md-12 mt-2 py-2 fw-semibold">Cập
-									nhật sản phẩm</button>
+
+								<!-- Nút hành động -->
+								<div class="d-flex justify-content-center gap-3 mt-5 pt-4 border-top">
+									<button type="submit" class="btn btn-primary px-4 py-2 fw-bold text-uppercase shadow-sm rounded-pill">
+										<i class="fa-solid fa-floppy-disk me-2"></i>Cập nhật
+									</button>
+									<a href="/admin/products" class="btn btn-secondary px-4 py-2 fw-bold text-uppercase shadow-sm rounded-pill">
+										<i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+									</a>
+								</div>
+
 							</form>
 						</div>
 					</div>
@@ -193,22 +225,41 @@
 		</div>
 
 		<script>
+			// Tính giá sau giảm tự động
+			function calculateDiscountPrice() {
+				const priceInput = document.querySelector('input[name="price"]');
+				const discountInput = document.querySelector('input[name="discount"]');
+				const discountPriceInput = document.getElementById('discountPriceInput');
+
+				const price = parseFloat(priceInput.value) || 0;
+				const discount = parseFloat(discountInput.value) || 0;
+
+				const discountPrice = Math.round(price * (1 - discount / 100));
+				discountPriceInput.value = discountPrice.toLocaleString('vi-VN');
+			}
+
+			// Thêm hàng phân loại mới
 			function addVariantRow() {
 				const tbody = document.querySelector("#variantsTable tbody");
 				const tr = document.createElement("tr");
 				tr.innerHTML = `
-					<td><input type="text" name="colors" class="form-control form-control-sm" placeholder="VD: Đen..." required></td>
+					<td><input type="text" name="colors" class="form-control form-control-sm bg-light" placeholder="VD: Đen..." required></td>
 					<td>
-						<select name="sizes" class="form-control form-control-sm" required>
-							<option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option><option value="Free Size">Free Size</option>
+						<select name="sizes" class="form-control form-control-sm bg-light" required>
+							<option value="S">S</option>
+							<option value="M">M</option>
+							<option value="L">L</option>
+							<option value="XL">XL</option>
+							<option value="Free Size">Free Size</option>
 						</select>
 					</td>
-					<td><input type="number" name="stocks" class="form-control form-control-sm" placeholder="Số lượng" required></td>
-					<td class="text-center"><button type="button" class="btn btn-sm btn-danger" onclick="removeVariantRow(this)"><i class="fa-solid fa-trash"></i></button></td>
+					<td><input type="number" name="stocks" class="form-control form-control-sm bg-light" placeholder="Số lượng" required min="0"></td>
+					<td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger rounded-circle" onclick="removeVariantRow(this)" title="Xóa"><i class="fa-solid fa-trash"></i></button></td>
 				`;
 				tbody.appendChild(tr);
 			}
 
+			// Xóa hàng phân loại
 			function removeVariantRow(button) {
 				const row = button.closest("tr");
 				if(document.querySelectorAll("#variantsTable tbody tr").length > 1) {
@@ -217,6 +268,11 @@
 					alert("Phải có ít nhất 1 phân loại sản phẩm!");
 				}
 			}
+
+			// Khởi tạo khi trang tải
+			document.addEventListener("DOMContentLoaded", function () {
+				calculateDiscountPrice();
+			});
 		</script>
 	</section>
 </body>
