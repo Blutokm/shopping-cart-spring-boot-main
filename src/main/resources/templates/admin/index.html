@@ -141,12 +141,9 @@
 
 		<script th:inline="javascript">
 			/*<![CDATA[*/
-
-			// --- 1. CONFIG BIỂU ĐỒ ĐƯỜNG (DOANH THU) ---
 			var revenueLabels = /*[[${chartRevenueLabels}]]*/[ "Tháng 1", "Tháng 2" ];
 			var revenueData = /*[[${chartRevenueData}]]*/[ 0, 0 ];
 
-			// Format tiền tệ chuẩn Việt Nam (VD: 1.000.000 ₫)
 			const vndFormat = new Intl.NumberFormat('vi-VN', {
 				style : 'currency',
 				currency : 'VND'
@@ -154,10 +151,9 @@
 
 			const ctxLine = document.getElementById('revenueLineChart').getContext('2d');
 
-			// Tạo hiệu ứng đổ bóng Gradient siêu đẹp - ĐÃ ĐỔI SANG MÀU CAM (#ff6600)
 			let gradientFill = ctxLine.createLinearGradient(0, 0, 0, 350);
-			gradientFill.addColorStop(0, 'rgba(255, 102, 0, 0.6)'); // Đậm ở trên
-			gradientFill.addColorStop(1, 'rgba(255, 102, 0, 0.02)'); // Mờ dần xuống dưới
+			gradientFill.addColorStop(0, 'rgba(255, 102, 0, 0.6)'); 
+			gradientFill.addColorStop(1, 'rgba(255, 102, 0, 0.02)'); 
 
 			new Chart(ctxLine, {
 				type : 'line',

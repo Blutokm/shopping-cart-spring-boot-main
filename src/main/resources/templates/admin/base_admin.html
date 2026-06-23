@@ -79,7 +79,6 @@ body {
 	padding-left: 16px;
 }
 
-/* Thêm style làm nổi bật menu Top Navbar khi Active */
 .navbar-nav .nav-link-top.active {
     color: var(--primary-color) !important;
     font-weight: bold;
@@ -203,7 +202,6 @@ body {
 
 			var currentPath = window.location.pathname;
 
-            // 1. Xử lý Highlight cho Menu Dọc (Sidebar)
 			var sbLinks = document.querySelectorAll('.admin-sidebar .nav-link-sb');
 			sbLinks.forEach(function(link) {
 				var href = link.getAttribute('href');
@@ -217,21 +215,17 @@ body {
 				}
 			});
 
-            // 2. Xử lý Highlight cho Menu Ngang (Top Navbar)
             var topLinks = document.querySelectorAll('.nav-link-top');
             topLinks.forEach(function(link) {
 				var href = link.getAttribute('href');
 				link.classList.remove('active');
 				
-                // Trang chủ Khách hàng
 				if (href === "/" && currentPath === "/") {
 					link.classList.add('active');
 				}
-                // Trang chủ Admin
 				else if (href === "/admin/" && currentPath.startsWith("/admin")) {
 					link.classList.add('active');
 				}
-                // Trang Sản phẩm
                 else if (href === "/products" && currentPath.startsWith("/products")) {
 					link.classList.add('active');
 				}

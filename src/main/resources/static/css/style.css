@@ -156,13 +156,19 @@ body { padding-top: 55px; }
 }
 
 @media (max-width: 576px) {
-    .carousel-item img { max-height: 250px; }
+  .carousel-item img { max-height: 250px; }
+  .product-card img { aspect-ratio: 1/1; }
+  .product-card .product-title { font-size: 0.9rem; }
+  .footer-giovanni { text-align: center; }
 }
+
 @media (min-width: 768px) and (max-width: 991px) {
-    .carousel-item img { max-height: 380px; }
+  .carousel-item img { max-height: 380px; }
+  .category-section { padding: 40px; }
 }
+
 @media (min-width: 992px) {
-    .carousel-item img { max-height: 500px; }
+  .carousel-item img { max-height: 500px; }
 }
 
 .category-img-box {

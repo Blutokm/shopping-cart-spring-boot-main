@@ -107,4 +107,4 @@ create table product_image
 
 
 INSERT INTO User_Dtls (name, mobileNumber, address, email, city, state, pincode, password, profileImage, role, isEnable, accountNonLocked, failedAttempt) 
-VALUES ('Administrator', '0988888888', 'Hà Nội', 'admin@gmail.com', 'Hà Nội', 'Hà Nội', '100000', '$2a$10$123456789012345678901uiaLpJxTpf6VbfI5NADlsRsfvEm6aq9C', 'default.jpg', 'ROLE_ADMIN', 1, 1, 0);
+VALUES ('Administrator', '0988888888', 'Hà Nội', 'admin@gmail.com', 'Hà Nội', 'Hà Nội', '100000', '$2a$10$123456789012345678901uiaLpJxTpf6VbfI5NADlsRsfvEm6aq9C', 'default.jpg', 'ROLE_SUPERADMIN', 1, 1, 0);
