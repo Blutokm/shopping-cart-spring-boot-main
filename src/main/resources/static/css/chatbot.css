@@ -15,7 +15,7 @@
     justify-content: center;
     box-shadow: 0 4px 20px rgba(26, 115, 232, 0.45);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    font-size: 0; /* ẩn text, dùng SVG icon */
+    font-size: 0; 
 }
 
 #chat-fab:hover {
@@ -27,7 +27,6 @@
     transform: scale(0.95);
 }
 
-/* Badge số tin nhắn chưa đọc */
 #chat-fab .badge {
     position: absolute;
     top: -4px;
@@ -45,7 +44,6 @@
     border: 2px solid #fff;
 }
 
-/* ── Chat Window ── */
 #chat-window {
     display: none;
     flex-direction: column;
@@ -159,7 +157,6 @@
 #chat-messages::-webkit-scrollbar-track { background: transparent; }
 #chat-messages::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
 
-/* Tin nhắn người dùng */
 .msg-user {
     align-self: flex-end;
     background: #1a73e8;
@@ -173,7 +170,6 @@
     box-shadow: 0 1px 4px rgba(26, 115, 232, 0.25);
 }
 
-/* Tin nhắn AI */
 .msg-bot {
     align-self: flex-start;
     background: #fff;
@@ -188,7 +184,6 @@
     border: 1px solid #e5e7eb;
 }
 
-/* Gemini logo nhỏ trước tin nhắn bot */
 .msg-bot-wrapper {
     display: flex;
     align-items: flex-end;
@@ -208,7 +203,6 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
 }
 
-/* Typing indicator */
 .msg-typing {
     align-self: flex-start;
     background: #fff;
@@ -236,7 +230,6 @@
     30% { transform: translateY(-6px); }
 }
 
-/* Timestamp */
 .msg-time {
     font-size: 11px;
     color: #9ca3af;
@@ -244,7 +237,6 @@
     text-align: right;
 }
 
-/* ── Quick Replies ── */
 #quick-replies {
     padding: 6px 14px 10px;
     display: flex;
@@ -274,7 +266,6 @@
     transform: translateY(-1px);
 }
 
-/* ── Input Area ── */
 #chat-input-area {
     padding: 12px 14px;
     border-top: 1px solid #e5e7eb;
@@ -329,7 +320,6 @@
 #send-btn:active { transform: scale(0.96); }
 #send-btn:disabled { background: #d1d5db; box-shadow: none; cursor: not-allowed; transform: none; }
 
-/* ── Powered by footer ── */
 #chat-footer {
     text-align: center;
     font-size: 11px;
@@ -344,7 +334,6 @@
     text-decoration: none;
 }
 
-/* ── Responsive (mobile) ── */
 @media (max-width: 480px) {
     #chat-window {
         width: calc(100vw - 20px);
