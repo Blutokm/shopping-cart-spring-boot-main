@@ -1,7 +1,7 @@
 *GIỚI THIỆU DỰ ÁN: HỆ THỐNG WEBSITE BÁN HÀNG TRỰC TUYẾN (E-COMMERCE)
 1. Tổng quan dự án
    
-   	-Tên dự án: Shopping Cart Web Application
+   	-Tên dự án: Website thương mại điện tử Thời trang và Phụ kiện PKTH
    
     -Mục tiêu: Xây dựng một nền tảng thương mại điện tử hoàn chỉnh, thân thiện với người dùng, giúp tối ưu hóa quy trình mua sắm trực tuyến. Dự án không chỉ cung cấp các tính năng bán hàng cơ bản mà còn tích hợp các giải pháp hiện đại như thanh toán trực tuyến qua cổng VNPay.
 
